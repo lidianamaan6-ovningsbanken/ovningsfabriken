@@ -62,6 +62,7 @@ def frame2(c, t):
         d.ellipse((x - r, y - r, x + r, y + r), fill=pl['color'], outline='#e5efd8', width=2)
         d.text((x, y), pl['label'], font=F(12, True), fill=('#153b2b' if light(pl['color']) else '#f3f5ef'), anchor='mm')
     for tr in c['balls']:
+        if at(tr, t)[0] > 120 or any(abs(tt - t) < 0.05 and q[0] > 150 for tt, q in tr): continue
         x, y = xy(at(tr, t)); d.ellipse((x - 8, y - 8, x + 8, y + 8), fill='#fffef0', outline='#142d22', width=2); d.regular_polygon((x, y, 3), 5, fill='#162d23', rotation=t * 60)
     for e in ex:  # över spelarna
         if not (e['t0'] <= t < e.get('t1', 999)): continue
@@ -87,6 +88,7 @@ def ring_pos(cx, cy, r, i, n, a0=-90):
 def render(C, argv, thumbs=(1, 4, 7.5, 11, 14.5)):
     for c in C:
         if len(argv) > 1 and c['id'] not in argv[1:]: continue
+        stick_balls(c)
         c['base'] = c['shapes'](c)
         for t in thumbs: frame2(c, t).resize((360, 360)).save(ROOT / f"filmwork/{c['id']}-{t}.jpg")
         path = OUT / (c['slug'] + '.mp4')
@@ -104,8 +106,15 @@ class Drill:
     def pos(self, pid):
         return self.pl[pid]['tr'][-1][1]
     def mv(self, pid, t0, t1, to):
-        tr = self.pl[pid]['tr']; t0 = max(t0, tr[-1][0]); t1 = max(t1, t0 + 0.05)
-        if t0 > tr[-1][0]: tr.append((t0, tr[-1][1]))
+        # En ny rörelse tar över från där spelaren är vid t0 (tidigare planerade steg efter t0 stryks).
+        tr = self.pl[pid]['tr']; t0 = max(0, t0)
+        if t0 < tr[-1][0]:
+            cur = at(tr, t0)
+            while len(tr) > 1 and tr[-1][0] > t0: tr.pop()
+            if tr[-1][0] < t0: tr.append((t0, cur))
+            else: tr[-1] = (tr[-1][0], cur) if tr[-1][0] == t0 else tr[-1]
+        elif t0 > tr[-1][0]: tr.append((t0, tr[-1][1]))
+        t1 = max(t1, t0 + 0.3)
         tr.append((t1, to))
     def path(self, pid, t0, pts, speed=1.0):
         t = t0
@@ -133,3 +142,52 @@ class Drill:
         return [dict(label=self.pl[k]['label'], color=self.pl[k]['color'], tr=self.pl[k]['tr']) for k in self.order]
     def ballset(self):
         return [b if b[-1][0] >= 18 else b + [(18, b[-1][1])] for b in self.balls]
+
+def stick_balls(c, reach=4.5, end=18.0):
+    """Bollen följer med spelaren som har den så länge den inte är i rörelse.
+    Nästa passning startar där bollen faktiskt är."""
+    if c.get('_stuck'): return
+    pls = c['players']
+    def nearest(x, y, t):
+        best = None
+        for p in pls:
+            px, py = at(p['tr'], t); dd = ((px - x) ** 2 + (py - y) ** 2) ** .5
+            if dd <= reach and (best is None or dd < best[0]): best = (dd, p, (x - px, y - py))
+        return best
+    def in_goal(x, y): return y < 6 or y > 94 or x < 9 or x > 91
+    res = []
+    for tr0 in c['balls']:
+        tr = []
+        for t, q in sorted(tr0, key=lambda z: z[0]):
+            if tr and abs(tr[-1][0] - t) < 1e-9: tr[-1] = (t, q)
+            else: tr.append((t, q))
+        T = max(end, tr[-1][0])
+        if tr[-1][0] < T: tr.append((T, tr[-1][1]))
+        orig = [q for _, q in tr]
+        # varje punkt där bollen stannar eller vänder landar hos närmaste spelare
+        snapped = []
+        for k, (t, q) in enumerate(tr):
+            if q[0] < 150 and not in_goal(*q):
+                best = None
+                for p in pls:
+                    px, py = at(p['tr'], t); dd = ((px - q[0]) ** 2 + (py - q[1]) ** 2) ** .5
+                    if dd <= 10 and (best is None or dd < best[0]): best = (dd, px, py)
+                if best and best[0] > 2.6: q = (best[1] + 1.8, best[2] - 1.2)
+            if k > 0 and orig[k] == orig[k - 1]: q = snapped[-1][1]
+            snapped.append((t, q))
+        tr = snapped
+        out = [tr[0]]
+        for k in range(len(tr) - 1):
+            (ta, pa), (tb, pb) = out[-1], tr[k + 1]
+            still = orig[k] == orig[k + 1] and tb - ta >= 0.15
+            if still and pa[0] < 150 and not in_goal(*pa):
+                nb = nearest(pa[0], pa[1], ta)
+                if nb:
+                    _, p, off = nb; t = ta + 0.1
+                    while t < tb - 0.05:
+                        px, py = at(p['tr'], t); out.append((t, (px + off[0], py + off[1]))); t += 0.1
+                    px, py = at(p['tr'], tb); out.append((tb, (px + off[0], py + off[1])))
+                    continue
+            out.append((tb, pb))
+        res.append(out)
+    c['balls'] = res; c['_stuck'] = True

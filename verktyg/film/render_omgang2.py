@@ -5,8 +5,62 @@ import math as _m
 C.clear()
 WHITE = '#f3f5ef'
 
+def _ball_last(balls):
+    last = 0
+    for bb in balls:
+        for (ta, pa), (tb, pb) in zip(bb, bb[1:]):
+            if tb < 17.9 and pa[0] < 150 and pb[0] < 150 and pa != pb: last = max(last, tb)
+    return last
+
+def _repeat(pl, balls, phases, extras, gap=1.6):
+    """Kör övningen en gång till: alla går tillbaka till startplatsen och repetitionen börjar om."""
+    L = _ball_last(balls) + 0.4
+    def cut(tr): return [(t, q) for t, q in tr if t <= L] + ([(L, at(tr, L))] if tr[-1][0] > L else [])
+    for x in pl:
+        tr = x['tr']; head = cut(tr); start = tr[0][1]
+        if head[-1][0] < L: head.append((L, head[-1][1]))
+        x['tr'] = head + [(L + gap, start)] + [(t + L + gap, q) for t, q in cut(tr) if t > 0] + []
+        if x['tr'][-1][0] < 2 * L + gap: x['tr'].append((2 * L + gap, x['tr'][-1][1]))
+    nb = []
+    for bb in balls:
+        head = cut(bb)
+        if head[-1][0] < L: head.append((L, head[-1][1]))
+        nb.append(head + [(L + 0.001, (200, 200)), (L + gap - 0.001, (200, 200))] + [(L + gap, bb[0][1])] + [(t + L + gap, q) for t, q in cut(bb) if t > 0])
+    phases = list(phases) + [(L, 'Ny repetition', 'Alla tillbaka till startplatserna. Övningen körs igen.')] + [(t + L + gap, h, s_) for t, h, s_ in phases]
+    if extras:
+        extras = list(extras) + [dict(e, t0=e['t0'] + L + gap, **({'t1': e['t1'] + L + gap} if 't1' in e else {})) for e in extras]
+    return pl, nb, phases, extras
+
+def _continue(pl, balls, end=16.8):
+    """Spelet fortsätter: laget med boll passar vidare tills filmen är slut."""
+    for bb in balls:
+        L = 0
+        for (ta, pa), (tb, pb) in zip(bb, bb[1:]):
+            if tb < 17.9 and pa[0] < 150 and pb[0] < 150 and pa != pb: L = max(L, tb)
+        if end - L < 3.5: continue
+        bx, by = at(bb, L)
+        if bx > 150 or by < 6 or by > 94 or bx < 9 or bx > 91: continue
+        def dist(x, t): px, py = at(x['tr'], t); return ((px - bx) ** 2 + (py - by) ** 2) ** .5
+        holder = min(pl, key=lambda x: dist(x, L))
+        if dist(holder, L) > 5 or holder['label'] in ('MV', 'T'): continue
+        mates = [x for x in pl if x['color'] == holder['color'] and x['label'] not in ('MV', 'T')] + [x for x in pl if x['label'] in ('N', 'J', 'E')]
+        if len(mates) < 3: continue
+        keep = [(t, q) for t, q in bb if t <= L]; t = L + 0.5; cur = holder; prev = None
+        keep.append((t, at(bb, L)))
+        while t + 0.9 < end:
+            cx, cy = at(cur['tr'], t)
+            opts = sorted([x for x in mates if x is not cur and x is not prev], key=lambda x: ((at(x['tr'], t)[0] - cx) ** 2 + (at(x['tr'], t)[1] - cy) ** 2))
+            nxt = opts[min(1, len(opts) - 1)]
+            nx, ny = at(nxt['tr'], t + 0.7)
+            keep.append((t + 0.7, (nx + 1.8, ny - 1.2))); keep.append((t + 1.15, (at(nxt['tr'], t + 1.15)[0] + 1.8, at(nxt['tr'], t + 1.15)[1] - 1.2)))
+            prev, cur, t = cur, nxt, t + 1.15
+        keep.append((18.0, keep[-1][1]))
+        bb[:] = keep
+
 def finish(d, id_, slug, title, setup, phases, label, shapes, extras=None, target=14.5):
     pl = d.players(); balls = d.ballset()
+    if _ball_last(balls) < 7.5:
+        pl, balls, phases, extras = _repeat(pl, balls, phases, extras); target = 16.8
     last = max([t for x in pl for t, _ in x['tr'] if t < 17.9] + [t for bb in balls for t, _ in bb if t < 17.9])
     f = max(1.0, min(2.2, target / last))
     sc = lambda tr: [(t * f if t < 17.9 else max(18, t * f), q) for t, q in tr]
@@ -17,6 +71,7 @@ def finish(d, id_, slug, title, setup, phases, label, shapes, extras=None, targe
         for e in extras:
             e['t0'] *= f
             if 't1' in e: e['t1'] *= f
+    _continue(pl, balls)
     add(id_, slug, title, setup, pl, balls[0], phases)
     C[-1]['balls'] = balls; C[-1]['shapes'] = shapes_base(label, shapes)
     if extras: C[-1]['extras'] = extras
@@ -131,14 +186,14 @@ d.p('bl', 'X1', B, BL); d.p('br', 'X3', B, BR)
 b = d.newball((BL[0] + 1.8, BL[1] - 1.2))
 d.mv('c1', 0.3, 1.2, (40, 60)); t = d.pas(b, 0.8, (41.8, 58.8))                   # X1 till X2 som kommer emot
 t = d.pas(b, t + 0.3, (BR[0] - 1.8, BR[1] - 1.2))                                  # tillbakaspel till X3
-d.mv('c2', t, t + 2.4, (62, 30)); t = d.pas(b, t + 0.4, (63.8, 28.8))              # X3 i djupled till X4
+d.mv('c2', t, t + 1.5, (62, 30)); t = d.pas(b, t + 0.8, (63.8, 28.8), 0.7)              # X3 i djupled till X4
 t = d.pas(b, t + 0.4, (TR[0] - 1.8, TR[1] + 1.2))                                  # X4 till X5
 d.mv('c1', t - 1, t + 0.6, (42, 52)); d.mv('c2', t - 0.2, t + 1.4, (58, 52))
 # vänder: uppifrån vänster ner
 d.mv('c2', t + 1.6, t + 2.4, (60, 42)); t = d.pas(b, t + 1.6, (TL[0] + 1.8, TL[1] + 1.2), 1.0)
 t = d.pas(b, t + 0.3, (59.8, 43.2))                                                # X5 till central
 t = d.pas(b, t + 0.3, (TR[0] - 1.8, TR[1] + 1.2))                                  # tillbakaspel
-d.mv('c1', t, t + 2.4, (38, 72)); t = d.pas(b, t + 0.4, (39.8, 70.8))              # djupled nedåt
+d.mv('c1', t, t + 1.5, (38, 72)); t = d.pas(b, t + 0.8, (39.8, 70.8), 0.7)              # djupled nedåt
 t = d.pas(b, t + 0.4, (BL[0] + 1.8, BL[1] - 1.2))
 finish(d, 't22', 'spelavstand-i-speluppbyggnad', ['Spelavstånd', 'I speluppbyggnad'], '8 spelare · Yta 40 × 20 m',
        [(0, 'X1 passar till X2', 'X2 kommer emot bollen centralt.'),
@@ -282,7 +337,7 @@ t = d.pas(b, t + 0.6, (47.8, 45.2)); d.mv('u', t - 0.6, t + 1.6, (44, 52))      
 t = d.pas(b, t + 0.4, (H[0] - 1.8, H[1] + 1.2)); d.mv('r', t - 0.6, t + 1.6, (76, 44))                 # vidare till höger
 d.mv('u', t - 0.3, t + 1.0, (50, 24))
 t = d.pas(b, t + 0.4, (51.8, 22.8)); d.mv('h', t - 0.6, t + 1.6, (56, 20))                             # in mellan dockorna
-d.carry(b, 'u', t, t + 0.8); d.mv('u', t, t + 0.8, (50, 18)); d.mv('v2', 1, 2, V)
+d.mv('u', t, t + 0.8, (50, 18)); d.carry(b, 'u', t, t + 0.8); d.mv('v2', 1, 2, V)
 finish(d, 't28', 'passningsovning-dubbel-2', ['Passningsövning dubbel 2', 'Båglöpning och diagonal'], 'Dockor vid straffområdet och mittcirkeln · Spelare runt om',
        [(0, 'Vänster spelare passar kort upp', 'Spelaren vid mittcirkeln börjar bågen runt dockan.'),
         (1.6, 'Diagonalt ner i löpningen', 'Båglöpning i rätt tid. Passa framför löparen.'),
@@ -342,7 +397,7 @@ b2 = d.newball((51.8, 54.8)); d.mv('b2', 0, 0.1, (50, 62))
 t3 = t + 0.6; d.mv('b2', t3, t3 + 0.5, (50, 56)); d.pl  # blå nr 3 med bollen
 d.balls[b2] = [(0, (200, 200)), (t3 - 0.01, (200, 200)), (t3, (51.8, 54.8))]
 d.mv('r2', t3, t3 + 0.6, (50, 54)); t4 = d.pas(b2, t3 + 0.7, (60, 56), 0.4); d.mv('r1', t3 + 0.3, t4, (60, 57))   # rött vinner
-d.carry(b2, 'r1', t4, t4 + 1.6); d.mv('r1', t4, t4 + 1.6, (80, 60))
+d.mv('r1', t4, t4 + 1.6, (80, 60)); d.carry(b2, 'r1', t4, t4 + 1.6)
 d.pas(b2, t4 + 1.7, (93, 60), 0.4)
 finish(d, 't44', 'possession-och-omstallning-till-avslut', ['Possession och omställning', 'Till avslut'], 'Mittzon 3 mot 3 + 2 · Fyra småmål · Ändzoner med målvakt och försvarare',
        [(0, 'Laget med boll håller den i mittzonen', 'Bollinnehav med syfte: leta efter vägen framåt.'),

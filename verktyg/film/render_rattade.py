@@ -50,7 +50,8 @@ for i in range(8):
               (s0 + 3 + late, (cx + ox, cy + oy)), (s0 + 3.6 + late, (cx - ox - side[0] * (1 if k == 0 else -1), cy - oy - side[1] * (1 if k == 0 else -1))),
               (s0 + 6.6 + late * 1.6, st), (18, st)]
     pl.append(p(str(i + 1), B, *tr))
-pl.append(fixed('T', G, (50, 44)))
+st7 = ring_pos(50, 50, 15, 6, 8); pl[6]['tr'] = [q for q in pl[6]['tr'] if q[0] < 17.9] + [(14.6, st7), (15.6, (46, 49)), (18, (46, 49))]
+pl.append(p('T', G, (0, (50, 44)), (14.6, (50, 44)), (15.6, (58, 40)), (18, (58, 40))))
 ang4 = _m.degrees(_m.atan2((ring_pos(50, 50, 15, 3, 8)[1] - 52) * 6.5, (ring_pos(50, 50, 15, 3, 8)[0] - 50) * 7.7))
 add('t02', 'snurra-flaskan', ['Snurra flaskan', 'Lek och reaktion'], 'Ring i mitten · Koner i hörnen och på sidorna', pl,
     [(0, (54, 55)), (3.2, (54, 55)), (3.8, (56, 57)), (6.6, (82, 82)), (7.2, (88, 83)), (7.7, (90, 88)), (8.2, (85, 90)), (11, ring_pos(50, 50, 15, 3, 8)), (18, ring_pos(50, 50, 15, 3, 8))],
@@ -58,8 +59,9 @@ add('t02', 'snurra-flaskan', ['Snurra flaskan', 'Lek och reaktion'], 'Ring i mit
      (3, 'Flaskan pekar på nr 4', 'Nr 4 tar bollen och dribblar runt valfri hörnkon.'),
      (3.6, 'Alla andra sprintar runt närmaste kon', 'Reagera snabbt. Kort sväng runt konen.'),
      (8.5, 'Tillbaka till ringen', 'Första touchen framåt hela vägen hem.'),
-     (12.5, 'Den som är sist tillbaka snurrar nästa gång', 'Här kom nr 7 sist.')])
-C[-1]['extras'] = [dict(kind='flask', t0=0, t1=12.5, pos=(50, 52), ang=lambda t: (t * 260 if t < 2.6 else ang4 + max(0, 3 - t) / 0.4 * 30) if t < 3 else ang4)]
+     (12.5, 'Den som är sist tillbaka snurrar nästa gång', 'Här kom nr 7 sist.'),
+     (15.6, 'Nr 7 snurrar flaskan', 'En ny omgång börjar. Alla är redo att reagera.')])
+C[-1]['extras'] = [dict(kind='flask', t0=15.6, t1=18.1, pos=(50, 52), ang=lambda t: t * 300), dict(kind='flask', t0=0, t1=15.6, pos=(50, 52), ang=lambda t: (t * 260 if t < 2.6 else ang4 + max(0, 3 - t) / 0.4 * 30) if t < 3 else ang4)]
 C[-1]['shapes'] = shapes_base('LEK OCH REAKTION', [('cone', x, y) for x, y in cones2])
 
 # ============ t03 Bollstafett + tre i rad ============
@@ -175,7 +177,7 @@ route = [1, 2, 3, 4, 2, 5, 1]
 def cycle(t0):
     b = []; ev = []; t = t0
     for k in range(len(route) - 1):
-        a, c = route[k], route[k + 1]; dur = 1.6 if (a, c) in [(3, 4), (5, 1)] else 1.0
+        a, c = route[k], route[k + 1]; dur = 2.0 if (a, c) in [(3, 4), (5, 1)] else 1.0
         b += [(t, slot(a, 0)), (t + 0.5, slot(a, 0))]; ev.append((t + 0.5, a, c, dur)); t += 0.5 + dur
     b.append((t, slot(1, 0))); return b, ev
 b1, e1 = cycle(0); b2, e2 = cycle(4.6)
@@ -184,10 +186,11 @@ for n in S5:
     tracks[f'{n}a'] = [(0, slot(n, 0))]; tracks[f'{n}b'] = [(0, slot(n, 1))]
 for tp, a, c, dur in sorted(e1 + e2):
     mover = queue[a].pop(0)
-    tracks[mover] += [(tp, slot(a, 0)), (tp + dur + 0.6, slot(c, len(queue[c])))]
+    _d = ((slot(a, 0)[0] - slot(c, 0)[0]) ** 2 + (slot(a, 0)[1] - slot(c, 0)[1]) ** 2) ** .5
+    tracks[mover] += [(tp, slot(a, 0)), (tp + max(dur + 0.3, _d / 30), slot(c, len(queue[c])))]
     queue[c].append(mover)
     for k, who in enumerate(queue[a]):
-        last = tracks[who][-1][1]; tracks[who] += [(max(tp + 0.1, tracks[who][-1][0] + 0.01), last), (tp + 0.7, slot(a, k))]
+        last = tracks[who][-1][1]; t_s = max(tp + 0.1, tracks[who][-1][0] + 0.01); tracks[who] += [(t_s, last), (max(tp + 0.7, t_s + 0.5), slot(a, k))]
 pl = [p(who[0], B, *sorted(tr, key=lambda z: z[0])) for who, tr in tracks.items()]
 add('t16', 'passningsvariant-med-fem-stationer', ['Passningsvariant', 'Fem stationer'], 'Fem stationer med käppar · Bollen går 1, 2, 3, 4, 2, 5, 1', pl, b1,
     [(0, 'A: 1 till 2, B: 2 till 3', 'Spelaren följer sin passning till nästa station.'),

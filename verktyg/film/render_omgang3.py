@@ -59,7 +59,7 @@ d = Drill()
 GATES = [(50, 23), (50, 77), (19, 50), (81, 50)]
 for k, ps in enumerate([(30, 34), (62, 32), (68, 62), (34, 66)]): d.p(f'b{k}', str(k + 1), B, ps)
 for k, ps in enumerate([(44, 42), (56, 46), (50, 58), (42, 54)]): d.p(f'r{k}', str(k + 1), R, ps)
-for k in range(4): wander(d, f'b{k}', 0, 9, (26, 30, 74, 70), k); wander(d, f'r{k}', 0, 18, (26, 30, 74, 70), 20 + k, 1.6)
+for k in range(4): wander(d, f'b{k}', 0, 9, (26, 30, 74, 70), k); wander(d, f'r{k}', 0, 18, [(28, 30, 49, 49), (51, 30, 72, 49), (51, 51, 72, 70), (28, 51, 49, 70)][k], 20 + k, 1.6)
 b = d.newball(rec(d, 'b0', 0))
 t = chain(d, b, 0.4, ['b1', 'b2', 'b3', 'b0', 'b1', 'b2']); cnt = arrivals(d, b)[:6]
 d.mv('b1', t - 1.2, t + 1.0, (85, 46))                                 # löper mot ledig port
@@ -112,7 +112,7 @@ d.mv('a3', t, t + 1.8, (78, 22)); t = d.pas(b, t + 1.9, rec(d, 'a3', t + 2.6))
 t = d.pas(b, t + 0.4, (80, 8), 0.5); tg = t
 b2 = d.newball((200, 200)); d.balls[b2] = [(0, (200, 200)), (tg + 0.8, (200, 200)), (tg + 0.81, rec(d, 'b4', tg + 0.8))]
 d.mv('w4', tg + 0.6, tg + 1.4, (42, 64)); t3 = d.pas(b2, tg + 1.2, rec(d, 'w4', tg + 1.6), 0.4)
-d.carry(b2, 'w4', t3, t3 + 1.6); d.mv('w4', t3, t3 + 1.6, (46, 82)); d.pas(b2, t3 + 1.7, (48, 101), 0.5)
+d.mv('w4', t3, t3 + 1.6, (46, 82)); d.carry(b2, 'w4', t3, t3 + 1.6); d.pas(b2, t3 + 1.7, (48, 101), 0.5)
 finish(d, 't50', 'uppbyggnad-6-mot-5-till-tre-smamal', ['Uppbyggnad 6 mot 5', 'Till tre småmål'], 'Uppbyggnadszon 6 mot 5 · Anfallszon 4 mot 4 med tre småmål',
        [(0, 'Blått bygger upp 6 mot 5', 'Backlinjen och två mittfältare mot fem vita.'),
         (1.6, 'Hitta den fria spelaren', 'Flytta bollen tills någon är fri.'),
@@ -129,13 +129,13 @@ rd = [(30, 34), (52, 32), (72, 38), (28, 52), (72, 56), (30, 66), (50, 68), (68,
 for k, ps in enumerate(bl): d.p(f'b{k}', str(k + 1), B, ps)
 for k, ps in enumerate(rd): d.p(f'r{k}', str(k + 1), R, ps)
 d.p('j', 'J', G, (50, 50))
-for k in range(8): wander(d, f'b{k}', 0, 8, (12, 18, 88, 82), 40 + k, 2.6); wander(d, f'r{k}', 0, 8, (22, 28, 78, 72), 50 + k, 2.6)
+for k in range(8): wander(d, f'b{k}', 0, 8, (max(12, bl[k][0] - 8), max(18, bl[k][1] - 7), min(88, bl[k][0] + 8), min(82, bl[k][1] + 7)), 40 + k, 2.6); wander(d, f'r{k}', 0, 8, [(22, 28, 40, 44), (42, 28, 58, 44), (60, 28, 78, 44), (22, 46, 40, 58), (60, 46, 78, 58), (22, 60, 40, 72), (42, 60, 58, 72), (60, 60, 78, 72)][k], 50 + k, 2.6)
 b = d.newball(rec(d, 'b0', 0))
 t = chain(d, b, 0.4, ['b1', 'j', 'b3', 'b7', 'j', 'b5']); tl = t
 d.mv('r5', t - 1, t, (38, 78)); t = d.pas(b, t + 0.3, rec(d, 'r5', t + 0.8), 0.4); tw = t          # rött vinner
-for k in [4, 5, 6, 0]: d.mv(f'b{k}', tw, tw + 1.6, (36 + k, 72 - k))                               # aggressiv press fem sekunder
+for k, ps in zip([4, 5, 6, 0], [(30, 72), (46, 70), (36, 84), (42, 62)]): d.mv(f'b{k}', tw, tw + 1.6, ps)                               # aggressiv press fem sekunder
 t = chain(d, b, t, ['r3', 'j', 'r1', 'r2'], 0.25)
-for k in range(8): d.mv(f'b{k}', tw + 5, tw + 7, [(30, 30), (50, 28), (70, 30), (78, 50), (22, 50), (32, 68), (50, 70), (68, 68)][k])   # försvar i zon
+for k in range(8): d.mv(f'b{k}', tw + 5, tw + 7, [(30, 26), (50, 24), (70, 26), (84, 44), (16, 46), (30, 76), (50, 80), (70, 76)][k])   # försvar i zon
 finish(d, 't51', 'possession-8-mot-8-plus-1-joker', ['Possession 8 mot 8', 'Plus en joker'], 'Rektangel · Två lag om åtta · Jokern i mitten spelar med bollen',
        [(0, 'Håll bollen med max två touch', 'Jokern är pivot i mitten. Det blir 9 mot 8 i anfall.'),
         (2.5, 'Gör planen stor', 'Samlas inte i mitten.'),
@@ -227,11 +227,11 @@ d.p('j', 'J', G, (52, 50))
 b = d.newball(rec(d, 'b0', 0))
 d.mv('b3', 1, 3, (30, 30)); d.mv('r0', 1, 3.4, (32, 36))
 t = chain(d, b, 0.5, ['b1', 'j', 'b2'])                                       # från backen upp via jokern
-d.mv('b2', t - 1, t + 1.4, (24, 68)); d.carry(b, 'b2', t, t + 1.2)
+d.mv('b2', t, t + 1.4, (24, 68)); d.carry(b, 'b2', t, t + 1.2)
 t = d.pas(b, t + 1.3, (6, 70), 0.5); tg = t                                   # mål i fritt småmål
 b2 = d.newball((200, 200)); d.balls[b2] = [(0, (200, 200)), (tg + 0.6, (200, 200)), (tg + 0.61, rec(d, 'b3', tg + 0.6))]
 d.mv('r1', tg + 0.4, tg + 1.2, (32, 34)); t3 = d.pas(b2, tg + 1.0, rec(d, 'r1', tg + 1.3), 0.3)
-t3 = chain(d, b2, t3, ['j', 'r3']); d.carry(b2, 'r3', t3, t3 + 1.2); d.mv('r3', t3, t3 + 1.2, (80, 34)); d.pas(b2, t3 + 1.3, (94, 30), 0.5)
+t3 = chain(d, b2, t3, ['j', 'r3']); d.mv('r3', t3, t3 + 1.2, (80, 34)); d.carry(b2, 'r3', t3, t3 + 1.2); d.pas(b2, t3 + 1.3, (94, 30), 0.5)
 finish(d, 't55', 'possession-4-mot-4-plus-1-joker-med-fyra-mal', ['Possession 4 mot 4 + 1', 'Fyra småmål'], 'Rektangel delad på mitten · Två småmål i varje kortände',
        [(0, 'Spela från backen fram till anfallarna', 'Blå nr 1 är spelaren längst bort från målen.'),
         (1.2, 'Spela upp i banan via jokern', 'Jokern hjälper laget med boll.'),
@@ -295,7 +295,7 @@ d.mv('b4', tin - 0.8, tin + 1.6, (64, 20))                                      
 t = chain(d, b, t, ['bf0', 'b4']); t = d.pas(b, t + 0.2, (56, -1), 0.5); tg = t
 b2 = d.newball((200, 200)); d.balls[b2] = [(0, (200, 200)), (tg + 0.5, (200, 200)), (tg + 0.51, (6, 52)), (tg + 1.3, rec(d, 'b0', tg + 1.3))]   # tränaren slår in ny boll
 d.mv('r0', tg + 0.6, tg + 1.4, (32, 52)); t3 = d.pas(b2, tg + 1.6, rec(d, 'r0', tg + 1.9), 0.3)   # rött vinner bollen i mittzonen
-d.carry(b2, 'r0', t3, t3 + 0.8); d.mv('r0', t3, t3 + 0.8, (18, 62)); d.pas(b2, t3 + 0.9, (7, 66), 0.4)   # direkt i småmål
+d.mv('r0', t3, t3 + 0.8, (18, 62)); d.carry(b2, 'r0', t3, t3 + 0.8); d.pas(b2, t3 + 0.9, (7, 66), 0.4)   # direkt i småmål
 finish(d, 't59', 'ajax-mittzon-och-anfall-i-andzonerna', ['Ajax: mittzon', 'Och anfall i ändzonerna'], 'Mittzon 5 mot 5 · Ändzoner 2 mot 1 med stort mål · Fyra småmål',
        [(0, 'Lagen spelar i mittzonen', 'Två anfallare väntar i ändzonen, en försvarare i den andra.'),
         (tin - 0.8, 'Spela in till anfallarna', 'Spela framåt när anfallarna är spelbara.'),

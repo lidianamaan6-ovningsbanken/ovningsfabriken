@@ -12,27 +12,57 @@ def newball_at(d, t, pos):
 def lab(t0, t1, pos, text): return dict(kind='label', t0=t0, t1=t1, pos=pos, text=text)
 
 # ============ t60 Dortmund: fyra lag och fyra mål ============
+# Två matcher korsvis på samma plan med två bollar, vanligt spel i båda hela tiden.
 d = Drill()
-for k, ps in enumerate([(40, 70), (60, 66), (34, 52), (66, 48)]): d.p(f'b{k}', str(k + 1), B, ps)        # blått mot övre målet
-for k, ps in enumerate([(44, 34), (56, 38), (38, 58), (62, 30)]): d.p(f'r{k}', str(k + 1), R, ps)        # rött mot nedre målet
-for k, ps in enumerate([(70, 40), (74, 58), (56, 56), (80, 50)]): d.p(f'w{k}', str(k + 1), WHITE, ps)    # vitt mot vänster mål
-for k, ps in enumerate([(28, 40), (24, 60), (46, 44), (20, 50)]): d.p(f'y{k}', str(k + 1), YEL, ps)     # gult mot höger mål
+BH = [(36, 70), (60, 64), (44, 52), (66, 80)]; RH = [(40, 30), (62, 36), (48, 46), (34, 20)]
+WH = [(70, 38), (78, 60), (60, 50), (84, 48)]; YH = [(28, 40), (22, 60), (40, 50), (16, 50)]
 for k in range(4):
-    wander(d, f'r{k}', 0, 18, (20, 20, 80, 80), 100 + k, 2.0); wander(d, f'w{k}', 0, 18, (20, 20, 80, 80), 110 + k, 2.2)
-b1 = d.newball(rec(d, 'b0', 0)); b2 = d.newball(rec(d, 'y0', 0))
-for k in range(4): wander(d, f'b{k}', 0, 6, (24, 30, 76, 80), 120 + k, 2.0); wander(d, f'y{k}', 0, 6, (16, 30, 60, 70), 130 + k, 2.0)
-t = chain(d, b1, 0.4, ['b1', 'b2', 'b3'])
-d.mv('b3', t, t + 1.6, (54, 20)); d.carry(b1, 'b3', t, t + 1.6); t = d.pas(b1, t + 1.7, (50, 9), 0.5); tg1 = t
-t2 = chain(d, b2, 0.8, ['y2', 'y1', 'y3', 'y0'])
-d.mv('y0', t2, t2 + 1.6, (70, 54)); d.carry(b2, 'y0', t2, t2 + 1.6); t2 = d.pas(b2, t2 + 1.7, (91, 50), 0.5)
+    d.p(f'b{k}', str(k + 1), B, BH[k]); d.p(f'r{k}', str(k + 1), R, RH[k]); d.p(f'w{k}', str(k + 1), WHITE, WH[k]); d.p(f'y{k}', str(k + 1), YEL, YH[k])
+
+def attack(ball, t, att, dfn, path, goal, scorer):
+    """Laget anfaller: passningar längs path (spelar-id), sista spelaren avslutar i goal. Försvaret följer bollen."""
+    home = {k: d.pos(f'{dfn}{k}') for k in range(4)}
+    for pid in path:
+        tgt = rec(d, pid, t + 0.7)
+        for k in range(4):
+            hx, hy = home[k]; bx, by = tgt
+            d.mv(f'{dfn}{k}', t, t + 0.9, (hx + (bx - hx) * 0.3, hy + (by - hy) * 0.3))
+        t = d.pas(ball, t + 0.25, tgt) + 0.15
+    sx, sy = d.pos(scorer); ex, ey = ((goal[0] * 2 + sx * 3) / 5, (goal[1] * 2 + sy * 3) / 5)
+    dur = max(1.0, ((ex - sx) ** 2 + (ey - sy) ** 2) ** .5 / 28)
+    d.mv(scorer, t, t + dur, (ex, ey)); d.carry(ball, scorer, t, t + dur)
+    return d.pas(ball, t + dur + 0.1, goal)
+
+# Match 1: blått anfaller övre målet, rött nedre.
+b1 = d.newball(rec(d, 'b0', 0))
+d.mv('b3', 0.3, 2.2, (58, 40)); d.mv('b1', 0.6, 2.4, (64, 30))
+t = attack(b1, 0.4, 'b', 'r', ['b2', 'b1', 'b3'], (50, 1), 'b3'); g1 = t
+for k, ps in enumerate([(40, 56), (56, 60), (48, 66), (60, 72)]): d.mv(f'b{k}', g1, g1 + 3.0, ps)          # blått springer hem
+for k, ps in enumerate([(46, 22), (58, 28), (40, 40), (64, 46)]): d.mv(f'r{k}', g1, g1 + 1.6, ps)
+d.balls[b1] += [(g1 + 0.3, at(d.balls[b1], g1 + 0.3)), (g1 + 0.301, (200, 200)), (g1 + 0.999, (200, 200)), (g1 + 1.0, rec(d, 'r0', g1 + 1.0))]    # ny boll till rött
+t = attack(b1, g1 + 1.2, 'r', 'b', ['r1', 'r2', 'r3'], (50, 99), 'r3'); g2 = t
+for k, ps in enumerate(RH): d.mv(f'r{k}', g2, g2 + 3.0, ps)
+d.balls[b1] += [(g2 + 0.3, at(d.balls[b1], g2 + 0.3)), (g2 + 0.301, (200, 200)), (g2 + 0.999, (200, 200)), (g2 + 1.0, rec(d, 'b1', g2 + 1.0))]
+t = attack(b1, g2 + 1.2, 'b', 'r', ['b0', 'b2'], (50, 1), 'b2'); g3 = t
+
+# Match 2: gult anfaller höger mål, vitt vänster.
+b2 = d.newball(rec(d, 'y0', 0))
+d.mv('y1', 0.4, 2.4, (48, 62)); d.mv('y2', 0.5, 2.6, (60, 44))
+t = attack(b2, 0.9, 'y', 'w', ['y2', 'y1', 'y2'], (99, 50), 'y2'); h1 = t
+for k, ps in enumerate(YH): d.mv(f'y{k}', h1, h1 + 3.0, ps)
+d.balls[b2] += [(h1 + 0.3, at(d.balls[b2], h1 + 0.3)), (h1 + 0.301, (200, 200)), (h1 + 0.999, (200, 200)), (h1 + 1.0, rec(d, 'w3', h1 + 1.0))]
+t = attack(b2, h1 + 1.2, 'w', 'y', ['w0', 'w2', 'w1'], (1, 50), 'w1'); h2 = t
+for k, ps in enumerate(WH): d.mv(f'w{k}', h2, h2 + 3.0, ps)
+d.balls[b2] += [(h2 + 0.3, at(d.balls[b2], h2 + 0.3)), (h2 + 0.301, (200, 200)), (h2 + 0.999, (200, 200)), (h2 + 1.0, rec(d, 'y3', h2 + 1.0))]
+t = attack(b2, h2 + 1.2, 'y', 'w', ['y0', 'y2'], (99, 50), 'y2')
+
 finish(d, 't60', 'dortmund-fyra-lag-och-fyra-mal', ['Dortmund', 'Fyra lag och fyra mål'], 'Fyra lag om 4–5 · Ett mål på varje sida · Två bollar',
-       [(0, 'Två matcher korsvis på samma plan', 'Blått mot rött på kortsidorna, vitt mot gult på långsidorna.'),
+       [(0, 'Två matcher korsvis på samma plan', 'Blått mot rött på kortsidorna, gult mot vitt på långsidorna.'),
         (2.5, 'Scanna hela tiden', 'Lyft blicken innan du tar emot, så undviker du krockar.'),
-        (5, 'Använd luckorna', 'Den andra matchen skapar ytor du kan spela i.'),
-        (tg1, 'Vanligt spel i båda matcherna', 'Prata med dina medspelare. Byt motståndare efter fyra minuter.')],
-       'SPELUPPBYGGNAD', [('box', 8, 10, 92, 90), ('smallgoal', 9, 50), ('smallgoal', 91, 50)])
-C[-1]['goals'] = [(50, 10), (50, 90)]; C[-1]['keep_goals'] = True
-C[-1]['goals'] = [(50, 0), (50, 100)]
+        (min(g1, h1) - 0.5, 'Vanligt spel i båda matcherna', 'Mål – nästa boll startar direkt hos motståndarna.'),
+        (min(g2, h2) - 2, 'Använd luckorna', 'Den andra matchen skapar ytor du kan spela i.'),
+        (max(g2, h2) + 0.8, 'Prata med dina medspelare', 'Byt motståndare efter fyra minuter.')],
+       'SPELUPPBYGGNAD', [('box', 6, 8, 94, 92), ('ugoal', 50, 6, 'up'), ('ugoal', 50, 94, 'down'), ('smallgoal', 5, 50), ('smallgoal', 95, 50)], target=16.8)
 
 # ============ t61 Uppbyggnad genom tre zoner mot mål ============
 d = Drill()
@@ -245,6 +275,8 @@ d.mv('r1', tg, tg + 1.6, (40, 70)); d.mv('r2', tg, tg + 1.6, (70, 72)); d.mv('r3
 tw = d.pas(b2, tg + 2.5, rec(d, 'r3', tg + 2.7), 0.3); t3 = d.pas(b2, tw + 0.3, (52, 59), 0.5)       # rött vinner och avslutar direkt
 for k, ps in enumerate(red): d.mv(f'b{k}', t3 + 0.4, t3 + 2.6, ps)                                    # blått byter med mittlaget
 for k, ps in enumerate(blu): d.mv(f'r{k}', t3 + 0.4, t3 + 2.6, ps)
+b3 = newball_at(d, t3 + 2.8, (94, 48)); t4 = d.pas(b3, t3 + 3.0, rec(d, 'y3', t3 + 3.6)); chain(d, b3, t4, ['y2', 'y4', 'y1', 'y0'])
+for k, ps in zip([1, 2], [(34, 20), (66, 20)]): d.mv(f'b{k}', t3 + 2.8, t3 + 4.0, ps)
 finish(d, 't69', 'engelska-kvadraten-med-mal', ['Engelska kvadraten', 'Med mål'], 'Tre zoner · Två mål rygg mot rygg i mitten · Gult, rött och blått',
        [(0, 'Gult och blått i ytterzonerna, rött i mitten', 'Två röda går in och pressar laget med boll.'),
         (1.6, 'Gör ytan stor', 'Fem passningar innan avslut.'),
