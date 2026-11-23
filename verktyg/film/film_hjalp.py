@@ -1,0 +1,92 @@
+# Hjälpfunktioner för nya filmer i samma stil som de befintliga.
+# Bygger på render_avslut_base.py och lägger till planelement, lagfärger,
+# svansar, flaska, tränarsignal, västar och platsbyten.
+from render_avslut_base import *
+import math as _m
+
+makebase_orig = makebase
+WHITE = '#f3f5ef'; BLACK = '#1b211e'; YELLOW = '#f2cf45'; ORANGE = '#ff965b'
+
+def shapes_base(label, shapes):
+    def mk(c):
+        c = dict(c); c['goals'] = []
+        im = makebase_orig(c); d = ImageDraw.Draw(im)
+        d.rectangle((700, 20, 1050, 60), fill='#0a1e17')
+        d.text((1040, 44), label, font=F(19, True), fill='#adc5b6', anchor='rm')
+        for s in shapes:
+            k = s[0]
+            if k == 'zone':
+                _, x1, y1, x2, y2, col, txt = s; a = xy((x1, y1)); b = xy((x2, y2))
+                ov = Image.new('RGBA', im.size, (0, 0, 0, 0)); od = ImageDraw.Draw(ov)
+                od.rectangle((*a, *b), fill=col + (70,), outline=col + (200,), width=3); im.paste(ov, (0, 0), ov); d = ImageDraw.Draw(im)
+                if txt: d.text((b[0] - 10, a[1] + 16), txt, font=F(15, True), fill='#e4ecd6', anchor='rm')
+            elif k == 'box':
+                _, x1, y1, x2, y2 = s; a = xy((x1, y1)); b = xy((x2, y2)); d.rounded_rectangle((*a, *b), radius=9, outline='#e4ecd6', width=4)
+            elif k == 'ring':
+                _, cx, cy, r, n = s
+                for i in range(n):
+                    v = 2 * _m.pi * i / n; xx, yy = xy((cx + r * _m.cos(v), cy + r * _m.sin(v) * 770 / 650 * 0.85))
+                    d.polygon([(xx, yy - 7), (xx - 6, yy + 5), (xx + 6, yy + 5)], fill=ORANGE)
+            elif k == 'circle':
+                _, cx, cy, r = s; x, y = xy((cx, cy)); rx = 7.7 * r; ry = 6.5 * r * 770 / 650 * 0.85
+                d.ellipse((x - rx, y - ry, x + rx, y + ry), outline='#b2cdb1', width=3)
+            elif k == 'smallgoal':
+                _, x, y = s; cx, cy = xy((x, y)); d.rectangle((cx - 17, cy - 10, cx + 17, cy + 10), outline='#eef4d9', width=3)
+            elif k in ('cone', 'redcone', 'yellowcone'):
+                _, x, y = s; xx, yy = xy((x, y)); col = {'cone': ORANGE, 'redcone': '#e5483b', 'yellowcone': YELLOW}[k]
+                d.polygon([(xx, yy - 8), (xx - 7, yy + 6), (xx + 7, yy + 6)], fill=col)
+            elif k == 'pole':
+                _, x, y = s; xx, yy = xy((x, y)); d.line((xx, yy - 22, xx, yy + 6), fill=YELLOW, width=5); d.ellipse((xx - 5, yy + 3, xx + 5, yy + 9), fill='#b98d1d')
+            elif k == 'text':
+                _, x, y, txt = s; d.text(xy((x, y)), txt, font=F(16, True), fill='#e4ecd6', anchor='mm')
+        return im
+    return mk
+
+def light(col):
+    col = col.lstrip('#'); r, g, b = (int(col[i:i + 2], 16) for i in (0, 2, 4)); return 0.299 * r + 0.587 * g + 0.114 * b > 150
+
+def frame2(c, t):
+    im = c['base'].copy(); d = ImageDraw.Draw(im)
+    ex = c.get('extras', [])
+    for e in ex:  # under spelarna
+        if e['t0'] <= t < e.get('t1', 999) and e['kind'] == 'vest':
+            x, y = xy(e['pos']); d.rectangle((x - 9, y - 16, x + 9, y - 4), fill=e['color'], outline='#ffffff', width=2)
+    for pl in c['players']:
+        x, y = xy(at(pl['tr'], t)); r = 18
+        for k in range(pl.get('tails', lambda t: 0)(t) if callable(pl.get('tails')) else 0):
+            d.rectangle((x - 6 + k * 7, y + 12, x + 0 + k * 7, y + 30), fill=YELLOW, outline='#7a5c00')
+        d.ellipse((x - r, y - r, x + r, y + r), fill=pl['color'], outline='#e5efd8', width=2)
+        d.text((x, y), pl['label'], font=F(12, True), fill=('#153b2b' if light(pl['color']) else '#f3f5ef'), anchor='mm')
+    for tr in c['balls']:
+        x, y = xy(at(tr, t)); d.ellipse((x - 8, y - 8, x + 8, y + 8), fill='#fffef0', outline='#142d22', width=2); d.regular_polygon((x, y, 3), 5, fill='#162d23', rotation=t * 60)
+    for e in ex:  # över spelarna
+        if not (e['t0'] <= t < e.get('t1', 999)): continue
+        if e['kind'] == 'flask':
+            x, y = xy(e['pos']); ang = e['ang'](t) if callable(e['ang']) else e['ang']
+            dx, dy = _m.cos(_m.radians(ang)), _m.sin(_m.radians(ang))
+            d.line((x - 22 * dx, y - 22 * dy, x + 22 * dx, y + 22 * dy), fill='#7fd1b9', width=11)
+            d.line((x + 22 * dx, y + 22 * dy, x + 32 * dx, y + 32 * dy), fill='#d9f3ea', width=6)
+        elif e['kind'] == 'signal':
+            x, y = xy(e['pos']); d.rounded_rectangle((x - 26, y - 62, x + 26, y - 26), radius=6, fill=e['color'], outline='#ffffff', width=3)
+        elif e['kind'] == 'label':
+            x, y = xy(e['pos']); d.text((x, y), e['text'], font=F(20, True), fill=YELLOW, anchor='mm')
+    _, h, s = max([p_ for p_ in c['phases'] if p_[0] <= t], key=lambda p_: p_[0])
+    d.text((62, 992), h, font=F(26, True), fill='#eef5e8', anchor='lm'); d.text((62, 1032), s, font=F(21), fill='#b4cbbb', anchor='lm')
+    return im
+
+def follow(track, dx=2.2, dy=1.6):
+    return [(t, (x + dx, y + dy)) for t, (x, y) in track]
+
+def ring_pos(cx, cy, r, i, n, a0=-90):
+    v = _m.radians(a0 + 360 * i / n); return (cx + r * _m.cos(v), cy + r * _m.sin(v) * 0.85 * 770 / 650)
+
+def render(C, argv, thumbs=(1, 4, 7.5, 11, 14.5)):
+    for c in C:
+        if len(argv) > 1 and c['id'] not in argv[1:]: continue
+        c['base'] = c['shapes'](c)
+        for t in thumbs: frame2(c, t).resize((360, 360)).save(ROOT / f"filmwork/{c['id']}-{t}.jpg")
+        path = OUT / (c['slug'] + '.mp4')
+        proc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', '1080x1080', '-r', '30', '-i', '-', '-an', '-c:v', 'libx264', '-threads', '4', '-preset', 'fast', '-crf', '17', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(path)], stdin=subprocess.PIPE)
+        for f in range(c['seconds'] * 30): proc.stdin.write(frame2(c, f / 30).tobytes())
+        proc.stdin.close(); assert proc.wait() == 0
+        print(c['id'], path.name, flush=True)

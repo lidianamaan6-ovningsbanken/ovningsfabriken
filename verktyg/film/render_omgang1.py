@@ -208,11 +208,11 @@ C[-1]['shapes'] = shapes_base('KONTRING', [('zone', 4, 8, 96, 32, (80, 200, 120)
 # ============ t10 Spanska cirkeln ============
 walls = [fixed('V', G, ring_pos(50, 50, 45, i, 8, -67.5)) for i in range(8)]
 d1 = [(0, (30, 36)), (2, (24, 50)), (4, (28, 62)), (5.2, (32, 66)), (6.2, (40, 74)), (9, (60, 76)), (13, (74, 60)), (18, (70, 38))]
-d2 = [(0, (70, 36)), (4, (74, 46)), (8, (72, 62)), (10.8, (64, 70)), (11.4, (62, 72)), (13, (56, 66)), (18, (50, 66))]
+d2 = [(0, (70, 36)), (4, (74, 46)), (8, (72, 62)), (10.8, (64, 70)), (11.4, (62, 72)), (12.4, (60, 70)), (15, (51, 50)), (18, (51, 50))]
 d3 = [(0, (50, 22)), (6, (66, 26)), (12, (34, 28)), (18, (26, 46))]
 d4 = [(0, (48, 78)), (6, (30, 72)), (12, (26, 52)), (18, (34, 30))]
 f1 = [(0, (47, 50)), (3, (47, 50)), (4.6, (34, 60)), (6, (34, 64)), (9, (46, 54)), (18, (48, 52))]
-f2 = [(0, (53, 50)), (8, (53, 50)), (10.6, (63, 66)), (11.4, (62, 70)), (12.6, (54, 62)), (18, (52, 50))]
+f2 = [(0, (53, 50)), (8, (53, 50)), (10.6, (63, 66)), (11.4, (62, 70)), (12.4, (64, 71)), (15, (74, 58)), (18, (72, 40))]
 b1 = follow(d1[:3]) + [(4.6, (30, 63)), (5.1, ring_pos(50, 50, 45, 4, 8, -67.5)), (5.6, ring_pos(50, 50, 45, 4, 8, -67.5)), (6.3, (41, 75))] + follow(d1[5:])
 add('t10', 'spanska-cirkeln', ['Spanska cirkeln', 'Positionsspel'], 'Ring av koner · Väggspelare runt om · Försvarare i mittcirkeln',
     [p('1', R, *d1), p('2', R, *d2), p('3', R, *d3), p('4', R, *d4), p('1', B, *f1), p('2', B, *f2)] + walls, b1,
@@ -220,8 +220,9 @@ add('t10', 'spanska-cirkeln', ['Spanska cirkeln', 'Positionsspel'], 'Ring av kon
      (3, 'Blått kliver ut och pressar', 'Se pressen komma innan den är där.'),
      (4.6, 'Spela väggen tidigt', 'Väggspelaren gör sig spelbar med vinkel och spelar tillbaka direkt.'),
      (6.3, 'Förbi pressen', 'Ta med bollen vidare i ringen.'),
-     (11.4, 'Blått vinner bollen', 'Då byter blå och röd spelare roll.')])
-C[-1]['balls'] = [b1, follow(d2[:4]) + [(11.4, (62, 72)), (18, (52, 52))], follow(d3), follow(d4)]
+     (11.4, 'Blått vinner bollen', 'Då byter blå och röd spelare roll.'),
+     (13, 'Rollbyte', 'Blå nr 2 dribblar vidare i ringen. Röd nr 2 går in som försvarare.')])
+C[-1]['balls'] = [b1, follow(d2[:4]) + [(11.4, (63, 72)), (12.4, (66, 73)), (15, (76, 60)), (18, (74, 42))], follow(d3), follow(d4)]
 C[-1]['shapes'] = shapes_base('POSITIONSSPEL', [('ring', 50, 50, 38, 20), ('circle', 50, 50, 11)])
 
 # ============ t12 Rondo i stor cirkel ============
