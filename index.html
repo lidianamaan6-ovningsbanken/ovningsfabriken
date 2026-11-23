@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Övningsfabriken – tränarens verktyg för hela säsongen</title>
-<meta name="description" content="Övningsfabriken är appen för fotbollstränare: bygg träningspass på minuter, läroplan med ålderskort enligt spelarutbildningsplanen, säsongsplanering, matchanalys och över 1 200 övningar. Licens för tränare eller hela klubben.">
+<meta name="description" content="Övningsfabriken är appen för fotbollstränare: bygg träningspass på minuter, läroplan med ålderskort enligt spelarutbildningsplanen, säsongsplanering, matchanalys och 1 450 övningar. Licens för tränare eller hela klubben.">
 <meta property="og:title" content="Övningsfabriken – övningsbanken för fotbollstränare">
 <meta property="og:description" content="Färdiga fotbollsövningar med animerad video. För tränare och klubbar.">
 <meta property="og:type" content="website">
@@ -112,12 +112,6 @@ video{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:6px;back
 .hint{margin-top:20px;font-size:14px;color:var(--faint)}
 
 /* så funkar det */
-.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--rule)}
-.flow li{padding:28px clamp(16px,2.4vw,36px) 0 0}
-.flow li+li{padding-left:clamp(16px,2.4vw,36px);border-left:1px solid var(--rule)}
-.when{font-size:14px;color:var(--lime);font-weight:600}
-.flow h3{margin-top:10px}
-.flow p{margin-top:10px;color:var(--muted)}
 
 /* appen: ljus del, som appen själv */
 .light{--ink:#14231B;--muted:#4C5D52;--faint:#6A7A6F;--rule:#D6DCD1;background:#EFEDE6;color:var(--ink);border-top:0!important}
@@ -236,8 +230,6 @@ footer a:hover{color:var(--ink)}
  .why li{grid-template-columns:minmax(0,1fr)}
  .about figure{max-width:280px}
  .drills{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
- .flow{grid-template-columns:minmax(0,1fr)}
- .flow li,.flow li+li{padding:24px 0;border-left:0;border-bottom:1px solid var(--rule)}
 }
 @media(max-width:700px){
  .plans thead{display:none}
@@ -291,8 +283,6 @@ footer a:hover{color:var(--ink)}
  .drill p.sum{font-size:15px}
  .play{width:60px;height:60px;margin:-30px 0 0 -30px}
  .play svg{width:20px;height:20px}
- .flow li,.flow li+li{padding:18px 0}
- .flow p{margin-top:6px;font-size:15px}
  .club h2{font-size:clamp(30px,9vw,36px)}
  .club .act{margin-top:20px}
  .why li{padding:18px 0;gap:6px}
@@ -324,24 +314,24 @@ footer a:hover{color:var(--ink)}
 <a class="btn" href="#" data-app>Prova appen</a>
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mnav"><span>Meny</span><i aria-hidden="true"></i></button>
 </nav>
-<div class="mnav" id="mnav" hidden><a href="#appen">Appen</a><a href="#ovningar">Övningar</a><a href="#sa-funkar-det">Så funkar det</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="om-sam.html">Om Sam</a><a href="#fragor">Frågor</a><a href="#kontakt">Kontakt</a></div></header>
+<div class="mnav" id="mnav" hidden><a href="#appen">Appen</a><a href="#ovningar">Övningar</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="om-sam.html">Om Sam</a><a href="#fragor">Frågor</a><a href="#kontakt">Kontakt</a></div></header>
 
 <main id="top">
 <section class="hero">
 <div>
 <h1>Passet klart innan du kliver ut på planen.</h1>
-<p class="lead">Övningsfabriken är <b>tränarens verktyg för hela säsongen</b>. Bygg passet på några minuter, planera säsongen efter spelarutbildningsplanen och följ upp matcherna. Med över 1&nbsp;200 övningar att välja bland.</p>
+<p class="lead">Övningsfabriken är <b>tränarens verktyg för hela säsongen</b>. Bygg passet på några minuter, planera säsongen efter spelarutbildningsplanen och följ upp matcherna. Med 1&nbsp;450 övningar att välja bland.</p>
 <div class="act"><a class="btn" href="#" data-app>Prova appen</a><a class="more" href="#licenser">Licens för hela klubben</a></div>
 </div>
 <figure class="clip">
-<video src="video/kontrapress.mp4" poster="video/kontrapress.jpg" autoplay muted loop playsinline preload="auto" width="720" height="720" aria-label="Animerad övning: Kontrapress efter bollförlust"></video>
-<figcaption class="spec"><span><b>Kontrapress efter bollförlust</b></span><span>Återerövring</span><span>5 mot 2 i 8 × 8 m</span></figcaption>
+<video src="video/press-tredjedelar.mp4" poster="video/press-tredjedelar.jpg" autoplay muted loop playsinline preload="auto" width="720" height="720" aria-label="Animerad övning: Press för poäng i tredjedelar"></video>
+<figcaption class="spec"><span><b>Press för poäng i tredjedelar</b></span><span>Återerövring</span><span>Bollvinst högt ger 3 poäng</span></figcaption>
 </figure>
 </section>
 
 <section class="facts" aria-label="Kort om appen">
 <ul>
-<li><b>1&nbsp;200+ övningar</b><span>Fler läggs till hela tiden.</span></li>
+<li><b>1&nbsp;450 övningar</b><span>Fler läggs till hela tiden.</span></li>
 <li><b>Läroplan per ålder</b><span>Ålderskort från 8 till 16 år enligt spelarutbildningsplanen.</span></li>
 <li><b>Inga spelaruppgifter</b><span>Inga namn på barn eller vuxna. Aldrig.</span></li>
 </ul>
@@ -425,21 +415,7 @@ footer a:hover{color:var(--ink)}
 <div class="drills" id="drills" aria-live="polite">
 <div class="skel"></div><div class="skel"></div><div class="skel"></div>
 </div>
-<p class="hint" id="hint" hidden>Alla 1&nbsp;200+ övningar finns i appen.</p>
-</div>
-</section>
-
-<section class="band" id="sa-funkar-det">
-<div class="wrap">
-<div class="head">
-<h2>Så ser en vecka ut med appen.</h2>
-<p>Ingen utbildning behövs. Logga in med din e-post och börja plocka övningar.</p>
-</div>
-<ol class="flow">
-<li><span class="when">Kvällen innan</span><h3>Beskriv vad ni ska träna</h3><p>Skriv fokus, antal spelare och hur lång träningen är. Du får ett färdigt pass, och byter ut övningar om du vill.</p></li>
-<li><span class="when">Innan du åker</span><h3>Passet ligger klart i mobilen</h3><p>Ingen utskrift, inga papper som blåser bort. Allt finns med dig ut till planen.</p></li>
-<li><span class="when">På planen</span><h3>Visa, kör, nästa övning</h3><p>Förstår spelarna inte upplägget? Visa videon. Den säger mer än en genomgång vid konerna.</p></li>
-</ol>
+<p class="hint" id="hint" hidden>Alla 1&nbsp;450 övningar finns i appen.</p>
 </div>
 </section>
 
