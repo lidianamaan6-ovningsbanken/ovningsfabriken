@@ -122,23 +122,32 @@ video{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:6px;back
 /* appen: ljus del, som appen själv */
 .light{--ink:#14231B;--muted:#4C5D52;--faint:#6A7A6F;--rule:#D6DCD1;background:#EFEDE6;color:var(--ink);border-top:0!important}
 .light .head p{color:var(--muted)}
-.feature{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:center;padding:clamp(28px,4vw,48px) 0;border-top:1px solid var(--rule)}
-.feature.flip{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
-.feature.flip .shot{order:-1}
-.feature .when{color:#2E6B47}
-.feature h3{margin-top:8px;font-size:clamp(26px,2.8vw,36px);line-height:1}
-.feature p{margin-top:14px;color:var(--muted);font-size:17px;max-width:44ch}
-.feature ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px;color:var(--ink);font-size:16px}
-.feature li{padding-left:20px;position:relative}
-.feature li::before{content:"";position:absolute;left:0;top:11px;width:10px;height:2px;background:#2E6B47}
 .shot{margin:0;border-radius:10px;overflow:hidden;background:#E4E2DA;border:1px solid var(--rule);box-shadow:0 24px 48px -28px rgba(20,35,27,.45)}
-.shot img{display:block;width:100%;height:auto}
-.more-feats{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 clamp(16px,2.4vw,32px);border-top:1px solid var(--rule)}
-.more-feats li{padding:24px 0 0}
-.more-feats h3{font-size:21px}
-.more-feats p{margin-top:8px;color:var(--muted);font-size:15px}
-@media(max-width:900px){.feature,.feature.flip{grid-template-columns:minmax(0,1fr)}.feature.flip .shot{order:0}.more-feats{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 24px}}
-@media(max-width:600px){.more-feats{grid-template-columns:minmax(0,1fr)}.more-feats li{padding:18px 0;border-bottom:1px solid var(--rule)}.feature h3{font-size:24px}.feature p{font-size:15px}.feature ul{font-size:15px}}
+.shot img{display:block;width:100%;height:auto;max-height:620px;object-fit:cover;object-position:top}
+.tabs{display:flex;gap:4px 26px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin-bottom:clamp(24px,3vw,40px)}
+.tabs button{flex:none;appearance:none;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 0 12px;min-height:44px;font:inherit;font-weight:600;font-size:16px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:#2E6B47}
+.light :focus-visible{outline-color:#2E6B47}
+.tabpanel{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start}
+.tabpanel .shot{justify-self:center;width:100%;max-width:640px}
+.pt h3{font-size:clamp(26px,2.8vw,36px);line-height:1}
+.pt p{margin-top:14px;color:var(--muted);font-size:17px;max-width:46ch}
+.pt ul,.included ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px;font-size:16px}
+.pt li,.included li{padding-left:20px;position:relative}
+.pt li::before,.included li::before{content:"";position:absolute;left:0;top:11px;width:10px;height:2px;background:#2E6B47}
+.included{margin-top:clamp(48px,6vw,80px);padding-top:28px;border-top:1px solid var(--rule)}
+.included h3{font-size:24px}
+.included ul{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 32px;margin-top:20px}
+@media(max-width:900px){.tabpanel{grid-template-columns:minmax(0,1fr)}.included ul{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media(max-width:600px){
+ .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:calc(-1*max(4vw,16px));margin-right:calc(-1*max(4vw,16px));padding:0 max(4vw,16px);gap:22px}
+ .tabs::-webkit-scrollbar{display:none}
+ .pt h3{font-size:24px}.pt p,.pt ul{font-size:15px}
+ .shot img{max-height:480px}
+ .included ul{grid-template-columns:minmax(0,1fr);font-size:15px}
+ .included h3{font-size:21px}
+}
 
 /* för föreningar */
 .club{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px)}
@@ -339,36 +348,56 @@ footer a:hover{color:var(--ink)}
 <section class="band light" id="appen">
 <div class="wrap">
 <div class="head">
-<h2>Ett verktyg för hela säsongen.</h2>
-<p>Övningsbanken är bara början. Appen hjälper dig från första träningen i augusti till sista matchen, och allt hänger ihop.</p>
+<h2>Det här får ni i appen.</h2>
+<p>Från säsongsplanen i augusti till matchdagen i oktober. Allt hänger ihop: läroplanen styr säsongen, säsongen styr passen, och matchanalysen styr träningsveckan.</p>
+</div>
+<div class="tabs" role="tablist" aria-label="Delar av appen"><button type="button" role="tab" id="tab-pass" aria-controls="p-pass" aria-selected="true" tabindex="0">Träningspass</button><button type="button" role="tab" id="tab-bank" aria-controls="p-bank" aria-selected="false" tabindex="-1">Övningsbank</button><button type="button" role="tab" id="tab-laroplan" aria-controls="p-laroplan" aria-selected="false" tabindex="-1">Läroplan</button><button type="button" role="tab" id="tab-sasong" aria-controls="p-sasong" aria-selected="false" tabindex="-1">Säsong</button><button type="button" role="tab" id="tab-spelide" aria-controls="p-spelide" aria-selected="false" tabindex="-1">Spelidé</button><button type="button" role="tab" id="tab-match" aria-controls="p-match" aria-selected="false" tabindex="-1">Matchförberedelse</button><button type="button" role="tab" id="tab-vecka" aria-controls="p-vecka" aria-selected="false" tabindex="-1">Matchveckan</button></div>
+<div class="tabpanel" role="tabpanel" id="p-pass" aria-labelledby="tab-pass">
+<div class="pt"><h3>Ett färdigt pass, block för block.</h3><p>Skriv vad ni ska träna, hur många spelare och målvakter ni har och hur lång träningen är. Du får ett pass med uppvärmning, huvudövningar och spel, där varje block har en bild av övningen.</p><ul><li>Ändra minuter och byt övning i varje block</li><li>Kör passet med timer ute på planen</li><li>Återbud? Passet anpassas efter antalet spelare</li><li>Lista över vad du ska ta med: västar, koner, mål och bollar</li></ul></div>
+<figure class="shot"><img src="bilder/app-pass.jpg" width="426" height="846" loading="lazy" alt="Skärmbild: ett färdigt träningspass med uppvärmning, huvudövningar och spel, och lista över utrustning"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-bank" aria-labelledby="tab-bank" hidden>
+<div class="pt"><h3>1 450 övningar, sorterade och sökbara.</h3><p>Sök på det ni behöver träna och filtrera på spelskede, kategori, spelform, lärandemål och antal spelare. Varje övning har en bild, och många har animerad video.</p><ul><li>Filter på skede, kategori, spelform och lärandemål</li><li>Visar direkt om övningen passar ert antal spelare</li><li>Spara favoriter med en stjärna</li><li>Lägg övningen direkt i ett pass</li></ul></div>
+<figure class="shot"><img src="bilder/app-ovningsbank.jpg" width="858" height="725" loading="lazy" alt="Skärmbild: övningsbanken med sökning, filter och 1 450 övningar"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-laroplan" aria-labelledby="tab-laroplan" hidden>
+<div class="pt"><h3>Ålderskort för varje årskull.</h3><p>Från 8 år och 5 mot 5 till 16 år och 11 mot 11, enligt spelarutbildningsplanen. Varje ålderskort visar hur mycket färdighet och spel det ska vara, och vilka färdigheter som tränas varje vecka, varannan vecka eller ibland.</p><ul><li>Spelform, passlängd och antal pass i veckan per ålder</li><li>Lärandemål för varje färdighet</li><li>Skapa en säsongsplan direkt från ålderskortet</li></ul></div>
+<figure class="shot"><img src="bilder/app-laroplan.jpg" width="646" height="708" loading="lazy" alt="Skärmbild: ålderskort för 11 år, 7 mot 7, med färdigheter och hur ofta de ska tränas"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-sasong" aria-labelledby="tab-sasong" hidden>
+<div class="pt"><h3>Säsongen planerad vecka för vecka.</h3><p>Utgå från klubbens läroplan och välj ålder, hur många veckor säsongen är och hur länge varje tema ska pågå. Du får en plan där varje tema kopplar en färdighet till ett spelkoncept.</p><ul><li>Bygger på klubbens egen läroplan</li><li>8, 12, 16 eller 20 veckor</li><li>Lägg till egna perioder</li></ul></div>
+<figure class="shot"><img src="bilder/app-sasong.jpg" width="638" height="425" loading="lazy" alt="Skärmbild: säsongsplan från klubbens läroplan med antal veckor och veckor per tema"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-spelide" aria-labelledby="tab-spelide" hidden>
+<div class="pt"><h3>Lagets spelidé och egna ord.</h3><p>Skriv in lagets principer för varje spelskede, till exempel ”vi pressar inåt”, och lagets egna ord och begrepp. Pass, övningar och matchplaner utgår sedan från dem, så att spelarna hör samma språk hela säsongen.</p><ul><li>Principer för varje spelskede</li><li>Lagets ord och begrepp med förklaring</li><li>Appen säger till om något går emot en princip</li></ul></div>
+<figure class="shot"><img src="bilder/app-spelide.jpg" width="638" height="265" loading="lazy" alt="Skärmbild: lagets principer per spelskede och lagets egna ord och begrepp"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-match" aria-labelledby="tab-match" hidden>
+<div class="pt"><h3>Läs av motståndaren före matchen.</h3><p>Lägg in nästa match och motståndarens formation och spelstil. Bedöm deras styrkor och svagheter i varje spelskede och i fasta situationer. Motståndaren sparas som lagprofil till nästa gång ni möts.</p><ul><li>Formation och spelstil</li><li>Styrka, svaghet eller farlig, per spelskede</li><li>Hörnor, frisparkar och inkast</li><li>Farliga spelare med nummer och position, inga namn</li></ul></div>
+<figure class="shot"><img src="bilder/app-matchanalys.jpg" width="422" height="614" loading="lazy" alt="Skärmbild: motståndaranalys med formation, spelstil och styrkor och svagheter per skede"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-vecka" aria-labelledby="tab-vecka" hidden>
+<div class="pt"><h3>Träningsveckan byggs mot matchen.</h3><p>Välj vilka dagar ni tränar, så får du passen fram till matchen. Första passet utnyttjar motståndarens svagheter, nästa skyddar er mot deras styrkor, och sista passet är lätt och tydligt med fasta situationer.</p><ul><li>Ett pass för varje träningsdag fram till match</li><li>Byggt på din analys av motståndaren</li><li>Matchplan och uppföljning efter matchen</li></ul></div>
+<figure class="shot"><img src="bilder/app-traningsveckan.jpg" width="436" height="403" loading="lazy" alt="Skärmbild: träningsveckan med tre pass fram till matchen mot Djurgården"></figure>
 </div>
 
-<div class="feature">
-<div>
-<span class="when">Träningspass</span>
-<h3>Beskriv vad ni ska träna. Appen bygger passet.</h3>
-<p>Skriv träningsfokus, till exempel ”spela ut från målvakten”, och hur många spelare, målvakter och minuter ni har. Du får ett färdigt pass som du kan justera.</p>
-<ul><li>Förslag på vanliga fokus med ett tryck</li><li>Anpassas efter antal spelare och målvakter</li><li>Eller bygg ditt eget pass block för block</li></ul>
-</div>
-<figure class="shot"><img src="bilder/app-bygg-pass.jpg" width="725" height="680" loading="lazy" alt="Skärmbild från appen: Skapa träningspass med träningsfokus, antal spelare, målvakter och längd"></figure>
-</div>
-
-<div class="feature flip">
-<figure class="shot"><img src="bilder/app-laroplan.jpg" width="646" height="708" loading="lazy" alt="Skärmbild från appen: ålderskort för 11 år, 7 mot 7, med färdigheter och hur ofta de ska tränas"></figure>
-<div>
-<span class="when">Läroplan</span>
-<h3>Ålderskort för varje årskull.</h3>
-<p>Från 8 år och 5 mot 5 till 16 år och 11 mot 11, enligt spelarutbildningsplanen. Varje ålderskort visar hur mycket färdighet och spel det ska vara, och vilka färdigheter som tränas varje vecka, varannan vecka eller ibland.</p>
-<ul><li>Spelform, passlängd och antal pass i veckan per ålder</li><li>Tryck på en färdighet för att se lärandemålet</li><li>Skapa en säsongsplan direkt från ålderskortet</li></ul>
-</div>
-</div>
-
-<ul class="more-feats">
-<li><h3>Säsong och spelidé</h3><p>Planera träningsperioder och teman, och samla lagets spelidé på ett ställe.</p></li>
-<li><h3>Match och analys</h3><p>Förbered truppen, samla klipp och observationer, och spara motståndaren som lagprofil till nästa möte.</p></li>
-<li><h3>Rita egen övning</h3><p>Placera spelare, mål och koner och visa hur din egen övning går till.</p></li>
-<li><h3>Progressioner</h3><p>Övningar i flera steg utifrån spelskede och ålder, så att svårigheten ökar i takt med laget.</p></li>
+<div class="included">
+<h3>Det här ingår i licensen</h3>
+<ul>
+<li>Träningspass block för block, med timer</li>
+<li>Utrustningslista till varje pass</li>
+<li>1 450 övningar med bild och filter</li>
+<li>Animerade videor till många övningar</li>
+<li>Läroplan med ålderskort 8–16 år</li>
+<li>Säsongsplan från klubbens läroplan</li>
+<li>Lagets spelidé, principer och begrepp</li>
+<li>Motståndaranalys och lagprofiler</li>
+<li>Träningsveckan mot nästa match</li>
+<li>Rita egna övningar</li>
+<li>Sparade övningar och favoriter</li>
+<li>Progressioner i flera steg</li>
 </ul>
+</div>
 </div>
 </section>
 
@@ -394,7 +423,7 @@ footer a:hover{color:var(--ink)}
 <p>Ingen utbildning behövs. Logga in med din e-post och börja plocka övningar.</p>
 </div>
 <ol class="flow">
-<li><span class="when">Kvällen innan</span><h3>Beskriv vad ni ska träna</h3><p>Skriv fokus, antal spelare och hur lång träningen är. Appen bygger passet, och du byter ut övningar om du vill.</p></li>
+<li><span class="when">Kvällen innan</span><h3>Beskriv vad ni ska träna</h3><p>Skriv fokus, antal spelare och hur lång träningen är. Du får ett färdigt pass, och byter ut övningar om du vill.</p></li>
 <li><span class="when">Innan du åker</span><h3>Passet ligger klart i mobilen</h3><p>Ingen utskrift, inga papper som blåser bort. Allt finns med dig ut till planen.</p></li>
 <li><span class="when">På planen</span><h3>Visa, kör, nästa övning</h3><p>Förstår spelarna inte upplägget? Visa videon. Den säger mer än en genomgång vid konerna.</p></li>
 </ol>
@@ -631,6 +660,17 @@ f.addEventListener('submit',async e=>{
  m.addEventListener('click',e=>{if(e.target.closest('a'))set(false)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!m.hidden){set(false);b.focus()}});
  matchMedia('(min-width:821px)').addEventListener('change',e=>{if(e.matches)set(false)});
+})();
+
+/* flikar i "Det här får ni i appen" */
+(()=>{const list=document.querySelector('#appen [role=tablist]');if(!list)return;
+ const tabs=[...list.querySelectorAll('[role=tab]')];
+ const show=t=>{tabs.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute('aria-controls')).hidden=!on});
+  t.scrollIntoView({block:'nearest',inline:'nearest'})};
+ list.addEventListener('click',e=>{const t=e.target.closest('[role=tab]');if(t)show(t)});
+ list.addEventListener('keydown',e=>{const i=tabs.indexOf(document.activeElement);if(i<0)return;
+  let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;if(e.key==='Home')j=0;if(e.key==='End')j=tabs.length-1;
+  if(j!==null){e.preventDefault();show(tabs[j]);tabs[j].focus()}});
 })();
 </script>
 </body>
