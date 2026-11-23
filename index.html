@@ -21,7 +21,7 @@
 --lime:#DDEB9E;--blue:#3CC4E0;--red:#E5574B;--err:#F2948B}
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
-html{background:var(--bg);scroll-behavior:smooth;scroll-padding-top:20px}
+html{background:var(--bg);scroll-padding-top:84px}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:inherit}
 p{margin:0}
@@ -34,7 +34,8 @@ section.band{padding:clamp(64px,9vw,120px) 0;border-top:1px solid var(--rule)}
 .muted{color:var(--muted)}
 
 /* meny */
-header{border-bottom:1px solid var(--rule)}
+header{position:sticky;top:0;z-index:10;background:rgba(14,22,18,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.nav{padding-top:12px!important;padding-bottom:12px!important}
 .nav{max-width:1240px;margin:0 auto;padding:18px max(4vw,16px);display:flex;align-items:center;gap:32px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-stretch:85%;font-size:21px;letter-spacing:-.01em}
 .brand img{width:22px;height:auto}
@@ -193,7 +194,7 @@ footer a:hover{color:var(--ink)}
  .drills{grid-template-columns:minmax(0,1fr);gap:40px}
  .two{grid-template-columns:minmax(0,1fr)}
 }
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.skel{animation:none}}
+@media(prefers-reduced-motion:reduce){.skel{animation:none}}
 </style>
 </head>
 <body>
@@ -384,10 +385,9 @@ function players(e){
  return '';
 }
 function render(){
- const list=active==='alla'?all:all.filter(e=>e.category_slug===active);
- $('drills').innerHTML=list.map(e=>{
+ $('drills').innerHTML=all.map(e=>{
   const meta=[e.setup,players(e),e.age_min?`Från ${e.age_min} år`:''].filter(Boolean).join(' · ');
-  return `<article class="drill">
+  return `<article class="drill" data-cat="${esc(e.category_slug)}">
 ${e.video_path?`<video src="${esc(e.video_path)}" poster="${esc(e.poster_path)}" muted loop playsinline preload="none" width="720" height="720" tabindex="0" aria-label="Video: ${esc(e.title)}. Tryck för att spela."></video>`:''}
 <p class="cat"><span><span class="dot" style="background:${COLORS[e.category_slug]||'var(--lime)'}"></span>${esc(e.categories?.name)}</span>${isNew(e.published_at)?`<span class="new">Ny ${fmtDate(e.published_at)}</span>`:''}</p>
 <h3>${esc(e.title)}</h3>
@@ -403,7 +403,10 @@ function renderFilters(){
  $('filters').innerHTML=btn('alla','Alla',all.length)+cats.map(([s,n])=>btn(s,n,all.filter(e=>e.category_slug===s).length)).join('');
  $('filters').hidden=false;
  $('filters').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;active=b.dataset.cat;
-  $('filters').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));render()};
+  $('filters').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));applyFilter()};
+}
+function applyFilter(){
+ document.querySelectorAll('#drills .drill').forEach(d=>{const show=active==='alla'||d.dataset.cat===active;d.hidden=!show;if(!show){const v=d.querySelector('video');if(v)v.pause()}});
 }
 function bindVideos(){
  const vids=[...document.querySelectorAll('.drill video')];
