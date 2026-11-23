@@ -1,0 +1,36 @@
+:root { color-scheme:dark; font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif; color:#f1f6ed; background:#101a15; }
+*,*::before,*::after { box-sizing:border-box; }
+body { margin:0; padding:clamp(16px,4vw,48px) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
+[hidden] { display:none !important; }
+.login-shell { width:min(100%,880px); margin:auto; display:grid; gap:14px; }
+.login-cover,.login-card { border:1px solid #385346; border-radius:21px; padding:clamp(18px,4vw,32px); }
+.login-cover { min-height:208px; display:flex; flex-direction:column; justify-content:space-between; gap:20px; background:linear-gradient(90deg,#10261df5,#11251bb5),url('assets/traningsplan-kvall.webp') center / cover; }
+.login-brand { display:flex; align-items:center; gap:9px; font-weight:800; margin:0; }
+.login-brand img { object-fit:contain; }
+h1,h2 { margin:0 0 8px; line-height:1.1; letter-spacing:-.035em; }
+h1 { font-size:clamp(38px,9vw,60px); }
+h2 { font-size:clamp(25px,6vw,34px); }
+.login-cover p:last-child { margin:0; }
+.login-card { background:#192a22; min-width:0; }
+label { display:block; font-weight:700; margin:14px 0 6px; }
+input,select,button { font:inherit; }
+input,select { width:100%; min-height:48px; padding:10px 12px; color:#f2f7ed; background:#111d17; border:1px solid #5a7465; border-radius:10px; }
+button { cursor:pointer; }
+:focus-visible { outline:3px solid #e5efb6; outline-offset:3px; }
+.login-clubs { list-style:none; padding:5px 4px; margin:10px -4px 0; display:grid; gap:6px; overflow-y:auto; max-height:min(48dvh,420px); }
+.login-clubs button { width:100%; min-height:52px; text-align:left; display:flex; align-items:center; gap:12px; padding:7px 10px; color:#f4f8f0; background:#21382b; border:1px solid #405f4e; border-radius:10px; }
+.login-clubs button:hover { background:#2b4939; }
+.login-crest { flex:none; width:36px; height:36px; display:grid; place-items:center; object-fit:contain; border-radius:7px; background:#e6eee2; color:#203b2d; font-size:12px; font-weight:800; padding:3px; }
+.login-back { padding:5px 0; color:#e5efb6; border:0; background:none; margin:0 0 15px; }
+.login-help { color:#c4d0c6; margin:8px 0 16px; }
+.login-error { padding:10px 12px; color:#ffe6dc; background:#452b25; border:1px solid #a7644e; border-radius:10px; }
+.login-submit { width:100%; min-height:48px; border:0; border-radius:10px; background:#e5efb6; color:#192a22; font-weight:850; }
+
+.login-shell a { color: #e5efb6; }
+.login-card form { margin-bottom: 16px; }
+.login-card .login-submit { margin-top: 12px; }
+
+#login-step { display:flex; align-items:center; gap:12px; }
+.entry-skip { margin:16px 0 0; }
+
+.login-brand img { display:block; width:min(280px,100%); height:auto; }
