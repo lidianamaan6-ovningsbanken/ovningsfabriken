@@ -5,7 +5,7 @@ Sparat för senare. Bocka av när det är klart.
 ## Måste fixas
 - [ ] Uppdatera integritetspolicyn: förfrågningar sparas nu i Supabase (Stockholm), inte via mejl
 - [ ] Kontaktuppgifter: e-post, telefon, bolagsnamn och org.nr i sidfoten
-- [ ] Gör `ny-design.html` till den riktiga startsidan (`index.html`)
+- [x] Gör `ny-design.html` till den riktiga startsidan (`index.html`)
 - [ ] Byt länken "Prova appen" från den tillfälliga chatgpt.site-adressen
 
 ## Gör sidan starkare
