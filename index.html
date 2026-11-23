@@ -124,6 +124,8 @@ video{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:6px;back
 .light .head p{color:var(--muted)}
 .shot{margin:0;border-radius:10px;overflow:hidden;background:#E4E2DA;border:1px solid var(--rule);box-shadow:0 24px 48px -28px rgba(20,35,27,.45)}
 .shot img{display:block;width:100%;height:auto;max-height:620px;object-fit:cover;object-position:top}
+.shot.dark{background:#111A15;border-color:#24332B}
+.tabpanel .shot.dark{max-width:420px}
 .tabs{display:flex;gap:4px 26px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin-bottom:clamp(24px,3vw,40px)}
 .tabs button{flex:none;appearance:none;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 0 12px;min-height:44px;font:inherit;font-weight:600;font-size:16px;color:var(--muted);cursor:pointer;white-space:nowrap}
 .tabs button:hover{color:var(--ink)}
@@ -349,9 +351,9 @@ footer a:hover{color:var(--ink)}
 <div class="wrap">
 <div class="head">
 <h2>Det här får ni i appen.</h2>
-<p>Från säsongsplanen i augusti till matchdagen i oktober. Allt hänger ihop: läroplanen styr säsongen, säsongen styr passen, och matchanalysen styr träningsveckan.</p>
+<p>Från säsongsplanen i augusti till matchdagen i oktober. Allt hänger ihop: läroplanen styr säsongen, säsongen styr passen, matchanalysen styr träningsveckan, och det ni lär er efter matchen sparas till nästa gång.</p>
 </div>
-<div class="tabs" role="tablist" aria-label="Delar av appen"><button type="button" role="tab" id="tab-pass" aria-controls="p-pass" aria-selected="true" tabindex="0">Träningspass</button><button type="button" role="tab" id="tab-bank" aria-controls="p-bank" aria-selected="false" tabindex="-1">Övningsbank</button><button type="button" role="tab" id="tab-laroplan" aria-controls="p-laroplan" aria-selected="false" tabindex="-1">Läroplan</button><button type="button" role="tab" id="tab-sasong" aria-controls="p-sasong" aria-selected="false" tabindex="-1">Säsong</button><button type="button" role="tab" id="tab-spelide" aria-controls="p-spelide" aria-selected="false" tabindex="-1">Spelidé</button><button type="button" role="tab" id="tab-match" aria-controls="p-match" aria-selected="false" tabindex="-1">Matchförberedelse</button><button type="button" role="tab" id="tab-vecka" aria-controls="p-vecka" aria-selected="false" tabindex="-1">Matchveckan</button></div>
+<div class="tabs" role="tablist" aria-label="Delar av appen"><button type="button" role="tab" id="tab-pass" aria-controls="p-pass" aria-selected="true" tabindex="0">Träningspass</button><button type="button" role="tab" id="tab-bank" aria-controls="p-bank" aria-selected="false" tabindex="-1">Övningsbank</button><button type="button" role="tab" id="tab-laroplan" aria-controls="p-laroplan" aria-selected="false" tabindex="-1">Läroplan</button><button type="button" role="tab" id="tab-sasong" aria-controls="p-sasong" aria-selected="false" tabindex="-1">Säsong</button><button type="button" role="tab" id="tab-spelide" aria-controls="p-spelide" aria-selected="false" tabindex="-1">Spelidé</button><button type="button" role="tab" id="tab-match" aria-controls="p-match" aria-selected="false" tabindex="-1">Matchförberedelse</button><button type="button" role="tab" id="tab-vecka" aria-controls="p-vecka" aria-selected="false" tabindex="-1">Matchveckan</button><button type="button" role="tab" id="tab-matchdag" aria-controls="p-matchdag" aria-selected="false" tabindex="-1">Matchdag</button><button type="button" role="tab" id="tab-efter" aria-controls="p-efter" aria-selected="false" tabindex="-1">Efter matchen</button></div>
 <div class="tabpanel" role="tabpanel" id="p-pass" aria-labelledby="tab-pass">
 <div class="pt"><h3>Ett färdigt pass, block för block.</h3><p>Skriv vad ni ska träna, hur många spelare och målvakter ni har och hur lång träningen är. Du får ett pass med uppvärmning, huvudövningar och spel, där varje block har en bild av övningen.</p><ul><li>Ändra minuter och byt övning i varje block</li><li>Kör passet med timer ute på planen</li><li>Återbud? Passet anpassas efter antalet spelare</li><li>Lista över vad du ska ta med: västar, koner, mål och bollar</li></ul></div>
 <figure class="shot"><img src="bilder/app-pass.jpg" width="426" height="846" loading="lazy" alt="Skärmbild: ett färdigt träningspass med uppvärmning, huvudövningar och spel, och lista över utrustning"></figure>
@@ -377,10 +379,18 @@ footer a:hover{color:var(--ink)}
 <figure class="shot"><img src="bilder/app-matchanalys.jpg" width="422" height="614" loading="lazy" alt="Skärmbild: motståndaranalys med formation, spelstil och styrkor och svagheter per skede"></figure>
 </div>
 <div class="tabpanel" role="tabpanel" id="p-vecka" aria-labelledby="tab-vecka" hidden>
-<div class="pt"><h3>Träningsveckan byggs mot matchen.</h3><p>Välj vilka dagar ni tränar, så får du passen fram till matchen. Första passet utnyttjar motståndarens svagheter, nästa skyddar er mot deras styrkor, och sista passet är lätt och tydligt med fasta situationer.</p><ul><li>Ett pass för varje träningsdag fram till match</li><li>Byggt på din analys av motståndaren</li><li>Matchplan och uppföljning efter matchen</li></ul></div>
+<div class="pt"><h3>Träningsveckan byggs mot matchen.</h3><p>Välj vilka dagar ni tränar, så får du passen fram till matchen. Första passet utnyttjar motståndarens svagheter, nästa skyddar er mot deras styrkor, och sista passet är lätt och tydligt med fasta situationer.</p><ul><li>Ett pass för varje träningsdag fram till match</li><li>Byggt på din analys av motståndaren</li><li>Matchplan inför matchen</li></ul></div>
 <figure class="shot"><img src="bilder/app-traningsveckan.jpg" width="436" height="403" loading="lazy" alt="Skärmbild: träningsveckan med tre pass fram till matchen mot Djurgården"></figure>
 </div>
 
+<div class="tabpanel" role="tabpanel" id="p-matchdag" aria-labelledby="tab-matchdag" hidden>
+<div class="pt"><h3>Matchdagen i mobilen.</h3><p>Ställ upp laget på planen, starta klockan och byt spelare med ett tryck. Appen räknar speltiden för varje spelare, så att alla får spela lika mycket.</p><ul><li>Klocka, perioder, halvtid och resultat</li><li>Formation och byten direkt på planen</li><li>Rättvis speltid, räknad för varje spelare</li><li>Snabbanteckningar som ”Bra press” eller ”Farlig hörna”, eller prata in dem</li><li>Påminnelse om vad ni ska ändra till andra halvlek</li></ul></div>
+<figure class="shot dark"><img src="bilder/app-matchdag.jpg" width="444" height="842" loading="lazy" alt="Skärmbild: matchdag med klocka, resultat, laguppställning på planen, avbytare, speltid per spelare och snabbanteckningar"></figure>
+</div>
+<div class="tabpanel" role="tabpanel" id="p-efter" aria-labelledby="tab-efter" hidden>
+<div class="pt"><h3>Lär er av varje match.</h3><p>Efter matchen svarar du på några korta frågor: fungerade planen, stoppade ni deras farliga skeden, och spelade de i den formation ni trodde? Svaren sparas på lagprofilen och används nästa gång ni möter samma lag.</p><ul><li>Alla anteckningar från matchen samlade</li><li>Betygsätt matchplanen: bra, okej eller dåligt</li><li>Skriv eller prata in dina svar</li><li>Sparas på motståndarens lagprofil till nästa möte</li></ul></div>
+<figure class="shot"><img src="bilder/app-efter-matchen.jpg" width="638" height="682" loading="lazy" alt="Skärmbild: efter matchen med anteckningar, betyg på matchplanen och frågor som sparas på lagprofilen"></figure>
+</div>
 <div class="included">
 <h3>Det här ingår i licensen</h3>
 <ul>
@@ -393,6 +403,9 @@ footer a:hover{color:var(--ink)}
 <li>Lagets spelidé, principer och begrepp</li>
 <li>Motståndaranalys och lagprofiler</li>
 <li>Träningsveckan mot nästa match</li>
+<li>Matchdag med klocka, byten och rättvis speltid</li>
+<li>Snabbanteckningar och röst under matchen</li>
+<li>Uppföljning efter matchen</li>
 <li>Rita egna övningar</li>
 <li>Sparade övningar och favoriter</li>
 <li>Progressioner i flera steg</li>
