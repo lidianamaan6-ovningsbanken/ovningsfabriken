@@ -17,3 +17,13 @@ Sparat för senare. Bocka av när det är klart.
 - [ ] Ålder och antal spelare för alla övningar i databasen
 - [ ] Kontrollera att alla 1 200 övningar har video, annars justera texten "Animerade videor"
 - [ ] Fler övningsvideor
+
+## Appen (ny, under /app/)
+- [x] Steg 1: inloggning med e-postlänk, appens skal och övningsbanken (1 450 övningar från databasen)
+- [ ] Steg 2: lag, klubbar och licenser. **Innan leverans:** bara tränare med licens ska komma åt övningarna (i dag räcker det att logga in)
+- [ ] Steg 3: träningspass (bygga pass, köra med timer, utrustningslista)
+- [ ] Steg 4: läroplan, säsong och spelidé
+- [ ] Steg 5: match (förberedelse, matchdag, efter matchen)
+- [ ] Egen e-posttjänst (t.ex. Resend) så att inloggningsmejlen blir på svenska och inte begränsas till 2 i timmen
+- [ ] Bilder på övningarna i banken (som i gamla appen)
+- [ ] Byt "Prova appen" på hemsidan till den nya appen när den är redo
