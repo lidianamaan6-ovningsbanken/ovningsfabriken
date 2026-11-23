@@ -13,5 +13,7 @@ Sparat för senare. Bocka av när det är klart.
 - [ ] Foto på Sam till "Om"-delen
 - [ ] UEFA C-raden (bekräfta först att det stämmer)
 - [ ] Skärmdumpar från appen i en mobilram
+- [ ] Flytta in alla 1 200+ övningar i databasen (då visas "Det här finns i banken" automatiskt)
 - [ ] Ålder och antal spelare för alla övningar i databasen
+- [ ] Kontrollera att alla 1 200 övningar har video, annars justera texten "Animerade videor"
 - [ ] Fler övningsvideor

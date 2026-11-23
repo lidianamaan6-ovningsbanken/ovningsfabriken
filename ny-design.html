@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Övningsfabriken – övningsbanken för fotbollstränare</title>
-<meta name="description" content="Övningsfabriken är övningsbanken för fotbollstränare: färdiga övningar med beskrivning och animerad video. Ha hela träningspasset i mobilen. Licens för tränare eller hela klubben.">
+<meta name="description" content="Övningsfabriken är övningsbanken för fotbollstränare: över 1 200 färdiga övningar med beskrivning och animerad video. Ha hela träningspasset i mobilen. Licens för tränare eller hela klubben.">
 <meta property="og:title" content="Övningsfabriken – övningsbanken för fotbollstränare">
 <meta property="og:description" content="Färdiga fotbollsövningar med animerad video. För tränare och klubbar.">
 <meta property="og:type" content="website">
@@ -99,6 +99,23 @@ video{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:6px;back
 .flow h3{margin-top:10px}
 .flow p{margin-top:10px;color:var(--muted)}
 
+/* för föreningar */
+.club{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px)}
+.club h2{font-size:clamp(40px,5.4vw,72px);line-height:.92}
+.club .intro{margin-top:24px;color:var(--muted);font-size:18px;max-width:38ch}
+.club .act{margin-top:32px}
+.why{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.why li{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:8px 32px;padding:26px 0;border-bottom:1px solid var(--rule)}
+.why p{color:var(--muted)}
+.trust{display:flex;flex-wrap:wrap;gap:10px 32px;margin-top:22px;font-size:15px;color:var(--muted)}
+.trust span::before{content:"";display:inline-block;width:10px;height:2px;background:var(--lime);margin-right:10px;vertical-align:4px}
+.bank{margin-top:clamp(56px,7vw,88px);padding-top:28px;border-top:1px solid var(--rule)}
+.bank .label{font-size:14px;color:var(--faint)}
+.bank .total{display:block;margin-top:6px;font-weight:800;font-stretch:78%;font-size:clamp(48px,7vw,96px);line-height:.9;font-variant-numeric:tabular-nums}
+.bank ul{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0 32px}
+.bank li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.bank li b{font-weight:800;font-stretch:80%;font-size:22px;font-variant-numeric:tabular-nums}
+
 /* licenser: en tabell, inte fyra kort */
 .plans{width:100%;border-collapse:collapse;font-size:16px}
 .plans th,.plans td{text-align:left;padding:22px 16px 22px 0;border-bottom:1px solid var(--rule);vertical-align:top}
@@ -157,7 +174,8 @@ footer a{text-decoration:none;color:var(--muted)}
 footer a:hover{color:var(--ink)}
 
 @media(max-width:900px){
- .hero,.head,.about,.contact{grid-template-columns:minmax(0,1fr)}
+ .hero,.head,.about,.contact,.club{grid-template-columns:minmax(0,1fr)}
+ .why li{grid-template-columns:minmax(0,1fr)}
  .drills{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
  .flow{grid-template-columns:minmax(0,1fr)}
  .flow li,.flow li+li{padding:24px 0;border-left:0;border-bottom:1px solid var(--rule)}
@@ -181,7 +199,7 @@ footer a:hover{color:var(--ink)}
 <body>
 <header><nav class="nav" aria-label="Huvudmeny">
 <a class="brand" href="#top"><img src="ovningsfabriken-mark.svg" alt="" width="22" height="28">Övningsfabriken</a>
-<div class="links"><a href="#ovningar">Övningar</a><a href="#sa-funkar-det">Så funkar det</a><a href="#licenser">Licenser</a><a href="#fragor">Frågor</a></div>
+<div class="links"><a href="#ovningar">Övningar</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="#fragor">Frågor</a></div>
 <a class="btn" href="#" data-app>Prova appen</a>
 </nav></header>
 
@@ -189,7 +207,7 @@ footer a:hover{color:var(--ink)}
 <section class="hero">
 <div>
 <h1>Passet klart innan du kliver ut på planen.</h1>
-<p class="lead">Övningsfabriken är <b>övningsbanken för fotbollstränare</b>. Varje övning har en beskrivning och en animerad video som visar exakt hur den går till. Hela passet finns i mobilen.</p>
+<p class="lead">Övningsfabriken är <b>övningsbanken för fotbollstränare</b>. Över 1&nbsp;200 färdiga övningar med beskrivningar och animerade videor som visar hur de går till. Hela passet finns i mobilen.</p>
 <div class="act"><a class="btn" href="#" data-app>Prova appen</a><a class="more" href="#licenser">Licens för hela klubben</a></div>
 </div>
 <figure class="clip">
@@ -200,8 +218,8 @@ footer a:hover{color:var(--ink)}
 
 <section class="facts" aria-label="Kort om appen">
 <ul>
-<li><b>50+ övningar</b><span>Fler läggs till hela tiden.</span></li>
-<li><b>Video till varje övning</b><span>Se rörelser och passningar innan du ställer ut konerna.</span></li>
+<li><b>1&nbsp;200+ övningar</b><span>Fler läggs till hela tiden.</span></li>
+<li><b>Animerade videor</b><span>Se rörelser och passningar innan du ställer ut konerna.</span></li>
 <li><b>Inga spelaruppgifter</b><span>Inga namn på barn eller vuxna. Aldrig.</span></li>
 </ul>
 </section>
@@ -217,7 +235,7 @@ footer a:hover{color:var(--ink)}
 <div class="drills" id="drills" aria-live="polite">
 <div class="skel"></div><div class="skel"></div><div class="skel"></div>
 </div>
-<p class="hint" id="hint" hidden>Tryck på en video för att spela den. Alla 50+ övningar finns i appen.</p>
+<p class="hint" id="hint" hidden>Tryck på en video för att spela den. Alla 1&nbsp;200+ övningar finns i appen.</p>
 </div>
 </section>
 
@@ -232,6 +250,32 @@ footer a:hover{color:var(--ink)}
 <li><span class="when">Innan du åker</span><h3>Passet ligger klart i mobilen</h3><p>Ingen utskrift, inga papper som blåser bort. Allt finns med dig ut till planen.</p></li>
 <li><span class="when">På planen</span><h3>Visa, kör, nästa övning</h3><p>Förstår spelarna inte upplägget? Visa videon. Den säger mer än en genomgång vid konerna.</p></li>
 </ol>
+</div>
+</section>
+
+<!-- För föreningar. Antal per tema hämtas från databasen (funktionen exercise_stats) -->
+<section class="band" id="foreningar">
+<div class="wrap">
+<div class="club">
+<div>
+<h2>Hela klubben tränar med samma övningar.</h2>
+<p class="intro">För dig som är sportchef, ungdomsansvarig eller tränaransvarig. Ge alla klubbens ledare samma övningsbank, från de yngsta lagen till juniorerna.</p>
+<div class="act"><a class="btn" href="#kontakt" data-plan="Licens för hela klubben">Licens för hela klubben</a></div>
+</div>
+<div>
+<ul class="why">
+<li><h3>Nya ledare kommer igång direkt</h3><p>Föräldern som tog över laget i augusti behöver inte hitta på något själv. Videon visar hur övningen går till och beskrivningen säger vad den tränar.</p></li>
+<li><h3>En gemensam grund i klubben</h3><p>När alla lag hämtar från samma bank känner spelarna igen övningarna när de flyttas upp en årskull eller byter lag.</p></li>
+<li><h3>Kunskapen stannar kvar</h3><p>Tränare kommer och går. Övningarna och sättet att träna finns kvar i klubben, säsong efter säsong.</p></li>
+</ul>
+<p class="trust"><span>Inga uppgifter om barn</span><span>Eget konto för varje tränare</span><span>Fungerar i alla mobiler</span></p>
+</div>
+</div>
+<div class="bank" id="bank" hidden>
+<p class="label">Det här finns i banken just nu</p>
+<span class="total" id="bankTotal"></span>
+<ul id="bankList"></ul>
+</div>
 </div>
 </section>
 
@@ -380,6 +424,23 @@ async function loadExercises(){
  }
 }
 loadExercises();
+
+/* ---------- Bredden i banken: antal per tema ---------- */
+const MIN_TO_SHOW=50; // visas först när hela banken ligger i databasen
+async function loadStats(){
+ try{
+  const r=await api('rpc/exercise_stats',{method:'POST',body:'{}'});
+  if(!r.ok) return;
+  const rows=(await r.json()).filter(x=>x.count>0);
+  const total=rows.reduce((a,x)=>a+x.count,0);
+  if(total<MIN_TO_SHOW) return;
+  const nf=new Intl.NumberFormat('sv-SE');
+  $('bankTotal').textContent=nf.format(total)+' övningar';
+  $('bankList').innerHTML=rows.map(x=>`<li><span>${esc(x.name)}</span><b>${nf.format(x.count)}</b></li>`).join('');
+  $('bank').hidden=false;
+ }catch(_){}
+}
+loadStats();
 
 /* ---------- Kontaktformuläret sparar i databasen ---------- */
 const f=$('f');
