@@ -86,6 +86,30 @@ footer a{text-decoration:none;color:var(--muted)}footer a:hover{color:var(--ink)
  .intro figure{max-width:320px}
  .chapter{grid-template-columns:minmax(0,1fr)}
 }
+
+/* mobil: mindre skala */
+@media(max-width:600px){
+ body{font-size:16px;line-height:1.5}
+ .nav{padding-top:8px!important;padding-bottom:8px!important}
+ .brand{font-size:19px}
+ html{scroll-padding-top:68px}
+ .intro{padding:20px 0 40px;gap:24px}
+ .intro figure{max-width:220px}
+ .intro h1{font-size:clamp(36px,10.5vw,42px)}
+ .intro .role{margin-top:10px;font-size:15px}
+ .intro .lead{margin-top:16px;font-size:17px}
+ .story{padding-bottom:40px}
+ .chapter{padding:22px 0;gap:10px}
+ .chapter h2{font-size:22px}
+ .chapter p{font-size:15px}
+ .wwh dt{font-size:18px}.wwh dd{font-size:15px}.wwh div{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:10px 0}
+ .teams li{font-size:15px;padding:10px 0}
+ .cta{padding-bottom:56px}
+ .cta p{font-size:20px}
+ .btn{min-height:46px;font-size:15px;padding:0 18px}
+ .back{margin-top:18px}
+ .mnav a{min-height:52px;font-size:21px}
+}
 </style>
 </head>
 <body>
