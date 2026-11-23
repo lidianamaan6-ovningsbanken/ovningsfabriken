@@ -13,6 +13,10 @@ def finish(d, id_, slug, title, setup, phases, label, shapes, extras=None, targe
     for x in pl: x['tr'] = sc(x['tr'])
     balls = [sc(bb) for bb in balls]
     phases = [(t * f, h, s_) for t, h, s_ in phases]
+    if extras:
+        for e in extras:
+            e['t0'] *= f
+            if 't1' in e: e['t1'] *= f
     add(id_, slug, title, setup, pl, balls[0], phases)
     C[-1]['balls'] = balls; C[-1]['shapes'] = shapes_base(label, shapes)
     if extras: C[-1]['extras'] = extras
