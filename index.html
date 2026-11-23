@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Övningsfabriken – övningsbanken för fotbollstränare</title>
-<meta name="description" content="Övningsfabriken är övningsbanken för fotbollstränare: över 1 200 färdiga övningar med beskrivning och animerad video. Ha hela träningspasset i mobilen. Licens för tränare eller hela klubben.">
+<title>Övningsfabriken – tränarens verktyg för hela säsongen</title>
+<meta name="description" content="Övningsfabriken är appen för fotbollstränare: bygg träningspass på minuter, läroplan med ålderskort enligt spelarutbildningsplanen, säsongsplanering, matchanalys och över 1 200 övningar. Licens för tränare eller hela klubben.">
 <meta property="og:title" content="Övningsfabriken – övningsbanken för fotbollstränare">
 <meta property="og:description" content="Färdiga fotbollsövningar med animerad video. För tränare och klubbar.">
 <meta property="og:type" content="website">
@@ -118,6 +118,27 @@ video{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:6px;back
 .when{font-size:14px;color:var(--lime);font-weight:600}
 .flow h3{margin-top:10px}
 .flow p{margin-top:10px;color:var(--muted)}
+
+/* appen: ljus del, som appen själv */
+.light{--ink:#14231B;--muted:#4C5D52;--faint:#6A7A6F;--rule:#D6DCD1;background:#EFEDE6;color:var(--ink);border-top:0!important}
+.light .head p{color:var(--muted)}
+.feature{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:center;padding:clamp(28px,4vw,48px) 0;border-top:1px solid var(--rule)}
+.feature.flip{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.feature.flip .shot{order:-1}
+.feature .when{color:#2E6B47}
+.feature h3{margin-top:8px;font-size:clamp(26px,2.8vw,36px);line-height:1}
+.feature p{margin-top:14px;color:var(--muted);font-size:17px;max-width:44ch}
+.feature ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px;color:var(--ink);font-size:16px}
+.feature li{padding-left:20px;position:relative}
+.feature li::before{content:"";position:absolute;left:0;top:11px;width:10px;height:2px;background:#2E6B47}
+.shot{margin:0;border-radius:10px;overflow:hidden;background:#E4E2DA;border:1px solid var(--rule);box-shadow:0 24px 48px -28px rgba(20,35,27,.45)}
+.shot img{display:block;width:100%;height:auto}
+.more-feats{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 clamp(16px,2.4vw,32px);border-top:1px solid var(--rule)}
+.more-feats li{padding:24px 0 0}
+.more-feats h3{font-size:21px}
+.more-feats p{margin-top:8px;color:var(--muted);font-size:15px}
+@media(max-width:900px){.feature,.feature.flip{grid-template-columns:minmax(0,1fr)}.feature.flip .shot{order:0}.more-feats{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 24px}}
+@media(max-width:600px){.more-feats{grid-template-columns:minmax(0,1fr)}.more-feats li{padding:18px 0;border-bottom:1px solid var(--rule)}.feature h3{font-size:24px}.feature p{font-size:15px}.feature ul{font-size:15px}}
 
 /* för föreningar */
 .club{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px)}
@@ -288,17 +309,17 @@ footer a:hover{color:var(--ink)}
 <body>
 <header><nav class="nav" aria-label="Huvudmeny">
 <a class="brand" href="#top"><img src="ovningsfabriken-mark.svg" alt="" width="22" height="28">Övningsfabriken</a>
-<div class="links"><a href="#ovningar">Övningar</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="#fragor">Frågor</a></div>
+<div class="links"><a href="#appen">Appen</a><a href="#ovningar">Övningar</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="#fragor">Frågor</a></div>
 <a class="btn" href="#" data-app>Prova appen</a>
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mnav"><span>Meny</span><i aria-hidden="true"></i></button>
 </nav>
-<div class="mnav" id="mnav" hidden><a href="#ovningar">Övningar</a><a href="#sa-funkar-det">Så funkar det</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="om-sam.html">Om Sam</a><a href="#fragor">Frågor</a><a href="#kontakt">Kontakt</a></div></header>
+<div class="mnav" id="mnav" hidden><a href="#appen">Appen</a><a href="#ovningar">Övningar</a><a href="#sa-funkar-det">Så funkar det</a><a href="#foreningar">För föreningar</a><a href="#licenser">Licenser</a><a href="om-sam.html">Om Sam</a><a href="#fragor">Frågor</a><a href="#kontakt">Kontakt</a></div></header>
 
 <main id="top">
 <section class="hero">
 <div>
 <h1>Passet klart innan du kliver ut på planen.</h1>
-<p class="lead">Övningsfabriken är <b>övningsbanken för fotbollstränare</b>. Över 1&nbsp;200 färdiga övningar med beskrivningar och animerade videor som visar hur de går till. Hela passet finns i mobilen.</p>
+<p class="lead">Övningsfabriken är <b>tränarens verktyg för hela säsongen</b>. Bygg passet på några minuter, planera säsongen efter spelarutbildningsplanen och följ upp matcherna. Med över 1&nbsp;200 övningar att välja bland.</p>
 <div class="act"><a class="btn" href="#" data-app>Prova appen</a><a class="more" href="#licenser">Licens för hela klubben</a></div>
 </div>
 <figure class="clip">
@@ -310,9 +331,45 @@ footer a:hover{color:var(--ink)}
 <section class="facts" aria-label="Kort om appen">
 <ul>
 <li><b>1&nbsp;200+ övningar</b><span>Fler läggs till hela tiden.</span></li>
-<li><b>Animerade videor</b><span>Se rörelser och passningar innan du ställer ut konerna.</span></li>
+<li><b>Läroplan per ålder</b><span>Ålderskort från 8 till 16 år enligt spelarutbildningsplanen.</span></li>
 <li><b>Inga spelaruppgifter</b><span>Inga namn på barn eller vuxna. Aldrig.</span></li>
 </ul>
+</section>
+
+<section class="band light" id="appen">
+<div class="wrap">
+<div class="head">
+<h2>Ett verktyg för hela säsongen.</h2>
+<p>Övningsbanken är bara början. Appen hjälper dig från första träningen i augusti till sista matchen, och allt hänger ihop.</p>
+</div>
+
+<div class="feature">
+<div>
+<span class="when">Träningspass</span>
+<h3>Beskriv vad ni ska träna. Appen bygger passet.</h3>
+<p>Skriv träningsfokus, till exempel ”spela ut från målvakten”, och hur många spelare, målvakter och minuter ni har. Du får ett färdigt pass som du kan justera.</p>
+<ul><li>Förslag på vanliga fokus med ett tryck</li><li>Anpassas efter antal spelare och målvakter</li><li>Eller bygg ditt eget pass block för block</li></ul>
+</div>
+<figure class="shot"><img src="bilder/app-bygg-pass.jpg" width="725" height="680" loading="lazy" alt="Skärmbild från appen: Skapa träningspass med träningsfokus, antal spelare, målvakter och längd"></figure>
+</div>
+
+<div class="feature flip">
+<figure class="shot"><img src="bilder/app-laroplan.jpg" width="646" height="708" loading="lazy" alt="Skärmbild från appen: ålderskort för 11 år, 7 mot 7, med färdigheter och hur ofta de ska tränas"></figure>
+<div>
+<span class="when">Läroplan</span>
+<h3>Ålderskort för varje årskull.</h3>
+<p>Från 8 år och 5 mot 5 till 16 år och 11 mot 11, enligt spelarutbildningsplanen. Varje ålderskort visar hur mycket färdighet och spel det ska vara, och vilka färdigheter som tränas varje vecka, varannan vecka eller ibland.</p>
+<ul><li>Spelform, passlängd och antal pass i veckan per ålder</li><li>Tryck på en färdighet för att se lärandemålet</li><li>Skapa en säsongsplan direkt från ålderskortet</li></ul>
+</div>
+</div>
+
+<ul class="more-feats">
+<li><h3>Säsong och spelidé</h3><p>Planera träningsperioder och teman, och samla lagets spelidé på ett ställe.</p></li>
+<li><h3>Match och analys</h3><p>Förbered truppen, samla klipp och observationer, och spara motståndaren som lagprofil till nästa möte.</p></li>
+<li><h3>Rita egen övning</h3><p>Placera spelare, mål och koner och visa hur din egen övning går till.</p></li>
+<li><h3>Progressioner</h3><p>Övningar i flera steg utifrån spelskede och ålder, så att svårigheten ökar i takt med laget.</p></li>
+</ul>
+</div>
 </section>
 
 <!-- Övningarna hämtas från databasen (Supabase, tabellen exercises) -->
@@ -337,7 +394,7 @@ footer a:hover{color:var(--ink)}
 <p>Ingen utbildning behövs. Logga in med din e-post och börja plocka övningar.</p>
 </div>
 <ol class="flow">
-<li><span class="when">Kvällen innan</span><h3>Välj lag och plocka övningar</h3><p>Övningarna är sorterade efter tema, som avslut och återerövring. Läs beskrivningen och se videon.</p></li>
+<li><span class="when">Kvällen innan</span><h3>Beskriv vad ni ska träna</h3><p>Skriv fokus, antal spelare och hur lång träningen är. Appen bygger passet, och du byter ut övningar om du vill.</p></li>
 <li><span class="when">Innan du åker</span><h3>Passet ligger klart i mobilen</h3><p>Ingen utskrift, inga papper som blåser bort. Allt finns med dig ut till planen.</p></li>
 <li><span class="when">På planen</span><h3>Visa, kör, nästa övning</h3><p>Förstår spelarna inte upplägget? Visa videon. Den säger mer än en genomgång vid konerna.</p></li>
 </ol>
