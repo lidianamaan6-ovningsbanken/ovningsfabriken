@@ -31,6 +31,9 @@ def shapes_base(label, shapes):
             elif k == 'circle':
                 _, cx, cy, r = s; x, y = xy((cx, cy)); rx = 7.7 * r; ry = 6.5 * r * 770 / 650 * 0.85
                 d.ellipse((x - rx, y - ry, x + rx, y + ry), outline='#b2cdb1', width=3)
+            elif k == 'ugoal':  # mål med öppningen åt ett håll ('up' eller 'down')
+                _, x, y, side = s; cx, cy = xy((x, y)); w, h = 46, 18; sg = -1 if side == 'up' else 1
+                d.line([(cx - w / 2, cy - sg * h / 2), (cx - w / 2, cy + sg * h / 2), (cx + w / 2, cy + sg * h / 2), (cx + w / 2, cy - sg * h / 2)], fill='#eef4d9', width=4)
             elif k == 'smallgoal':
                 _, x, y = s; cx, cy = xy((x, y)); d.rectangle((cx - 17, cy - 10, cx + 17, cy + 10), outline='#eef4d9', width=3)
             elif k in ('cone', 'redcone', 'yellowcone'):
