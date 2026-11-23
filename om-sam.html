@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Om Sam Nouman – grundare av Övningsfabriken</title>
+<meta name="description" content="Sam Nouman är fotbollstränare och grundare av Övningsfabriken, övningsbanken för fotbollstränare.">
+<meta property="og:title" content="Om Sam Nouman – grundare av Övningsfabriken">
+<meta property="og:image" content="bilder/sam-nouman.jpg">
+<meta name="theme-color" content="#0E1612">
+<link rel="icon" href="ovningsfabriken-mark.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:Archivo;src:url(fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+:root{color-scheme:dark;--bg:#0E1612;--ink:#EEF2EA;--muted:#A9B7AC;--faint:#7A8D80;--rule:#26362D;--lime:#DDEB9E}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html{background:var(--bg);scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
+a{color:inherit}p{margin:0}
+h1,h2{margin:0;font-weight:800;font-stretch:78%;letter-spacing:-.015em;text-wrap:balance}
+:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 max(4vw,16px)}
+
+header{position:sticky;top:0;z-index:10;background:rgba(14,22,18,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.nav{max-width:1240px;margin:0 auto;padding:12px max(4vw,16px);display:flex;align-items:center;gap:32px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-stretch:85%;font-size:21px}
+.brand img{width:22px;height:auto}
+.links{display:flex;gap:28px;margin-left:auto;font-size:15px}
+.links a{text-decoration:none;color:var(--muted)}.links a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 22px;border-radius:6px;background:var(--lime);color:#13221A;font-weight:700;font-size:16px;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#E9F3B9}
+header .btn{min-height:40px;padding:0 16px;font-size:15px}
+@media(max-width:820px){.links{display:none}header .btn{margin-left:auto}}
+
+.back{display:inline-block;margin-top:clamp(28px,4vw,48px);font-size:15px;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--ink)}
+.intro{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:end;padding:clamp(28px,4vw,48px) 0 clamp(56px,8vw,104px)}
+.intro img{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:6px;background:#1A2620}
+.intro h1{font-size:clamp(48px,7vw,104px);line-height:.9}
+.intro .role{margin-top:18px;font-size:18px;color:var(--muted)}
+.intro .lead{margin-top:28px;font-size:clamp(19px,1.7vw,22px);line-height:1.5;max-width:40ch}
+
+.story{padding:0 0 clamp(56px,8vw,104px)}
+.chapter{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:16px clamp(32px,6vw,96px);padding:32px 0;border-bottom:1px solid var(--rule)}
+
+.chapter h2{font-size:clamp(26px,2.6vw,34px);line-height:1.05}
+.chapter p{color:var(--muted);font-size:18px;max-width:60ch}
+.chapter p+p{margin-top:14px}
+
+.cta{padding:0 0 clamp(64px,9vw,120px)}
+.cta p{font-size:clamp(22px,2.4vw,30px);font-weight:700;font-stretch:85%;line-height:1.2;max-width:32ch}
+.cta .act{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;margin-top:28px}
+.more{font-weight:600;text-decoration:none;border-bottom:1px solid var(--faint);padding-bottom:2px}
+
+footer{border-top:1px solid var(--rule);color:var(--faint);font-size:14px;padding:32px 0 40px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer a{text-decoration:none;color:var(--muted)}footer a:hover{color:var(--ink)}
+
+@media(max-width:900px){
+ .intro{grid-template-columns:minmax(0,1fr);align-items:start}
+ .intro figure{max-width:320px}
+ .chapter{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+<header><nav class="nav" aria-label="Huvudmeny">
+<a class="brand" href="./"><img src="ovningsfabriken-mark.svg" alt="" width="22" height="28">Övningsfabriken</a>
+<div class="links"><a href="./#ovningar">Övningar</a><a href="./#foreningar">För föreningar</a><a href="./#licenser">Licenser</a><a href="./#fragor">Frågor</a></div>
+<a class="btn" href="#" data-app>Prova appen</a>
+</nav></header>
+
+<main class="wrap">
+<a class="back" href="./#om">← Tillbaka till startsidan</a>
+
+<section class="intro">
+<figure style="margin:0"><img src="bilder/sam-nouman.jpg" srcset="bilder/sam-nouman-480.jpg 480w, bilder/sam-nouman.jpg 800w" sizes="(max-width:900px) 320px, 38vw" width="800" height="1000" alt="Sam Nouman"></figure>
+<div>
+<h1>Hej, jag heter Sam.</h1>
+<p class="role">Fotbollstränare och grundare av Övningsfabriken</p>
+<p class="lead">Jag byggde Övningsfabriken för att jag själv var trött på att lägga kvällarna på att leta övningar och rita upplägg som spelarna ändå inte förstod.</p>
+</div>
+</section>
+
+<!-- Kapitlen fylls i med Sams egen berättelse -->
+<section class="story" aria-label="Min berättelse">
+<div class="chapter">
+<h2>Varför jag startade Övningsfabriken</h2>
+<div>
+<p>Som tränare gick mycket tid åt till sådant som inte var fotboll: att leta övningar på nätet, rita på papper och förklara samma upplägg om och om igen vid konerna. Varje tränare i klubben gjorde samma jobb, var för sig.</p>
+<p>Jag ville ha ett ställe där övningarna redan finns, med en tydlig beskrivning och en video som visar hur det ska se ut. Det blev Övningsfabriken.</p>
+</div>
+</div>
+<div class="chapter">
+<h2>Det jag vill med appen</h2>
+<div>
+<p>Att tiden ska gå till spelarna. En tränare ska kunna öppna appen kvällen innan, plocka ett pass och känna sig trygg när hen kliver ut på planen, oavsett om det är första säsongen eller den tjugonde.</p>
+<p>Och att appen aldrig ska behöva några uppgifter om spelarna. Det är barn det handlar om, och deras integritet går först.</p>
+</div>
+</div>
+</section>
+
+<section class="cta">
+<p>Vill du prata om hur din klubb kan använda Övningsfabriken? Hör av dig, så tar vi det därifrån.</p>
+<div class="act"><a class="btn" href="./#kontakt">Kontakta mig</a><a class="more" href="#" data-app>Prova appen</a></div>
+</section>
+</main>
+
+<footer><div class="wrap">
+<span>© <span id="yr">2026</span> Övningsfabriken · Skapad av Sam Nouman</span>
+<span style="display:flex;flex-wrap:wrap;gap:20px"><a href="./#licenser">Licenser</a><a href="./#kontakt">Kontakt</a><a href="integritet.html">Integritetspolicy</a></span>
+</div></footer>
+<script>
+document.querySelectorAll('[data-app]').forEach(a=>{a.href='https://ovningsfabriken-webb.tweedykookaburra32.chatgpt.site/';a.target='_blank';a.rel='noopener'});
+document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>

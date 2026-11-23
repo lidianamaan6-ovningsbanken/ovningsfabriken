@@ -130,7 +130,13 @@ video{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:6px;back
 .pnote{margin-top:22px;color:var(--muted);font-size:15px}
 
 /* om */
-.about{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px)}
+.about{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:start}
+.about figure{margin:0}
+.about img{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:6px;background:#1A2620}
+.about .txt{margin-top:28px}
+.readmore{display:inline-flex;align-items:center;gap:10px;margin-top:32px;font-weight:700;font-size:17px;text-decoration:none;border-bottom:1px solid var(--lime);padding-bottom:4px}
+.readmore span{color:var(--lime);transition:transform .15s}
+.readmore:hover span{transform:translateX(4px)}
 .about blockquote{margin:0;font-weight:700;font-stretch:85%;font-size:clamp(26px,3vw,38px);line-height:1.15;letter-spacing:-.01em}
 .about .by{margin-top:22px;color:var(--muted);font-size:15px}
 .about .by b{color:var(--ink)}
@@ -177,6 +183,7 @@ footer a:hover{color:var(--ink)}
 @media(max-width:900px){
  .hero,.head,.about,.contact,.club{grid-template-columns:minmax(0,1fr)}
  .why li{grid-template-columns:minmax(0,1fr)}
+ .about figure{max-width:280px}
  .drills{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
  .flow{grid-template-columns:minmax(0,1fr)}
  .flow li,.flow li+li{padding:24px 0;border-left:0;border-bottom:1px solid var(--rule)}
@@ -301,13 +308,15 @@ footer a:hover{color:var(--ink)}
 
 <section class="band" id="om">
 <div class="wrap about">
+<figure><img src="bilder/sam-nouman.jpg" srcset="bilder/sam-nouman-480.jpg 480w, bilder/sam-nouman.jpg 800w" sizes="(max-width:900px) 280px, 34vw" width="800" height="1000" loading="lazy" alt="Sam Nouman, grundare av Övningsfabriken"></figure>
 <div>
 <blockquote>”Varför ska varje tränare behöva leta och rita sina övningar själv?”</blockquote>
 <p class="by"><b>Sam Nouman</b>, grundare av Övningsfabriken</p>
-</div>
 <div class="txt">
 <p>Övningsfabriken började med den frågan. Kvällar gick åt till att leta övningar på nätet och rita upplägg på papper som spelarna ändå inte förstod. Varje tränare i klubben gjorde samma jobb, var för sig.</p>
 <p>Appen samlar färdiga övningar med tydliga beskrivningar och animerade videor, så att tiden går till spelarna i stället. Den är byggd av en tränare, för tränare.</p>
+</div>
+<a class="readmore" href="om-sam.html">Läs mer om Sam <span aria-hidden="true">→</span></a>
 </div>
 </div>
 </section>
