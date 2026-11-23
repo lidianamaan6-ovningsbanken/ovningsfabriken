@@ -5,7 +5,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # vilken fil som gjort den film som ligger i appen
 SOURCES = [('render_pilot.py', ['t11', 't57']), ('render_omgang1.py', ['t05', 't08', 't09', 't10']),
            ('render_rattade.py', None), ('render_omgang2.py', None), ('render_omgang3.py', None),
-           ('render_omgang4.py', None), ('render_omgang5.py', None), ('render_extern1.py', None), ('render_extern2.py', None), ('render_extern3.py', None), ('render_extern4.py', None), ('render_extern5.py', None)]
+           ('render_omgang4.py', None), ('render_omgang5.py', None), ('render_extern1.py', None), ('render_extern2.py', None), ('render_extern3.py', None), ('render_extern4.py', None), ('render_extern5.py', None), ('render_extern6.py', None)]
 def load(fn):
     spec = importlib.util.spec_from_file_location('m_' + fn[:-3], os.path.join(HERE, fn))
     m = importlib.util.module_from_spec(spec); a = sys.argv; sys.argv = ['x', 'NONE']; spec.loader.exec_module(m); sys.argv = a
