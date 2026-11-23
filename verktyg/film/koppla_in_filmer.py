@@ -19,3 +19,12 @@ lines = ''.join(f"""  if (b?.id === '{i}') h += '<video class="of-exercise-film"
 s = s[:k] + lines + anchor + ''.join(f"'{i}', " for i in new) + s[k + len(anchor):]
 with open(js, 'w', encoding='utf-8') as fh: fh.write(s)
 print('nya:', len(new), 'totalt filmer i appen:', s[:s.index('])')].count('"'))
+
+# Versionsnummer på kodfilen så att telefoner hämtar den nya versionen direkt
+import hashlib, re
+v = hashlib.sha1(s.encode('utf-8')).hexdigest()[:10]
+for page in [f'{R}/app/app.html']:
+    t = open(page, encoding='utf-8').read()
+    t = re.sub(r'(src="\./assets/app-[0-9a-f]+\.js)(\?v=[0-9a-f]+)?"', r'\1?v=' + v + '"', t)
+    with open(page, 'w', encoding='utf-8') as fh: fh.write(t)
+print('version', v)
