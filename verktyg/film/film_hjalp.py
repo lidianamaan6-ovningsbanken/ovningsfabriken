@@ -21,6 +21,8 @@ def shapes_base(label, shapes):
                 ov = Image.new('RGBA', im.size, (0, 0, 0, 0)); od = ImageDraw.Draw(ov)
                 od.rectangle((*a, *b), fill=col + (70,), outline=col + (200,), width=3); im.paste(ov, (0, 0), ov); d = ImageDraw.Draw(im)
                 if txt: d.text((b[0] - 10, a[1] + 16), txt, font=F(15, True), fill='#e4ecd6', anchor='rm')
+            elif k == 'line':  # linje mellan punkter (t.ex. zongränser)
+                d.line([xy(q) for q in s[1]], fill='#e4ecd6', width=3)
             elif k == 'box':
                 _, x1, y1, x2, y2 = s; a = xy((x1, y1)); b = xy((x2, y2)); d.rounded_rectangle((*a, *b), radius=9, outline='#e4ecd6', width=4)
             elif k == 'ring':
@@ -59,8 +61,9 @@ def frame2(c, t):
         x, y = xy(at(pl['tr'], t)); r = 18
         for k in range(pl.get('tails', lambda t: 0)(t) if callable(pl.get('tails')) else 0):
             d.rectangle((x - 6 + k * 7, y + 12, x + 0 + k * 7, y + 30), fill=YELLOW, outline='#7a5c00')
-        d.ellipse((x - r, y - r, x + r, y + r), fill=pl['color'], outline='#e5efd8', width=2)
-        d.text((x, y), pl['label'], font=F(12, True), fill=('#153b2b' if light(pl['color']) else '#f3f5ef'), anchor='mm')
+        col = pl['color'](t) if callable(pl['color']) else pl['color']   # färg kan bytas vid rollbyte
+        d.ellipse((x - r, y - r, x + r, y + r), fill=col, outline='#e5efd8', width=2)
+        d.text((x, y), pl['label'], font=F(12, True), fill=('#153b2b' if light(col) else '#f3f5ef'), anchor='mm')
     for tr in c['balls']:
         if at(tr, t)[0] > 120 or any(abs(tt - t) < 0.05 and q[0] > 150 for tt, q in tr): continue
         x, y = xy(at(tr, t)); d.ellipse((x - 8, y - 8, x + 8, y + 8), fill='#fffef0', outline='#142d22', width=2); d.regular_polygon((x, y, 3), 5, fill='#162d23', rotation=t * 60)
