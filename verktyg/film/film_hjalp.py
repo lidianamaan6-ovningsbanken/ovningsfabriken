@@ -9,7 +9,8 @@ WHITE = '#f3f5ef'; BLACK = '#1b211e'; YELLOW = '#f2cf45'; ORANGE = '#ff965b'
 
 def shapes_base(label, shapes):
     def mk(c):
-        c = dict(c); c['goals'] = []
+        c = dict(c)
+        if not c.get('keep_goals'): c['goals'] = []
         im = makebase_orig(c); d = ImageDraw.Draw(im)
         d.rectangle((700, 20, 1050, 60), fill='#0a1e17')
         d.text((1040, 44), label, font=F(19, True), fill='#adc5b6', anchor='rm')
@@ -90,3 +91,42 @@ def render(C, argv, thumbs=(1, 4, 7.5, 11, 14.5)):
         for f in range(c['seconds'] * 30): proc.stdin.write(frame2(c, f / 30).tobytes())
         proc.stdin.close(); assert proc.wait() == 0
         print(c['id'], path.name, flush=True)
+
+class Drill:
+    """Bygger en övning steg för steg: spelare, löpningar, passningar och dribblingar."""
+    def __init__(self):
+        self.pl = {}; self.order = []; self.balls = []
+    def p(self, pid, label, color, pos):
+        self.pl[pid] = dict(label=label, color=color, tr=[(0, pos)]); self.order.append(pid)
+    def pos(self, pid):
+        return self.pl[pid]['tr'][-1][1]
+    def mv(self, pid, t0, t1, to):
+        tr = self.pl[pid]['tr']; t0 = max(t0, tr[-1][0]); t1 = max(t1, t0 + 0.05)
+        if t0 > tr[-1][0]: tr.append((t0, tr[-1][1]))
+        tr.append((t1, to))
+    def path(self, pid, t0, pts, speed=1.0):
+        t = t0
+        for q in pts:
+            cx, cy = self.pos(pid); d = ((q[0] - cx) ** 2 + (q[1] - cy) ** 2) ** .5
+            dt = max(0.3, d / 18 / speed); self.mv(pid, t, t + dt, q); t += dt
+        return t
+    def newball(self, pos):
+        self.balls.append([(0, pos)]); return len(self.balls) - 1
+    def bpos(self, b):
+        return self.balls[b][-1][1]
+    def pas(self, b, t0, to, dur=None):
+        tr = self.balls[b]; t0 = max(t0, tr[-1][0])
+        if dur is None:
+            cx, cy = tr[-1][1]; d = ((to[0] - cx) ** 2 + (to[1] - cy) ** 2) ** .5; dur = max(0.45, d / 55)
+        if t0 > tr[-1][0]: tr.append((t0, tr[-1][1]))
+        tr.append((t0 + dur, to)); return t0 + dur
+    def carry(self, b, pid, t0, t1, off=(1.8, -1.2)):
+        tr = self.balls[b]; t = max(t0, tr[-1][0])
+        while t <= t1 + 1e-6:
+            x, y = at(self.pl[pid]['tr'], t); tr.append((t, (x + off[0], y + off[1]))); t = round(t + 0.2, 3)
+    def at_feet(self, pid, t=None, off=(1.8, -1.2)):
+        x, y = self.pos(pid) if t is None else at(self.pl[pid]['tr'], t); return (x + off[0], y + off[1])
+    def players(self):
+        return [dict(label=self.pl[k]['label'], color=self.pl[k]['color'], tr=self.pl[k]['tr']) for k in self.order]
+    def ballset(self):
+        return [b if b[-1][0] >= 18 else b + [(18, b[-1][1])] for b in self.balls]
