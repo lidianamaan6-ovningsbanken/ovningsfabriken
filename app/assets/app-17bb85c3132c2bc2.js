@@ -5088,6 +5088,8 @@ const FITS = (b, n) => n >= b.min && n <= b.max;
 function pickBy(filter, n, avoid, prefer) {
   let c = BANK.filter(b => filter(b) && !avoid.includes(b.id));
   const fit = c.filter(b => FITS(b, n)); if (fit.length) c = fit;
+  const tp = teamProfile();
+  if (tp) { const ok = c.filter(b => profOk(b, tp)); if (ok.length) c = ok; c = c.slice().sort((a, b) => profScore(b, tp) - profScore(a, tp)); }
   if (prefer) { const p = c.filter(prefer); if (p.length) c = p; }
   return c.length ? c[Math.floor(Math.random() * Math.min(c.length, 4))] : null;
 }
@@ -7075,9 +7077,15 @@ function profScore(b, p) {
     if (b.level === 'A') sc += 1; if (b.level === 'C' && ['lek', 'pass'].includes(c)) sc -= 1;
     if (c === 'lek' || /^Lek/.test(ty)) sc -= 4;
   }
+  /* Ålder: övningar gjorda för lagets ålder först, för små barn längre ner för äldre lag */
+  const gap = p.u - minAge;
+  if (gap >= 0 && gap <= 4) sc += 1.5; else if (gap >= 8 && p.u >= 13) sc -= 1.5;
+  if (p.u <= 9 && b.level === 'C') sc += 1; if (p.u >= 14 && b.level === 'A') sc += 0.5;
   return sc;
 }
 const profOk = (b, p) => !p || profScore(b, p) > -3.5;
+/* Det aktiva lagets profil (ålder och spelform), eller null om inget lag är valt */
+function teamProfile() { const t = clubTeam(); return t ? Object.assign(profOfTeam(t), { label: t.name, team: t }) : null; }
 teamScore = function (b) { return profScore(b, profOfTeam(clubTeam())); };
 const SF_ORDER = ['3v3', '5v5', '7v7', '9v9', '11v11'];
 function sfFitList(b) { return SF_ORDER.filter(k => profOk(b, SF_PROF[k])); }
@@ -9032,7 +9040,12 @@ function workspaceTip() {
   const all = BANK.filter(b => OF_FILM_POSTERS[b.id]);
   if (!all.length) return '';
   const fit = all.filter(b => FITS(b, n));
-  const pool = fit.length >= 10 ? fit : all;
+  let pool = fit.length >= 10 ? fit : all;
+  const tp = teamProfile();
+  if (tp) {
+    const ok = pool.filter(b => profOk(b, tp)).sort((a, b) => profScore(b, tp) - profScore(a, tp) || a.id.localeCompare(b.id));
+    if (ok.length >= 6) pool = ok.slice(0, Math.max(6, Math.ceil(ok.length * 0.5)));
+  }
   const day = Math.floor(new Date(todayStr() + 'T12:00').getTime() / 864e5);
   const b = pool[((day * 37 + workspaceTipShift) % pool.length + pool.length) % pool.length];
   const ex = bankToEx(b); const id = esc(ex.id);
@@ -9042,7 +9055,7 @@ function workspaceTip() {
     + '<button type="button" class="of-tip-media" data-a="open" data-id="' + id + '" aria-label="Visa övningen ' + esc(b.name) + '">'
     + '<span class="of-crop"><img data-skydd-src="' + esc(skyddName(OF_FILM_POSTERS[b.id])) + '" alt="" width="720" height="720"></span><span class="of-tip-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span></button>'
     + '<div class="of-tip-body"><span class="of-exercise-stage">' + esc(b.stage || catName(catOf(b))) + '</span>'
-    + '<h3>' + esc(b.name) + '</h3><p>' + range + ' spelare' + (b.ages ? ' · ' + esc(b.ages) : '') + (team ? '' : '') + '</p>'
+    + '<h3>' + esc(b.name) + '</h3><p>' + range + ' spelare' + (b.ages ? ' · ' + esc(b.ages) : '') + (tp ? ' · passar ' + esc(tp.team.name.replace(/^U\d+ – /, '')) : '') + '</p>'
     + '<div class="of-tip-actions"><button type="button" class="btn primary" data-a="open" data-id="' + id + '">Se filmen</button>'
     + '<button type="button" class="btn" data-a="addTo" data-id="' + id + '">Lägg i pass</button></div></div></section>';
 }
@@ -9177,6 +9190,7 @@ Object.assign(A, {
     setTimeout(() => $('#of-focus')?.focus({ preventScroll: true }), 250);
   },
   ofAccount: () => window.OF_KONTO?.open(),
+  workspaceAllAges: el => { ST.workspaceBankAllAges = el.dataset.v === '1'; workspaceBankLimit = BANK_PAGE_SIZE; persist(); render(); },
   workspaceTeamToggle: () => {
     if (window.OF_GRIND?.pickTeam && OF_GRIND.pickTeam()) return;
     const go = () => { const d = $('.of-team-drawer'); if (!d) return; d.open = !d.open; if (d.open) { d.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => d.querySelector('select,a,button:not(summary)')?.focus({ preventScroll: true }), 250); } };
@@ -9267,17 +9281,21 @@ const workspaceBankOptions = (items, selected) => items.map(([key, label]) =>
 
 function workspaceBankCards() {
   const q = (ST.bankQ || '').trim();
-  const profile = bankProf();
+  const profile = ST.workspaceBankAllAges ? null : (teamProfile() || bankProf());
   const category = ST.bankCat || 'all';
   const stage = ST.workspaceBankStage || '';
   const pool = BANK.filter(b => (category === 'all' || catOf(b) === category)
     && (!stage || b.stage === stage)
-    && (!profile || profOk(b, profile))
+    && (!profile || q || profOk(b, profile))
     && (!ST.workspaceBankFit || FITS(b, ST.n))
     && (!ST.bankLand || ST.bankLand === 'all' || landOf(b) === ST.bankLand)
     && (!ST.lpF || [...lpTags(b).fard, ...lpTags(b).spel].includes(ST.lpF)));
   const matches = q ? searchBank(q, pool, pool.length) : pool.sort((a, b) =>
-    Number(FITS(b, ST.n)) - Number(FITS(a, ST.n)) || Number(a.src === 'svb') - Number(b.src === 'svb'));
+    Number(FITS(b, ST.n)) - Number(FITS(a, ST.n)) || (profile ? profScore(b, profile) - profScore(a, profile) : 0) || Number(a.src === 'svb') - Number(b.src === 'svb'));
+  const tpAll = teamProfile();
+  const ageNote = tpAll ? '<div class="of-bank-age">' + (profile
+      ? '<span><b>Anpassat för ' + esc(tpAll.label) + '</b> · ' + esc(sfOf(tpAll.sf)?.[1] || '') + ' · bäst lämpade först</span><button type="button" class="of-text-action" data-a="workspaceAllAges" data-v="1">Visa alla åldrar</button>'
+      : '<span>Visar övningar för alla åldrar</span><button type="button" class="of-text-action" data-a="workspaceAllAges" data-v="0">Anpassa efter ' + esc(tpAll.label) + '</button>') + '</div>' : '';
   const cards = matches.slice(0, workspaceBankLimit).map(b => {
     const exercise = bankToEx(b);
     const id = esc(exercise.id);
@@ -9298,7 +9316,7 @@ function workspaceBankCards() {
       + '<p class="of-exercise-source' + (state === 'reviewed' ? ' of-exercise-reviewed' : '') + '">' + media + '</p>'
       + '<button type="button" class="btn of-exercise-add" data-a="addTo" data-id="' + id + '" aria-label="Lägg till ' + label + ' i pass">Lägg i pass</button></div></article>';
   });
-  return '<p class="of-bank-count" role="status">' + matches.length + (matches.length === 1 ? ' övning' : ' övningar') + '</p>'
+  return ageNote + '<p class="of-bank-count" role="status">' + matches.length + (matches.length === 1 ? ' övning' : ' övningar') + (profile && !q ? ' av ' + BANK.length.toLocaleString('sv-SE') : '') + '</p>'
     + (matches.length ? '<div class="of-bank-grid">' + cards.join('') + '</div>'
       : '<div class="of-card"><h2>Inga övningar matchar</h2><p>Prova ett annat sökord eller välj färre filter.</p>'
         + '<button type="button" class="of-text-action" data-a="workspaceBankReset">Rensa sökning och filter</button></div>')
