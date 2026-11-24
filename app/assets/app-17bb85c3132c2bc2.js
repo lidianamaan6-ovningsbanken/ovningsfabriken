@@ -9106,6 +9106,7 @@ const renderWorkspacePage = render;
 render = function () {
   const app = $('#app');
   if (ST.view === 'dev' && !OF_DEV_ON) ST.view = 'today';
+  if (window.OF_GRIND && !OF_GRIND.allowed(ST.view)) { app.innerHTML = ''; OF_GRIND.show(); return; }
   if (ST.view === 'today' || ST.view === 'tools' || ST.view === 'dev') {
     app.className = 'wrap of-workspace';
     app.innerHTML = ST.view === 'today' ? workspaceToday() : ST.view === 'dev' ? (window.OF_DEV ? OF_DEV.html() : '<p>Laddar …</p>') : workspaceTools();

@@ -13,7 +13,9 @@
   const M = () => window.OF_MOLN;
   const nf = new Intl.NumberFormat('sv-SE');
   const KIND = { sess: 'Pass', match: 'Matcher', mxteam: 'Matchlag', mxform: 'Uppställningar', saved: 'Favoriter', settings: 'Inställningar' };
-  let ping = null, cloud = null, cloudErr = '', searchQ = '';
+  let ping = null, cloud = null, cloudErr = '', searchQ = '', adminClubs = null, adminErr = '', newLink = '';
+  const inviteURL = t => location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
+  const inYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
 
   const card = (title, eyebrow, body, wide) => '<section class="of-home-panel of-dev-card' + (wide ? ' is-wide' : '') + '"><div class="of-panel-head"><div><span class="of-eyebrow">' + eyebrow + '</span><h2>' + title + '</h2></div></div>' + body + '</section>';
   const rows = (pairs) => '<dl class="of-dev-dl">' + pairs.map(([k, v]) => '<div><dt>' + esc(k) + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>';
@@ -72,7 +74,22 @@
     const errs = ERR.length ? '<ul class="of-dev-log">' + ERR.slice(0, 30).map(e => '<li>' + esc(e) + '</li>').join('') + '</ul>' : '<p class="of-muted-note">Inga fel sedan sidan laddades.</p>';
     const mlog = (st.log || []).length ? '<ul class="of-dev-log">' + st.log.slice(0, 30).map(e => '<li>' + esc(e) + '</li>').join('') + '</ul>' : '<p class="of-muted-note">Inget har hänt än.</p>';
 
+    const isAdmin = !!window.OF_ACCESS?.admin;
+    const lic = !st.user ? '<p class="of-muted-note">Logga in med ditt admin-konto för att skapa och hantera klubblicenser.</p>'
+      : !isAdmin ? '<p class="of-muted-note">Ditt konto är inte admin. Kör raden i README (supabase/README.md) för att bli admin.</p>'
+      : '<form class="of-dev-lic" data-devform="club"><label>Klubbens namn<input name="name" required minlength="2" placeholder="t.ex. Järfälla FF"></label>'
+        + '<div class="of-dev-two"><label>Platser<input name="seats" type="number" min="1" max="500" value="6" required></label><label>Gäller till<input name="valid" type="date" value="' + inYear() + '" required></label></div>'
+        + '<button class="btn primary" type="submit">Skapa klubb och ägarlänk</button></form>'
+        + (newLink ? '<div class="of-dev-link"><span class="of-eyebrow">Skicka till klubbens ansvariga</span><code>' + esc(newLink) + '</code><button class="btn" data-dev="copy" data-url="' + esc(newLink) + '">Kopiera länk</button></div>' : '')
+        + (adminErr ? '<p class="of-konto-msg">' + esc(adminErr) + '</p>' : '')
+        + (adminClubs ? (adminClubs.length ? '<table class="of-dev-table"><thead><tr><th>Klubb</th><th>Platser</th><th>Till</th></tr></thead><tbody>' + adminClubs.map(c =>
+          '<tr><td><b>' + esc(c.name) + '</b><br><small class="of-muted-note">' + (c.owners.length ? esc(c.owners.join(', ')) : 'Ingen ansvarig än') + '</small><br>'
+          + '<button class="of-text-action" data-dev="ownerlink" data-id="' + c.id + '">Ny ägarlänk</button> · <button class="of-text-action" data-dev="extend" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">+1 år</button> · <button class="of-text-action" data-dev="seats" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">Ändra platser</button></td>'
+          + '<td>' + c.members + ' / ' + c.seats + '</td><td' + (c.valid_until < new Date().toISOString().slice(0, 10) ? ' class="of-dev-danger"' : '') + '>' + esc(c.valid_until) + '</td></tr>').join('') + '</tbody></table>'
+          : '<p class="of-muted-note">Inga klubbar än.</p>') : '<p class="of-muted-note">Hämtar klubbar …</p>');
+
     return top + '<div class="of-home2 of-dev">' + '<div class="of-dev-grid">'
+      + card('Licenser', 'Admin', lic, true)
       + card('Molnet', 'Supabase', moln) + card('Versioner', 'Bygget', version)
       + card('Lokal data', 'Den här enheten', lokal) + card('Tema', 'Utseende', tema)
       + card('Söktest', 'Övningsbanken', search) + card('Filmtäckning', 'Övningsbanken', tack)
@@ -92,6 +109,10 @@
     if (!M()) return;
     try { ping = await M().ping(); } catch (e) { ping = { ok: false, error: e.message }; }
     try { cloud = await M().cloudCounts(); cloudErr = ''; } catch (e) { cloudErr = e.message; }
+    if (M().state.user) {
+      try { window.OF_ACCESS = await M().rpc('my_access'); } catch (e) { }
+      if (window.OF_ACCESS?.admin) { try { adminClubs = await M().rpc('admin_clubs'); adminErr = ''; } catch (e) { adminErr = e.message; } }
+    }
     rerender();
   }
   function rerender() {
@@ -108,9 +129,26 @@
     if (!ping) refreshRemote();
     if (bound) return; bound = true;
     document.addEventListener('input', e => { if (e.target.id === 'of-dev-q') { searchQ = e.target.value; runSearch(); } });
+    document.addEventListener('submit', async e => {
+      const f = e.target; if (f.dataset.devform !== 'club') return; e.preventDefault();
+      try {
+        const r = await M().rpc('admin_create_club', { club_name: f.elements.name.value, seat_count: Number(f.elements.seats.value), valid: f.elements.valid.value });
+        newLink = inviteURL(r.token); adminClubs = await M().rpc('admin_clubs'); adminErr = '';
+      } catch (err) { adminErr = err.message; }
+      rerender();
+    });
     document.addEventListener('click', async e => {
       const b = e.target.closest('[data-dev]'); if (!b) return;
       const a = b.dataset.dev; const T = g('toast') || alert;
+      if (a === 'copy') { try { await navigator.clipboard.writeText(b.dataset.url); T('Länken är kopierad'); } catch (err) { prompt('Kopiera länken:', b.dataset.url); } }
+      if (a === 'ownerlink') { try { newLink = inviteURL(await M().rpc('admin_owner_link', { cid: b.dataset.id })); } catch (err) { adminErr = err.message; } rerender(); }
+      if (a === 'extend' || a === 'seats') {
+        let seats = Number(b.dataset.seats), valid = b.dataset.valid;
+        if (a === 'extend') { const d = new Date(Math.max(Date.now(), new Date(valid).getTime())); d.setFullYear(d.getFullYear() + 1); valid = d.toISOString().slice(0, 10); }
+        else { const v = prompt('Antal platser:', seats); if (!v) return; seats = Number(v); }
+        try { await M().rpc('admin_set_license', { cid: b.dataset.id, seat_count: seats, valid }); adminClubs = await M().rpc('admin_clubs'); } catch (err) { adminErr = err.message; }
+        rerender();
+      }
       if (a === 'sync') { await M().pull(false); await M().push(); refreshRemote(); T('Synkat'); }
       if (a === 'resync') { await M().resetSync(); refreshRemote(); T('Full omsynk klar'); }
       if (a === 'theme') { const v = b.dataset.v; if (v === 'system') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v; rerender(); }

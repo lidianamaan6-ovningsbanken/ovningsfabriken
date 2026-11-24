@@ -8,7 +8,7 @@
 if(t&&/^[a-z0-9-]{1,40}$/i.test(t)){var m=document.createElement('meta');m.name='of-team';m.content=t;document.head.appendChild(m);}
 else if(q.get('utan-lag')!=='1'){
 var dev=q.get('utvecklare')==='1';try{dev=dev||(q.get('utvecklare')!=='0'&&localStorage.getItem('of-utvecklare')==='1');}catch(e){}
-var auth=/access_token=|error_description=|[?&]code=/.test(location.hash+location.search);
+var auth=/access_token=|error_description=|[?&]code=|[?&]inbjudan=/.test(location.hash+location.search);
 if(!dev&&!auth){location.replace('index.html');}}})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1039,7 +1039,10 @@ html,body{overflow-x:clip}
 .wl>.btn.big{position:sticky;bottom:0;box-shadow:0 -10px 20px var(--bg)}
 </style>
 
-<link rel="stylesheet" href="./workspace.css?v=32">
+<link rel="stylesheet" href="./workspace.css?v=33">
+<link rel="stylesheet" href="./grind.css?v=2">
+<script>try{var c=JSON.parse(localStorage.getItem('of-tillgang')||'null');if(!(c&&c.ok&&Date.now()-c.at<6048e5)||/[?&]inbjudan=/.test(location.search))document.documentElement.classList.add('of-grind-on')}catch(e){document.documentElement.classList.add('of-grind-on')}</script>
+
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="./assets/ovningsfabriken-32.png">
 <link rel="apple-touch-icon" href="./icon-192.png?v=2">
@@ -1054,10 +1057,11 @@ html,body{overflow-x:clip}
 <script src="./stockholm-p2009.js" defer></script>
 <script src="./lagkatalog.js" defer></script>
 <script src="./assets/vendor/supabase.js?v=2" defer></script>
-<script src="./assets/moln.js?v=2" defer></script>
-<script src="./assets/konto.js?v=2" defer></script>
-<script src="./assets/utvecklare.js?v=1" defer></script>
-<script src="./assets/app-17bb85c3132c2bc2.js?v=moln2" defer></script>
+<script src="./assets/moln.js?v=3" defer></script>
+<script src="./assets/konto.js?v=3" defer></script>
+<script src="./assets/grind.js?v=1" defer></script>
+<script src="./assets/utvecklare.js?v=2" defer></script>
+<script src="./assets/app-17bb85c3132c2bc2.js?v=grind1" defer></script>
 <style>
 .attend-dialog{width:min(520px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;color:var(--ink);background:var(--surface)}
 .attend-dialog::backdrop{background:rgba(0,0,0,.55)}

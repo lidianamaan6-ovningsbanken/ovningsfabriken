@@ -27,7 +27,10 @@ Sams riktiga app (v61) ligger i `app/`, utan server: `index.html` = lagval, `app
 - [x] Inloggning med e-postlänk (valfri – appen fungerar som förut utan konto)
 - [x] Molnsynk av pass, matcher, favoriter och inställningar (tabell `coach_items`, migrering 0005). Fungerar mellan enheter, senast ändrade vinner.
 - [x] Utvecklarfliken: slås på med `app.html?utvecklare=1` (av med `?utvecklare=0`). Kräver ingen inloggning.
-- [ ] Testa inloggningen på riktigt med egen e-post (mejlet går bara att klicka i av en människa)
+- [x] Inloggning krävs i appen (lösenord + inbjudningslänk), klubbar med licens och platser (migrering 0006)
+- [ ] Sam: stäng av "Confirm email" i Supabase och gör sitt konto till admin (se supabase/README.md)
+- [ ] Flytta övningarna bakom databasens säkerhetsregler (i dag ligger de i appens JS-fil, så grinden stoppar bara vanliga besökare)
+- [ ] Betalning (Stripe) så att klubbar kan köpa licens själva
 - [ ] Koppla Resend: Supabase skickar bara 2 inloggningsmejl i timmen utan egen e-posttjänst
 
 ### Backend (påbörjad i app-ny/)

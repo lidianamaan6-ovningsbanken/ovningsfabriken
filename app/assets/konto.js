@@ -44,7 +44,45 @@
       + (st.lastError && st.status === 'fel' ? '<p class="of-konto-msg">' + esc(st.lastError) + '</p>' : '')
       + '<div class="of-konto-actions"><button type="button" class="btn" data-konto="sync">Synka nu</button>'
       + '<button type="button" class="of-text-action" data-konto="out">Logga ut</button></div>'
-      + '<p class="of-konto-note">Loggar du ut finns dina pass kvar på den här enheten.</p>';
+      + '<div id="of-klubb" class="of-klubb">' + (clubCache || '<p class="of-konto-note">Hämtar klubb …</p>') + '</div>'
+      + '<details class="of-konto-pass"><summary>Byt lösenord</summary><form data-konto="pass" class="of-konto-form"><label for="of-nytt-pass">Nytt lösenord</label>'
+      + '<input id="of-nytt-pass" name="password" type="password" minlength="8" autocomplete="new-password" required><button class="btn" type="submit">Spara lösenord</button></form></details>';
+  }
+
+  /* ---------- Klubben: kollegor och inbjudningar ---------- */
+  let clubCache = '';
+  const inviteURL = t => location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
+  async function loadClub() {
+    const box = document.getElementById('of-klubb'); if (!box || !M()?.state.user) return;
+    let a; try { a = await M().rpc('my_access'); window.OF_ACCESS = a; } catch (e) { box.innerHTML = '<p class="of-konto-msg">' + esc(e.message) + '</p>'; return; }
+    const clubs = a?.clubs || [];
+    if (!clubs.length) { clubCache = '<h3>Klubb</h3><p class="of-konto-note">' + (a?.admin ? 'Du är admin men inte med i någon klubb.' : 'Kontot är inte kopplat till någon klubb.') + '</p>'; box.innerHTML = clubCache; return; }
+    let h = '';
+    for (const c of clubs) {
+      h += '<section class="of-klubb-c"><div class="of-klubb-top"><div><span class="of-eyebrow">' + (c.role === 'owner' ? 'Du är ansvarig' : 'Tränare') + '</span><h3>' + esc(c.name) + '</h3></div>'
+        + '<span class="of-klubb-seats"><b>' + c.used + '</b> / ' + c.seats + ' platser</span></div>'
+        + '<p class="of-konto-note">' + (c.active ? 'Licensen gäller till ' + esc(c.valid_until) : 'Licensen gick ut ' + esc(c.valid_until)) + '</p>';
+      const { data: members } = await M().sb.from('club_members').select('user_id,email,role,joined_at').eq('club_id', c.id).order('joined_at');
+      const me = M().state.user.id;
+      h += '<ul class="of-klubb-list">' + (members || []).map(m => '<li><span class="of-acc-ic is-in sm">' + esc((m.email || '?').slice(0, 1).toUpperCase()) + '</span><span class="grow">' + esc(m.email || 'Okänd') + (m.user_id === me ? ' <small>(du)</small>' : '') + '<small>' + (m.role === 'owner' ? 'Ansvarig' : 'Tränare') + '</small></span>'
+        + (c.role === 'owner' && m.role !== 'owner' ? '<button type="button" class="of-text-action" data-konto="remove" data-club="' + c.id + '" data-user="' + m.user_id + '" data-name="' + esc(m.email) + '">Ta bort</button>' : '') + '</li>').join('') + '</ul>';
+      if (c.role === 'owner') {
+        const { data: inv } = await M().sb.from('club_invites').select('token,label,role,expires_at,created_at').eq('club_id', c.id).is('used_by', null).eq('revoked', false).gt('expires_at', new Date().toISOString()).order('created_at');
+        h += (inv?.length ? '<h4>Väntar på att gå med</h4><ul class="of-klubb-list">' + inv.map(i => '<li><span class="grow">' + esc(i.label || 'Inbjudan') + '<small>Gäller till ' + esc(i.expires_at.slice(0, 10)) + '</small></span>'
+          + '<button type="button" class="of-text-action" data-konto="copy" data-url="' + esc(inviteURL(i.token)) + '">Kopiera länk</button>'
+          + '<button type="button" class="of-text-action" data-konto="revoke" data-token="' + esc(i.token) + '">Ta bort</button></li>').join('') + '</ul>' : '')
+          + (c.active && c.used < c.seats ? '<form class="of-konto-form of-klubb-inv" data-konto="invite" data-club="' + c.id + '"><label for="of-inv-' + c.id + '">Bjud in en kollega</label>'
+            + '<div class="of-klubb-row"><input id="of-inv-' + c.id + '" name="label" placeholder="Namn, t.ex. Anna (valfritt)" maxlength="80"><button class="btn primary" type="submit">Skapa länk</button></div></form>'
+            : '<p class="of-konto-note">' + (c.active ? 'Alla platser är använda. Ta bort någon eller kontakta Övningsfabriken för fler platser.' : '') + '</p>');
+      }
+      h += '</section>';
+    }
+    clubCache = h; box.innerHTML = h;
+  }
+  async function copy(url) {
+    try { if (navigator.share && /Mobi/i.test(navigator.userAgent)) { await navigator.share({ title: 'Inbjudan till Övningsfabriken', url }); return; } } catch (e) { }
+    try { await navigator.clipboard.writeText(url); (window.toast || alert)('Länken är kopierad. Skicka den till din kollega.'); }
+    catch (e) { prompt('Kopiera länken och skicka den till din kollega:', url); }
   }
 
   function open() {
@@ -57,10 +95,25 @@
         const a = e.target.closest('[data-konto]')?.dataset.konto;
         if (a === 'close') d.close();
         if (a === 'sync') { await M().pull(false); await M().push(); d.innerHTML = dialogHTML(); }
-        if (a === 'out') { await M().signOut(); d.innerHTML = dialogHTML(); }
+        if (a === 'out') { await M().signOut(); clubCache = ''; d.close(); }
+        if (a === 'copy') copy(e.target.closest('[data-url]').dataset.url);
+        if (a === 'revoke') { const t = e.target.closest('[data-token]').dataset.token; if (confirm('Ta bort inbjudan? Länken slutar fungera.')) { try { await M().rpc('revoke_invite', { invite_token: t }); } catch (err) { alert(err.message); } loadClub(); } }
+        if (a === 'remove') { const b = e.target.closest('[data-user]'); if (confirm('Ta bort ' + b.dataset.name + ' från klubben? Platsen blir ledig.')) { try { await M().rpc('remove_member', { cid: b.dataset.club, member: b.dataset.user }); } catch (err) { alert(err.message); } loadClub(); } }
       });
       d.addEventListener('submit', async e => {
         e.preventDefault();
+        const kind = e.target.dataset.konto;
+        if (kind === 'invite') {
+          const btn = e.target.querySelector('button'); btn.disabled = true;
+          try { const t = await M().rpc('create_invite', { cid: e.target.dataset.club, invite_label: e.target.elements.label.value }); await loadClub(); copy(inviteURL(t)); }
+          catch (err) { alert(err.message); btn.disabled = false; }
+          return;
+        }
+        if (kind === 'pass') {
+          try { await M().setPassword(e.target.elements.password.value); (window.toast || alert)('Lösenordet är sparat'); e.target.reset(); e.target.closest('details').open = false; }
+          catch (err) { alert(err.message); }
+          return;
+        }
         const email = e.target.elements.email.value.trim(); const btn = e.target.querySelector('button');
         btn.disabled = true; btn.textContent = 'Skickar …';
         try {
@@ -74,6 +127,7 @@
     }
     d.innerHTML = dialogHTML();
     d.showModal();
+    loadClub();
     d.querySelector('input, [data-konto="sync"]')?.focus();
   }
 

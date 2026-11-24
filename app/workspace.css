@@ -679,3 +679,29 @@ i.pass { background:#3f8a5f; } i.done { background:#a9b9ad; } i.match { backgrou
 .of-acc-ic { position:relative; display:grid; place-items:center; width:34px; height:34px; flex:0 0 34px; border-radius:50%; background:var(--lux-lime); color:#10261c; font-weight:800; font-size:15px; }
 .of-acc-ic.is-in { background:linear-gradient(145deg,#ead3a0,#b8924a); color:#1a2a20; }
 .of-acc-ic .of-acc-dot { position:absolute; right:-1px; bottom:-1px; border:2px solid var(--of-nav); width:11px; height:11px; flex:none; box-shadow:none; }
+/* Klubben i kontorutan */
+.of-konto { width:min(560px,calc(100% - 24px)); max-height:calc(100dvh - 32px); overflow:auto; }
+.of-klubb { margin-top:22px; border-top:1px solid var(--line); padding-top:6px; }
+.of-klubb h3 { font-family:var(--lux-serif); font-weight:500; font-size:22px; margin-top:3px; }
+.of-klubb h4 { margin:16px 0 6px; font-size:13px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+.of-klubb-c { padding-top:14px; }
+.of-klubb-top { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
+.of-klubb-seats { font-size:14px; color:var(--muted); white-space:nowrap; } .of-klubb-seats b { font-family:var(--lux-serif); font-size:22px; color:var(--ink); }
+.of-klubb-list { list-style:none; margin:10px 0 0; padding:0; display:grid; gap:2px; }
+.of-klubb-list li { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+.of-klubb-list .grow { flex:1; min-width:0; overflow-wrap:anywhere; font-size:14px; font-weight:600; }
+.of-klubb-list small { display:block; color:var(--muted); font-weight:500; font-size:12px; }
+.of-klubb-list .of-text-action { font-size:13px; white-space:nowrap; }
+.of-acc-ic.sm { width:28px; height:28px; flex-basis:28px; font-size:12px; }
+.of-klubb-row { display:flex; gap:8px; } .of-klubb-row input { flex:1; min-width:0; } .of-klubb-row .btn { margin:0; white-space:nowrap; }
+.of-klubb-inv { margin-top:16px; }
+.of-konto-pass { margin-top:20px; font-size:14px; } .of-konto-pass summary { cursor:pointer; font-weight:700; }
+.of-dev-card.is-wide { grid-column:1/-1; }
+.of-dev-lic { display:grid; gap:12px; max-width:560px; }
+.of-dev-lic label { display:grid; gap:6px; font-weight:700; font-size:14px; }
+.of-dev-lic input { min-height:46px; padding:0 13px; border:1px solid var(--line); border-radius:12px; font:inherit; font-size:16px; background:var(--surface); color:var(--ink); }
+.of-dev-lic .btn { justify-self:start; border-radius:999px; min-height:46px; padding-inline:22px; }
+.of-dev-two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.of-dev-link { display:grid; gap:8px; margin-top:16px; padding:16px; border-radius:16px; background:var(--accent-soft); }
+.of-dev-link code { font-size:12.5px; overflow-wrap:anywhere; }
+.of-dev-link .btn { justify-self:start; border-radius:999px; }

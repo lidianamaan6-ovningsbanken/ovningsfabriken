@@ -161,11 +161,43 @@
   async function signOut() {
     await push().catch(() => { });
     await sb.auth.signOut();
+    clearLocal();
+    try { localStorage.removeItem('of-moln-owner'); } catch (e) { }
+  }
+  async function signInPassword(email, password) {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error; return data;
+  }
+  async function signUp(email, password) {
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if (error) throw error; return data;
+  }
+  async function setPassword(password) {
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) throw error;
+  }
+  async function rpc(fn, args) {
+    const { data, error } = await sb.rpc(fn, args || {});
+    if (error) throw error; return data;
+  }
+  /* Tömmer tränardata på enheten (används vid utloggning och när en annan tränare loggar in) */
+  function clearLocal() {
+    const SESS = g('SESS'), MX = g('MX'), SAVED = g('SAVED');
+    [SESS, MX?.matches, MX?.teams, MX?.forms, SAVED].forEach(o => { if (o) Object.keys(o).forEach(k => delete o[k]); });
+    quiet = true;
+    try { g('persist')?.(); localStorage.setItem(g('LS_S'), '{}'); localStorage.setItem(g('LS_M'), JSON.stringify(g('MX') || {})); } catch (e) { }
+    quiet = false;
+    try { g('render')?.(); } catch (e) { }
   }
   function setUser(user) {
     const before = state.user?.id; state.user = user || null;
     if (state.user?.id === before) return;
     synced = state.user ? readJSON('synced', {}) : {};
+    if (state.user) {
+      let owner = null; try { owner = localStorage.getItem('of-moln-owner'); } catch (e) { }
+      if (owner && owner !== state.user.id) { clearLocal(); log('Ny tränare på enheten – tidigare data rensad lokalt'); }
+      try { localStorage.setItem('of-moln-owner', state.user.id); } catch (e) { }
+    }
     if (state.user && localStorage.getItem(skey('settingsSig')) === null) { try { localStorage.setItem(skey('settingsSig'), settingsSig()); } catch (e) { } }
     state.status = state.user ? 'ansluter' : 'av';
     log(state.user ? 'Inloggad som ' + state.user.email : 'Utloggad');
@@ -192,7 +224,7 @@
   }
 
   window.OF_MOLN = {
-    state, ready, signIn, signOut, push, pull, ping, cloudCounts, changedLocally, collections,
+    state, ready, signIn, signOut, signInPassword, signUp, setPassword, rpc, sb, push, pull, ping, cloudCounts, changedLocally, collections,
     on: (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
     resetSync: () => { synced = {}; writeJSON('synced', {}); writeJSON('pulledAt', null); return pull(true); },
   };
