@@ -1,12 +1,12 @@
 /* Inloggningsgrind */
 html.of-grind-on, html.of-grind-on body { overflow:hidden; }
 html.of-grind-on #nav-root, html.of-grind-on #app, html.of-grind-on body > main, html.of-grind-on body > .lagval { visibility:hidden; }
-.of-grind { position:fixed; inset:0; z-index:5000; display:grid; place-items:center; padding:24px; overflow:auto;
+.of-grind { position:fixed; inset:0; z-index:5000; display:flex; padding:24px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
   background:radial-gradient(120% 90% at 0% 0%, #1c4334 0%, #0c1f17 55%, #08150f 100%); font-family:"DM Sans",system-ui,sans-serif; color:#13221b; }
 .of-grind[hidden] { display:none; }
 .of-grind .of-eyebrow { display:block; color:#b8924a; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
 .of-grind-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); width:min(980px,100%); min-height:560px; border-radius:28px; overflow:hidden;
-  background:#f7f5ef; box-shadow:0 40px 100px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(217,189,132,.25); }
+  margin:auto; flex:none; background:#f7f5ef; box-shadow:0 40px 100px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(217,189,132,.25); }
 .of-grind-side { position:relative; display:flex; align-items:flex-end; padding:36px; color:#fff;
   background:linear-gradient(180deg,rgba(8,21,15,.15) 0%,rgba(8,21,15,.85) 100%),url("./assets/traningsplan-kvall.webp") center/cover #163026; }
 .of-grind-side .of-grind-logo { width:200px; height:auto; }
@@ -40,10 +40,10 @@ html.of-grind-on #nav-root, html.of-grind-on #app, html.of-grind-on body > main,
 @keyframes of-spin { to { transform:rotate(360deg); } }
 .of-grind-dev { align-self:flex-start; margin-top:26px; border:1px dashed #b8924a; border-radius:999px; background:none; padding:8px 14px; color:#7a5f2c; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
 @media (max-width:760px) {
-  .of-grind { padding:0; place-items:stretch; }
-  .of-grind-card { grid-template-columns:1fr; min-height:100%; border-radius:0; }
+  .of-grind { padding:0; display:block; }
+  .of-grind-card { display:block; width:100%; min-height:100%; margin:0; border-radius:0; overflow:visible; }
   .of-grind-side { display:none; }
-  .of-grind-main { padding:28px 22px 40px; justify-content:flex-start; }
+  .of-grind-main { padding:28px 22px calc(48px + env(safe-area-inset-bottom,0px)); justify-content:flex-start; }
   .of-grind-mobile-logo { display:block; margin:-28px -22px 26px; padding:22px; background:linear-gradient(180deg,rgba(8,21,15,.35),rgba(8,21,15,.85)),url("./assets/traningsplan-kvall.webp") center/cover #163026; }
   .of-grind-mobile-logo .of-grind-logo { width:170px; height:auto; }
   .of-grind h1 { font-size:34px; }
