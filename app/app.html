@@ -5,12 +5,8 @@
 <meta name="of-open" content="1">
 <meta name="of-app" content="app-17bb85c3132c2bc2.js?v=klubb1">
 <script>
-(function(){var q=new URLSearchParams(location.search),t=q.get('team');
-if(t&&/^[a-z0-9-]{1,40}$/i.test(t)){var m=document.createElement('meta');m.name='of-team';m.content=t;document.head.appendChild(m);}
-else if(q.get('utan-lag')!=='1'){
-var dev=q.get('utvecklare')==='1';try{dev=dev||(q.get('utvecklare')!=='0'&&localStorage.getItem('of-utvecklare')==='1');}catch(e){}
-var auth=/access_token=|error_description=|[?&]code=|[?&]inbjudan=/.test(location.hash+location.search);
-if(!dev&&!auth){var k=q.get('klubb');location.replace('index.html'+(k&&/^[a-z0-9-]{2,30}$/.test(k)?'?klubb='+k:''));}}})();
+/* Laget kommer från kontot. Gamla adresser med ?team= eller ?utan-lag städas bort. */
+(function(){try{var u=new URL(location.href);if(u.searchParams.has('team')||u.searchParams.has('utan-lag')){u.searchParams.delete('team');u.searchParams.delete('utan-lag');history.replaceState(null,'',u.toString());}}catch(e){}})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

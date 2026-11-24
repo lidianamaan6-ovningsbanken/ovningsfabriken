@@ -1,56 +1,23 @@
 <!doctype html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#122820">
-  <title>Välj lag · Övningsfabriken</title>
-  <link rel="icon" href="assets/ovningsfabriken-32.png">
-  <link rel="apple-touch-icon" href="icon-192.png?v=2">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="lagval.css">
-  <script src="lagkatalog.js" defer></script>
-  <script src="lagval.js" defer></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500&amp;display=swap">
-  <link rel="stylesheet" href="grind.css?v=6">
-<script>try{var c=JSON.parse(localStorage.getItem('of-tillgang')||'null');if(!(c&&c.ok&&Date.now()-c.at<6048e5)||/[?&]inbjudan=/.test(location.search))document.documentElement.classList.add('of-grind-on')}catch(e){document.documentElement.classList.add('of-grind-on')}</script>
-
-  <script src="assets/vendor/supabase.js?v=2" defer></script>
-  <script src="assets/moln.js?v=5" defer></script>
-  <script src="assets/grind.js?v=6" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Övningsfabriken</title>
+<meta name="theme-color" content="#102820">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/ovningsfabriken-32.png">
+<link rel="apple-touch-icon" href="./icon-192.png?v=2">
+<script>
+/* Klubb och lag kommer nu från kontot, så den gamla lagvalssidan behövs inte.
+   Allt skickas vidare till appen, som visar inloggning, klubbens startbild och lagval. */
+(function () {
+  var q = new URLSearchParams(location.search), out = new URLSearchParams();
+  ['klubb', 'inbjudan', 'utvecklare'].forEach(function (k) { if (q.get(k)) out.set(k, q.get(k)); });
+  location.replace('app.html' + (out.toString() ? '?' + out.toString() : '') + location.hash);
+})();
+</script>
+<style>body{margin:0;background:#102820}</style>
 </head>
-<body>
-<script>(function(){try{var q=location.search;if(/[?&]inbjudan=/.test(q))return;var b=JSON.parse(localStorage.getItem('of-klubb')||'null');if(!b||!b.crest)return;
-var c=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#16392b',d=document.createElement('div');d.id='of-splash';d.setAttribute('aria-hidden','true');
-d.style.cssText='position:fixed;inset:0;z-index:9000;display:grid;place-items:center;transition:opacity .45s ease;background:radial-gradient(120% 80% at 50% 35%,'+c+' 0%,'+c+' 45%,rgba(0,0,0,.28) 100%),'+c;
-var i=new Image();i.src=b.crest;i.alt='';i.style.cssText='width:min(54vw,260px);height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))';d.appendChild(i);
-document.body.appendChild(d);window.OF_SPLASH_AT=Date.now();var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',c);
-setTimeout(function(){if(d.parentNode){d.style.opacity='0';setTimeout(function(){d.remove()},500)}},5000);}catch(e){}})();</script>
-  <main class="login-shell">
-    <header class="login-cover">
-      <p class="login-brand"><img src="assets/ovningsfabriken-logo-light.svg" width="280" height="92" alt="Övningsfabriken"></p>
-      <div><h1>Välkommen till Övningsfabriken</h1><p>Välj din klubb och ditt lag för att börja planera.</p></div>
-    </header>
-    <section class="login-card" aria-labelledby="login-step">
-      <button class="login-back" type="button" hidden>Tillbaka till klubbar</button>
-      <h2 id="login-step" tabindex="-1">Välj din klubb</h2>
-      <div id="login-clubs">
-        <label for="club-search">Sök klubb</label>
-        <input type="search" id="club-search" placeholder="Exempelvis Järfälla eller Sollentuna" autocomplete="off">
-        <ul class="login-clubs" aria-label="Klubbar"></ul>
-        <p id="login-empty" role="status" hidden>Ingen klubb matchar din sökning.</p>
-      </div>
-      <form id="login-form" method="get" action="app.html" hidden>
-        <label for="login-team">Lag</label>
-        <select id="login-team" name="team" required></select>
-        <p class="login-help">Dina ändringar sparas i den här webbläsaren.</p>
-        <button class="login-submit" type="submit">Öppna appen</button>
-      </form>
-      
-      <p class="entry-skip"><a href="app.html?utan-lag=1">Fortsätt utan lag</a></p>
-      <noscript><p>Aktivera JavaScript för att kunna välja ditt lag.</p></noscript>
-    </section>
-  </main>
-</body>
+<body><noscript><a href="app.html">Öppna Övningsfabriken</a></noscript></body>
 </html>
