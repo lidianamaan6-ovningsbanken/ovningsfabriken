@@ -6,7 +6,10 @@
 <script>
 (function(){var q=new URLSearchParams(location.search),t=q.get('team');
 if(t&&/^[a-z0-9-]{1,40}$/i.test(t)){var m=document.createElement('meta');m.name='of-team';m.content=t;document.head.appendChild(m);}
-else if(q.get('utan-lag')!=='1'){location.replace('index.html');}})();
+else if(q.get('utan-lag')!=='1'){
+var dev=q.get('utvecklare')==='1';try{dev=dev||(q.get('utvecklare')!=='0'&&localStorage.getItem('of-utvecklare')==='1');}catch(e){}
+var auth=/access_token=|error_description=|[?&]code=/.test(location.hash+location.search);
+if(!dev&&!auth){location.replace('index.html');}}})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1051,10 +1054,10 @@ html,body{overflow-x:clip}
 <script src="./stockholm-p2009.js" defer></script>
 <script src="./lagkatalog.js" defer></script>
 <script src="./assets/vendor/supabase.js?v=2" defer></script>
-<script src="./assets/moln.js?v=1" defer></script>
+<script src="./assets/moln.js?v=2" defer></script>
 <script src="./assets/konto.js?v=1" defer></script>
 <script src="./assets/utvecklare.js?v=1" defer></script>
-<script src="./assets/app-17bb85c3132c2bc2.js?v=moln1" defer></script>
+<script src="./assets/app-17bb85c3132c2bc2.js?v=moln2" defer></script>
 <style>
 .attend-dialog{width:min(520px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;color:var(--ink);background:var(--surface)}
 .attend-dialog::backdrop{background:rgba(0,0,0,.55)}

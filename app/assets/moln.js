@@ -151,7 +151,9 @@
 
   /* ---------- Inloggning ---------- */
   async function signIn(email) {
-    const redirect = location.origin + location.pathname;
+    const q = new URLSearchParams(location.search); q.delete('utvecklare');
+    if (!q.get('team') && q.get('utan-lag') !== '1') q.set('utan-lag', '1');
+    const redirect = location.origin + location.pathname + '?' + q.toString();
     const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: redirect, shouldCreateUser: true } });
     if (error) throw error;
     log('Inloggningslänk skickad');
