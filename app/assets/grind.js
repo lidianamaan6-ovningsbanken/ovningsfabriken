@@ -93,7 +93,7 @@
       body = '<span class="of-eyebrow">' + esc(c?.name || 'Klubben') + '</span><h1>' + (st.teamMode === 'change' ? 'Dina lag' : 'Vilket lag tränar du?') + '</h1>'
         + '<p class="of-grind-lead">' + (st.teamMode === 'change' ? 'Välj de lag du tränar. Det första blir ditt aktiva lag.' : 'Välj ditt lag så anpassas pass, övningar och läroplan efter åldern. Du kan välja flera.') + '</p>'
         + '<form class="of-grind-form" data-g="team"><label for="g-name">Ditt förnamn</label><input id="g-name" name="name" autocomplete="given-name" maxlength="40" value="' + esc(name) + '" placeholder="Så hälsar appen på dig">'
-        + (st.teamMode === 'change' ? '<label for="g-active">Aktivt lag i appen</label><select id="g-active" name="active" class="of-grind-select">' + teams.map(t => '<option value="' + esc(t.id) + '"' + (t.id === (g('ST')?.team || st.picked[0]) ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('') + '</select>' : '')
+        + (st.teamMode === 'change' && st.picked.length > 1 ? '<label for="g-active">Aktivt lag i appen</label><select id="g-active" name="active" class="of-grind-select">' + teams.filter(t => st.picked.includes(t.id)).map(t => '<option value="' + esc(t.id) + '"' + (t.id === st.picked[0] ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('') + '</select><small class="of-grind-hint">Lagen du kryssar i nedan sparas. Det aktiva laget måste vara ikryssat.</small>' : '')
         + Object.entries(groups).map(([grp, list]) => '<fieldset class="of-grind-teams"><legend>' + esc(grp) + '</legend>' + list.map(t =>
           '<label class="of-grind-team"><input type="checkbox" name="team" value="' + esc(t.id) + '"' + (st.picked.includes(t.id) ? ' checked' : '') + '><span>' + esc(t.name) + '</span></label>').join('') + '</fieldset>').join('')
         + '<button class="of-grind-btn" type="submit"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Sparar …' : st.teamMode === 'change' ? 'Spara' : 'Spara och fortsätt') + '</button></form>' + msg
@@ -223,13 +223,14 @@
       try {
         const c = st.teamClub;
         // aktivt lag först: behåll nuvarande om det fortfarande är valt
-        const act = f.elements.active?.value; if (act && !ids.includes(act)) ids.unshift(act);
-        const cur = act || g('ST')?.team; const ordered = cur && ids.includes(cur) ? [cur, ...ids.filter(i => i !== cur)] : ids;
+        const act = f.elements.active?.value;
+        const cur = act && ids.includes(act) ? act : (st.teamMode === 'change' && st.picked[0] && ids.includes(st.picked[0]) ? st.picked[0] : null);
+        const ordered = cur ? [cur, ...ids.filter(i => i !== cur)] : ids;
         await M().rpc('set_my_teams', { cid: c.id, team_ids: ordered });
         if (name !== (M().state.user?.user_metadata?.name || '')) await M().sb.auth.updateUser({ data: { name } });
         c.teams = ordered; (st.access?.clubs || []).forEach(x => { if (x.id === c.id) x.teams = ordered; });
         writeCache({ ok: true, at: Date.now(), uid: M().state.user.id, access: st.access }); window.OF_ACCESS = st.access;
-        st.busy = false; open = true; st.phase = 'open'; forceTeam = st.teamMode === 'change' ? ordered[0] : null;
+        st.busy = false; open = true; st.phase = 'open'; forceTeam = ordered[0];
         refreshApp();
       } catch (err) { st.busy = false; st.msg = friendly(err); show(); }
       return;
