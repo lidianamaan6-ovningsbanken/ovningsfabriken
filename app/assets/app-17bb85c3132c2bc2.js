@@ -8833,8 +8833,14 @@ renderNav = function () {
     + '<button class="of-brand" type="button" data-a="view" data-v="today">' + workspaceBrand() + '</button>'
     + '<div class="of-links">' + WORKSPACE_PAGES.map(([view, label], i) =>
       '<button type="button" data-a="view" data-v="' + view + '"' + (active === view ? ' aria-current="page"' : '') + '>' + workspaceIcon(i) + '<span>' + label + '</span></button>').join('') + '</div>'
-    + workspaceClubBadge('of-nav-club', 'Tränarverktyg') + '</nav>';
+    + workspaceNavTeam() + workspaceClubBadge('of-nav-club', 'Tränarverktyg') + '</nav>';
 };
+
+function workspaceNavTeam() {
+  const team = clubTeam();
+  return '<button type="button" class="of-nav-team" data-a="workspaceTeamToggle"><span class="of-nav-team-dot" aria-hidden="true">' + (team ? esc(team.name.slice(0, 1)) : '+') + '</span>'
+    + '<span><strong>' + esc(team?.name || 'Inget lag valt') + '</strong><small>' + (team ? 'Byt lag' : 'Välj lag') + '</small></span></button>';
+}
 
 function workspaceTop(title, caption) {
   return '<header class="of-top"><div><div class="of-mobile-title">' + workspaceBrand() + '</div><div class="of-kicker">' + esc(caption) + '</div><h1>' + esc(title) + '</h1></div>'
@@ -8915,14 +8921,23 @@ function workspaceToday() {
     : todaysPasses.length ? 'Dagens träning' + (todaysPasses[0].time ? ' kl ' + todaysPasses[0].time : '') + ': ' + todaysPasses[0].name + '.'
     : finishedPass ? 'Dagens träning är genomförd. Bra jobbat!'
     : 'Inget planerat idag. Bygg ett pass på några minuter.';
-  const stat = (label, value) => '<div><span>' + label + '</span><strong>' + esc(String(value)) + '</strong></div>';
+  const stat = (label, value) => '<div class="of-hero-stat"><span>' + label + '</span><strong>' + esc(String(value)) + '</strong></div>';
+  const fresh = !weekPasses.length && !nextPass && !todaysPasses.length;
+  const crest = team?.club ? (team.club === JFA_NAME ? CLUB_LOGO : globalThis.OF_SIGN_IN?.crests?.[team.club]) : '';
+  const teamChip = '<button type="button" class="of-hero-team" data-a="workspaceTeamToggle" aria-label="' + (team ? 'Byt lag, nu ' + esc(team.name) : 'Välj lag') + '">'
+    + (crest ? '<img src="' + esc(crest) + '" alt="">' : '<span class="of-hero-team-dot" aria-hidden="true">' + (team ? esc(team.name.slice(0, 1)) : '+') + '</span>')
+    + '<span><strong>' + esc(team?.name || 'Inget lag valt') + '</strong><small>' + (team ? esc(sfOf(team.sf)?.[1] || 'Byt lag') : 'Välj lag') + '</small></span></button>';
   const header = '<header class="of-home-head of-home-photo of-hero2"><div class="of-home-wordmark">' + workspaceBrand() + '</div>'
-    + workspaceClubBadge('of-home-club')
-    + '<div class="of-home-headline"><div class="of-home-date">' + esc(dateLabel) + ' · vecka ' + workspaceWeekNo(today) + '</div><h1>' + workspaceGreeting() + '</h1>'
+    + teamChip
+    + '<div class="of-home-headline"><div class="of-eyebrow">' + esc(dateLabel) + ' <i aria-hidden="true">·</i> Vecka ' + workspaceWeekNo(today) + '</div><h1>' + workspaceGreeting() + '</h1>'
     + '<p class="of-hero-status">' + esc(status) + '</p></div>'
-    + '<div class="of-hero-stats">' + stat('Pass i veckan', weekPasses.length)
-    + stat('Nästa pass', nextPass ? workspaceDate(nextPass.date, { weekday: 'short', day: 'numeric', month: 'short' }) : todaysPasses.length ? 'Idag' : '–')
-    + stat('Övningsfilmer', OF_EXERCISE_FILM_IDS.size) + '</div></header>';
+    + (fresh
+      ? '<div class="of-hero-cta"><button type="button" class="of-hero-btn is-main" data-a="workspaceOpenComposer">Bygg dagens pass <span aria-hidden="true">→</span></button>'
+        + '<button type="button" class="of-hero-btn" data-a="view" data-v="plan">Planera veckan <span aria-hidden="true">→</span></button></div>'
+      : '<div class="of-hero-stats">' + stat('Pass i veckan', weekPasses.length)
+        + stat('Nästa pass', nextPass ? workspaceDate(nextPass.date, { weekday: 'short', day: 'numeric' }).replace('.', '') : '–')
+        + stat('Övningsfilmer', OF_EXERCISE_FILM_IDS.size) + '</div>')
+    + '</header>';
   if (firstVisit && !IS_OPEN) {
     return '<div class="of-home">' + header
       + '<section class="of-home-panel of-home-welcome"><h2>Kom igång med Övningsfabriken</h2>'
@@ -8931,11 +8946,11 @@ function workspaceToday() {
   }
 
   const teamRow = IS_OPEN
-    ? '<details class="of-home-team"><summary><span>' + esc(team?.name || 'Inget lag valt') + '</span>'
+    ? '<details class="of-home-team of-team-drawer"><summary><span>' + esc(team?.name || 'Inget lag valt') + '</span>'
       + (team ? '<small>' + esc(sfOf(team.sf)?.[1] || '') + '</small>' : '')
       + '<span class="of-home-team-action">' + (team ? 'Byt lag' : 'Välj lag') + '</span></summary>'
       + workspaceTeamChoice(team, false) + '</details>'
-    : '<details class="of-home-team"><summary><span>' + esc(team?.name || 'Inget lag valt') + '</span>'
+    : '<details class="of-home-team of-team-drawer"><summary><span>' + esc(team?.name || 'Inget lag valt') + '</span>'
     + (team ? '<small>' + esc([team.series, sfOf(team.sf)?.[1]].filter(Boolean).join(' · ')) + '</small>' : '')
     + '<span class="of-home-team-action">' + (HAS_CLUB_LICENSE ? 'Byt lag' : SIGNED_IN_TEAM ? 'Lagkonto' : team ? 'Byt lag' : 'Välj lag') + '</span></summary>'
     + (SIGNED_IN_TEAM ? (PERSONAL_COACH
@@ -8953,7 +8968,7 @@ function workspaceToday() {
     + '<p>' + esc(finishedPass.name) + '</p><button type="button" class="of-text-action" data-a="'
     + (finishedPass.refl?.done ? 'openSess' : 'reflStart') + '" data-id="' + esc(finishedPass.id) + '">'
     + (finishedPass.refl?.done ? 'Öppna passet' : 'Reflektera över passet') + '</button></section>' : '';
-  const empty = showComposer ? '<section class="of-home-panel of-home-empty"><div class="of-panel-head"><h2>Inget planerat idag</h2><p>Välj hur du vill komma igång.</p></div>'
+  const empty = showComposer ? '<section class="of-home-panel of-home-empty"><div class="of-panel-head"><div><span class="of-eyebrow">Idag</span><h2>Inget planerat idag</h2></div><p>Välj hur du vill komma igång.</p></div>'
     + '<div class="of-quick">'
     + '<button type="button" class="of-quick-item of-quick-main" data-a="workspaceOpenComposer"><span class="of-quick-ic">' + workspaceIcon(1) + '</span><span><b>Bygg ett pass</b><small>Ange fokus och antal spelare</small></span></button>'
     + '<button type="button" class="of-quick-item" data-a="newPass"><span class="of-quick-ic">+</span><span><b>Tomt pass</b><small>Välj övningar själv</small></span></button>'
@@ -8964,7 +8979,7 @@ function workspaceToday() {
     ...upcomingPasses.filter(s => s.date > today).slice(0, 3).map(s => ['Träning', s.name, s.date, s.time, 'openSess', s.id]),
     ...matches.filter(m => m.date > today && !m.live?.ended).slice(0, 2).map(m => ['Match', m.oppName ? 'Mot ' + m.oppName : 'Planerad match', m.date, m.time, 'openMatch', m.id]),
   ].sort((x, y) => x[2].localeCompare(y[2]) || (x[3] || '').localeCompare(y[3] || '')).slice(0, 4);
-  const upcoming = '<section class="of-home-panel of-home-upcoming2"><div class="of-panel-head"><h2>Kommande</h2>'
+  const upcoming = '<section class="of-home-panel of-home-upcoming2"><div class="of-panel-head"><div><span class="of-eyebrow">Planerat</span><h2>Kommande</h2></div>'
     + '<button type="button" class="of-text-action" data-a="view" data-v="plan">Planering</button></div>'
     + (later.length ? '<ul class="of-up-list">' + later.map(([kind, name, date, time, action, id]) =>
       '<li><button type="button" data-a="' + action + '" data-id="' + esc(id) + '"><span class="of-up-date"><b>' + esc(workspaceDate(date, { day: 'numeric' })) + '</b>'
@@ -8972,7 +8987,7 @@ function workspaceToday() {
       + (time ? ' · ' + esc(time) : '') + ' · ' + esc(workspaceDate(date, { weekday: 'long' })) + '</small><strong>' + esc(name) + '</strong></span></button></li>').join('') + '</ul>'
       : '<p class="of-muted-note">Inga kommande träningar eller matcher. Planera veckan så ser du dem här.</p>')
     + '</section>';
-  const week = '<section class="of-home-panel of-week" aria-label="Veckan"><div class="of-panel-head"><h2>Veckan</h2><span>' + esc(workspaceDate(weekDays[0], { day: 'numeric', month: 'short' }) + ' – ' + workspaceDate(weekDays[6], { day: 'numeric', month: 'short' })) + '</span></div><div class="of-week-days">'
+  const week = '<section class="of-home-panel of-week" aria-label="Veckan"><div class="of-panel-head"><div><span class="of-eyebrow">Vecka ' + workspaceWeekNo(today) + '</span><h2>Veckan</h2></div><span>' + esc(workspaceDate(weekDays[0], { day: 'numeric', month: 'short' }) + ' – ' + workspaceDate(weekDays[6], { day: 'numeric', month: 'short' })) + '</span></div><div class="of-week-days">'
     + weekDays.map(d => {
       const ps = passes.filter(s => s.date === d && s.blocks.length && (!team || !s.teamId || s.teamId === team.id));
       const ms = matches.filter(m => m.date === d);
@@ -9013,10 +9028,10 @@ function workspaceTip() {
   const b = pool[((day * 37 + workspaceTipShift) % pool.length + pool.length) % pool.length];
   const ex = bankToEx(b); const id = esc(ex.id);
   const range = b.min === b.max ? b.min : b.min + '–' + b.max;
-  return '<section class="of-home-panel of-tip"><div class="of-panel-head"><h2>Dagens övning</h2>'
+  return '<section class="of-home-panel of-tip"><div class="of-panel-head"><div><span class="of-eyebrow">Tips</span><h2>Dagens övning</h2></div>'
     + '<button type="button" class="of-text-action" data-a="workspaceTipNext">Visa en annan</button></div>'
     + '<button type="button" class="of-tip-media" data-a="open" data-id="' + id + '" aria-label="Visa övningen ' + esc(b.name) + '">'
-    + '<img src="' + esc(OF_FILM_POSTERS[b.id]) + '" alt="" loading="lazy" width="540" height="540"><span class="of-tip-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span></button>'
+    + '<span class="of-crop"><img src="' + esc(OF_FILM_POSTERS[b.id]) + '" alt="" loading="lazy" width="720" height="720"></span><span class="of-tip-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span></button>'
     + '<div class="of-tip-body"><span class="of-exercise-stage">' + esc(b.stage || catName(catOf(b))) + '</span>'
     + '<h3>' + esc(b.name) + '</h3><p>' + range + ' spelare' + (b.ages ? ' · ' + esc(b.ages) : '') + (team ? '' : '') + '</p>'
     + '<div class="of-tip-actions"><button type="button" class="btn primary" data-a="open" data-id="' + id + '">Se filmen</button>'
@@ -9041,16 +9056,27 @@ function workspaceComposer(primary) {
     + (BUILD?.err ? '<p role="alert" class="of-error">' + esc(BUILD.err) + '</p>' : '') + '</form></details>';
 }
 
+function workspaceBlockThumb(ex) {
+  const id = ex?.basedOn || (String(ex?.id || '').startsWith('bank-') ? String(ex.id).slice(5) : '');
+  if (id && OF_FILM_POSTERS[id]) return '<span class="of-crop"><img src="' + esc(OF_FILM_POSTERS[id]) + '" alt="" loading="lazy" width="720" height="720"></span>';
+  try { return '<span class="of-crop of-crop-svg">' + thumbSVG(ex) + '</span>'; } catch (e) { return '<span class="of-crop of-crop-svg"></span>'; }
+}
 function workspaceTodayPasses(passes) {
-  const passCard = s => '<article class="of-today-pass"><div><h3>' + esc(s.name) + '</h3>'
-    + '<p>' + (s.time ? esc(s.time) + ' · ' : '') + sessTotal(s) + ' min · ' + (s.players || ST.n)
-    + ' spelare, varav ' + sessionGoalkeepers(s, s.players || ST.n) + ' MV</p></div>'
-    + '<div class="of-today-actions"><button type="button" class="btn primary" data-a="workspaceRun" data-id="' + esc(s.id) + '" aria-label="Kör passet: ' + esc(s.name) + '">Kör passet</button>'
-    + '<button type="button" class="of-text-action" data-a="workspaceAttendance" data-id="' + esc(s.id) + '">Ändra spelarantal</button>'
-    + '<button type="button" class="of-text-action" data-a="openSess" data-id="' + esc(s.id) + '" aria-label="Öppna passet: ' + esc(s.name) + '">Öppna passet</button></div></article>';
-  return '<section class="of-today-list of-home-passlist"><h2>Dagens träning</h2>' + passCard(passes[0])
+  const kindName = k => (KINDS.find(x => x[0] === k) || KINDS[1])[1];
+  const passCard = (s, lead) => {
+    const meta = sessTotal(s) + ' min · ' + (s.players || ST.n) + ' spelare · ' + sessionGoalkeepers(s, s.players || ST.n) + ' MV';
+    return '<article class="of-pass-hero' + (lead ? '' : ' is-small') + '"><div class="of-pass-top"><div><span class="of-eyebrow">Dagens träning' + (s.time ? ' <i aria-hidden="true">·</i> ' + esc(s.time) : '') + '</span>'
+      + '<h2>' + esc(s.name) + '</h2><p>' + meta + '</p></div>'
+      + '<div class="of-pass-actions"><button type="button" class="of-pass-run" data-a="workspaceRun" data-id="' + esc(s.id) + '" aria-label="Kör passet: ' + esc(s.name) + '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Kör passet</button>'
+      + '<button type="button" class="of-pass-link" data-a="openSess" data-id="' + esc(s.id) + '">Öppna</button>'
+      + '<button type="button" class="of-pass-link" data-a="workspaceAttendance" data-id="' + esc(s.id) + '">Spelarantal</button></div></div>'
+      + (lead && s.blocks.length ? '<ol class="of-pass-blocks">' + s.blocks.map((bl, i) => '<li><button type="button" data-a="openSess" data-id="' + esc(s.id) + '" aria-label="' + esc((bl.ex?.name || '') + ', ' + bl.min + ' minuter') + '">'
+        + workspaceBlockThumb(bl.ex) + '<span class="of-pass-bl"><small>' + String(i + 1).padStart(2, '0') + ' · ' + esc(kindName(bl.kind)) + ' · ' + bl.min + ' min</small><strong>' + esc(bl.ex?.name || 'Övning') + '</strong></span></button></li>').join('') + '</ol>' : '')
+      + '</article>';
+  };
+  return '<section class="of-home-passlist2">' + passCard(passes[0], true)
     + (passes.length > 1 ? '<details class="of-home-more"><summary>Fler pass idag (' + (passes.length - 1) + ')</summary>'
-      + '<div>' + passes.slice(1).map(passCard).join('') + '</div></details>' : '') + '</section>';
+      + '<div>' + passes.slice(1).map(p => passCard(p, false)).join('') + '</div></details>' : '') + '</section>';
 }
 
 function workspaceTools() {
@@ -9134,6 +9160,10 @@ Object.assign(A, {
     const d = $('.of-home-composer'); if (!d) return;
     d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(() => $('#of-focus')?.focus({ preventScroll: true }), 250);
+  },
+  workspaceTeamToggle: () => {
+    const go = () => { const d = $('.of-team-drawer'); if (!d) return; d.open = !d.open; if (d.open) { d.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => d.querySelector('select,a,button:not(summary)')?.focus({ preventScroll: true }), 250); } };
+    if (ST.view !== 'today') { A.view({ dataset: { v: 'today' } }); setTimeout(go, 50); } else go();
   },
   workspaceTipNext: () => { workspaceTipShift++; render(); $('.of-tip [data-a="workspaceTipNext"]')?.focus(); },
   workspaceDay: el => {
