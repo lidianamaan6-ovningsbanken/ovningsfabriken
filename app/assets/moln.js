@@ -158,8 +158,19 @@
     if (error) throw error;
     log('Inloggningslänk skickad');
   }
+  function deviceId() {
+    try { let d = localStorage.getItem('of-enhet'); if (!d) { d = 'enhet-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)); localStorage.setItem('of-enhet', d); } return d; }
+    catch (e) { return 'enhet-okand-' + Date.now(); }
+  }
+  function deviceLabel() {
+    const u = navigator.userAgent;
+    const os = /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? (/Mobile/.test(u) ? 'Android-mobil' : 'Android-surfplatta') : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows-dator' : /Linux/.test(u) ? 'Linux-dator' : 'Enhet';
+    const br = /Edg\//.test(u) ? 'Edge' : /Chrome\//.test(u) ? 'Chrome' : /Firefox\//.test(u) ? 'Firefox' : /Safari\//.test(u) ? 'Safari' : '';
+    return os + (br ? ' · ' + br : '');
+  }
   async function signOut() {
     await push().catch(() => { });
+    try { if (state.user) await sb.rpc('forget_device', { dev: deviceId() }); } catch (e) { }
     await sb.auth.signOut();
     clearLocal();
     try { localStorage.removeItem('of-moln-owner'); } catch (e) { }
@@ -224,7 +235,7 @@
   }
 
   window.OF_MOLN = {
-    state, ready, signIn, signOut, signInPassword, signUp, setPassword, rpc, sb, push, pull, ping, cloudCounts, changedLocally, collections,
+    state, ready, signIn, signOut, signInPassword, deviceId, deviceLabel, signUp, setPassword, rpc, sb, push, pull, ping, cloudCounts, changedLocally, collections,
     on: (fn) => { listeners.add(fn); return () => listeners.delete(fn); },
     resetSync: () => { synced = {}; writeJSON('synced', {}); writeJSON('pulledAt', null); return pull(true); },
   };

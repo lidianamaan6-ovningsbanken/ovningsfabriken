@@ -55,6 +55,14 @@
           : '<p class="of-grind-alt">Ny tränare? Be klubbens ansvariga om en inbjudningslänk.</p>')
         + '<details class="of-grind-more"><summary>Glömt lösenordet?</summary><p>Kontakta klubbens ansvariga eller Övningsfabriken, så hjälper vi dig. Du kan också få en inloggningslänk på mejlen:</p>'
         + '<form data-g="link" class="of-grind-inline"><input name="email" type="email" required placeholder="din@epost.se" aria-label="E-post för inloggningslänk"><button type="submit">Skicka länk</button></form></details>';
+    } else if (st.phase === 'devices') {
+      const fmt = t => { try { return new Date(t).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } };
+      body = '<span class="of-eyebrow">Enhetsgräns</span><h1>Kontot används redan</h1>'
+        + '<p class="of-grind-lead">Ditt konto är aktivt på ' + st.devices.length + ' enheter, och licensen tillåter ' + st.limit + ' per tränare. Logga ut en av dem för att använda den här.</p>'
+        + '<ul class="of-grind-devices">' + st.devices.map(d => '<li><span><b>' + esc(d.label || 'Okänd enhet') + '</b><small>Senast använd ' + esc(fmt(d.last_seen)) + '</small></span>'
+          + '<button type="button" class="of-grind-btn is-ghost" data-g="replace" data-id="' + esc(d.id) + '"' + (st.busy ? ' disabled' : '') + '>Logga ut den</button></li>').join('') + '</ul>'
+        + msg + '<p class="of-grind-alt">Kontot är personligt. Kollegor behöver en egen inbjudan från klubbens ansvariga.</p>'
+        + '<div class="of-grind-row"><button type="button" class="of-grind-link" data-g="out">Logga ut här i stället</button></div>';
     } else {
       const clubs = st.access?.clubs || [];
       const expired = clubs.filter(c => !c.active);
@@ -96,6 +104,7 @@
   };
 
   async function check() {
+    lastCheck = Date.now();
     const user = M()?.state.user;
     if (!user) { open = false; writeCache(null); st.phase = 'login'; refreshApp(); return; }
     if (!readCache() || !open) { st.phase = 'checking'; if (!open) show(); }
@@ -110,6 +119,10 @@
         const u = new URL(location.href); u.searchParams.delete('inbjudan');
         if (!u.searchParams.get('team') && u.searchParams.get('utan-lag') !== '1' && /app\.html$/.test(u.pathname)) u.searchParams.set('utan-lag', '1');
         history.replaceState(null, '', u.toString());
+      }
+      const reg = await M().rpc('register_device', { dev: M().deviceId(), dev_label: M().deviceLabel() });
+      if (reg && reg.ok === false) {
+        open = false; writeCache(null); st.phase = 'devices'; st.devices = reg.devices || []; st.limit = reg.limit; refreshApp(); return;
       }
       const a = await M().rpc('my_access');
       st.access = a;
@@ -152,6 +165,12 @@
     if (a === 'mode') { st.mode = b.dataset.v; st.msg = ''; show(); }
     if (a === 'out') { open = false; writeCache(null); await M().signOut(); st.msg = ''; show(); }
     if (a === 'retry') { st.msg = ''; check(); }
+    if (a === 'replace') {
+      st.busy = true; st.msg = ''; show();
+      try { const r = await M().rpc('replace_device', { dev: M().deviceId(), dev_label: M().deviceLabel(), remove_dev: b.dataset.id }); if (r?.ok === false) { st.devices = r.devices || []; } else { st.busy = false; return check(); } }
+      catch (err) { st.msg = friendly(err); }
+      st.busy = false; show();
+    }
     if (a === 'dev') { try { (0, eval)('ST').view = 'dev'; } catch (err) { } hide(); try { (0, eval)('render')(); } catch (err) { } }
   }
 
@@ -163,6 +182,11 @@
     M().on(s => { const uid = s.user?.id; if (uid !== lastUid) { lastUid = uid; open = false; check(); } });
   }
   if (!open) document.documentElement.classList.add('of-grind-on');
+  /* Kontrollera igen när appen öppnas på nytt (högst var tionde minut), så att en utloggad enhet låses */
+  let lastCheck = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && M()?.state.user && Date.now() - lastCheck > 6e5) { lastCheck = Date.now(); check(); }
+  });
   window.OF_GRIND = { allowed, show, check, isOpen: () => open };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

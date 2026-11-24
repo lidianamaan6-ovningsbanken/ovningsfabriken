@@ -77,6 +77,12 @@
       }
       h += '</section>';
     }
+    const { data: devs } = await M().sb.from('user_devices').select('device_id,label,last_seen').order('last_seen', { ascending: false });
+    const mine = M().deviceId();
+    h += '<section class="of-klubb-c"><h4>Dina enheter</h4><ul class="of-klubb-list">' + (devs || []).map(d => '<li><span class="grow">' + esc(d.label || 'Okänd enhet') + (d.device_id === mine ? ' <small>(den här)</small>' : '')
+      + '<small>Senast använd ' + esc(String(d.last_seen).slice(0, 10)) + '</small></span>'
+      + (d.device_id !== mine ? '<button type="button" class="of-text-action" data-konto="forget" data-dev="' + esc(d.device_id) + '">Logga ut</button>' : '') + '</li>').join('') + '</ul>'
+      + '<p class="of-konto-note">Kontot är personligt och kan användas på ett begränsat antal enheter.</p></section>';
     clubCache = h; box.innerHTML = h;
   }
   async function copy(url) {
@@ -96,6 +102,7 @@
         if (a === 'close') d.close();
         if (a === 'sync') { await M().pull(false); await M().push(); d.innerHTML = dialogHTML(); }
         if (a === 'out') { await M().signOut(); clubCache = ''; d.close(); }
+        if (a === 'forget') { try { await M().rpc('forget_device', { dev: e.target.closest('[data-dev]').dataset.dev }); } catch (err) { alert(err.message); } loadClub(); }
         if (a === 'copy') copy(e.target.closest('[data-url]').dataset.url);
         if (a === 'revoke') { const t = e.target.closest('[data-token]').dataset.token; if (confirm('Ta bort inbjudan? Länken slutar fungera.')) { try { await M().rpc('revoke_invite', { invite_token: t }); } catch (err) { alert(err.message); } loadClub(); } }
         if (a === 'remove') { const b = e.target.closest('[data-user]'); if (confirm('Ta bort ' + b.dataset.name + ' från klubben? Platsen blir ledig.')) { try { await M().rpc('remove_member', { cid: b.dataset.club, member: b.dataset.user }); } catch (err) { alert(err.message); } loadClub(); } }

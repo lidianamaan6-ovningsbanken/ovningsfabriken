@@ -49,3 +49,7 @@ html.of-grind-on #nav-root, html.of-grind-on #app, html.of-grind-on body > main,
   .of-grind h1 { font-size:34px; }
 }
 @media (prefers-reduced-motion:reduce) { .of-grind-spin { animation-duration:3s; } }
+.of-grind-devices { list-style:none; margin:22px 0 0; padding:0; display:grid; gap:10px; }
+.of-grind-devices li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid #dde3da; border-radius:16px; background:#fff; }
+.of-grind-devices b { display:block; font-size:15px; } .of-grind-devices small { display:block; color:#6b7a70; font-size:13px; margin-top:2px; }
+.of-grind-devices .of-grind-btn { min-height:42px; padding:0 16px; font-size:14px; white-space:nowrap; }

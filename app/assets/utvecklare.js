@@ -82,10 +82,11 @@
         + '<button class="btn primary" type="submit">Skapa klubb och ägarlänk</button></form>'
         + (newLink ? '<div class="of-dev-link"><span class="of-eyebrow">Skicka till klubbens ansvariga</span><code>' + esc(newLink) + '</code><button class="btn" data-dev="copy" data-url="' + esc(newLink) + '">Kopiera länk</button></div>' : '')
         + (adminErr ? '<p class="of-konto-msg">' + esc(adminErr) + '</p>' : '')
-        + (adminClubs ? (adminClubs.length ? '<table class="of-dev-table"><thead><tr><th>Klubb</th><th>Platser</th><th>Till</th></tr></thead><tbody>' + adminClubs.map(c =>
+        + (adminClubs ? (adminClubs.length ? '<table class="of-dev-table"><thead><tr><th>Klubb</th><th>Platser</th><th>Enhetsbyten 30 d</th><th>Till</th></tr></thead><tbody>' + adminClubs.map(c =>
           '<tr><td><b>' + esc(c.name) + '</b><br><small class="of-muted-note">' + (c.owners.length ? esc(c.owners.join(', ')) : 'Ingen ansvarig än') + '</small><br>'
-          + '<button class="of-text-action" data-dev="ownerlink" data-id="' + c.id + '">Ny ägarlänk</button> · <button class="of-text-action" data-dev="extend" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">+1 år</button> · <button class="of-text-action" data-dev="seats" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">Ändra platser</button></td>'
-          + '<td>' + c.members + ' / ' + c.seats + '</td><td' + (c.valid_until < new Date().toISOString().slice(0, 10) ? ' class="of-dev-danger"' : '') + '>' + esc(c.valid_until) + '</td></tr>').join('') + '</tbody></table>'
+          + '<button class="of-text-action" data-dev="ownerlink" data-id="' + c.id + '">Ny ägarlänk</button> · <button class="of-text-action" data-dev="extend" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">+1 år</button> · <button class="of-text-action" data-dev="seats" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">Ändra platser</button>'
+          + ' · <button class="of-text-action" data-dev="devices" data-id="' + c.id + '" data-n="' + (c.devices || 2) + '">Enheter: ' + (c.devices || 2) + '/tränare</button></td>'
+          + '<td>' + c.members + ' / ' + c.seats + '</td><td' + ((c.switches30 || 0) >= 10 ? ' class="of-dev-danger" title="Många byten – kan tyda på delat lösenord"' : '') + '>' + (c.switches30 || 0) + '</td><td' + (c.valid_until < new Date().toISOString().slice(0, 10) ? ' class="of-dev-danger"' : '') + '>' + esc(c.valid_until) + '</td></tr>').join('') + '</tbody></table>'
           : '<p class="of-muted-note">Inga klubbar än.</p>') : '<p class="of-muted-note">Hämtar klubbar …</p>');
 
     return top + '<div class="of-home2 of-dev">' + '<div class="of-dev-grid">'
@@ -142,6 +143,11 @@
       const a = b.dataset.dev; const T = g('toast') || alert;
       if (a === 'copy') { try { await navigator.clipboard.writeText(b.dataset.url); T('Länken är kopierad'); } catch (err) { prompt('Kopiera länken:', b.dataset.url); } }
       if (a === 'ownerlink') { try { newLink = inviteURL(await M().rpc('admin_owner_link', { cid: b.dataset.id })); } catch (err) { adminErr = err.message; } rerender(); }
+      if (a === 'devices') {
+        const v = prompt('Antal enheter per tränare (1–10):', b.dataset.n); if (!v) return;
+        try { await M().rpc('admin_set_devices', { cid: b.dataset.id, n: Number(v) }); adminClubs = await M().rpc('admin_clubs'); } catch (err) { adminErr = err.message; }
+        rerender(); return;
+      }
       if (a === 'extend' || a === 'seats') {
         let seats = Number(b.dataset.seats), valid = b.dataset.valid;
         if (a === 'extend') { const d = new Date(Math.max(Date.now(), new Date(valid).getTime())); d.setFullYear(d.getFullYear() + 1); valid = d.toISOString().slice(0, 10); }
