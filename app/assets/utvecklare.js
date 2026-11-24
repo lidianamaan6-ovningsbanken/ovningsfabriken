@@ -13,6 +13,7 @@
   const M = () => window.OF_MOLN;
   const nf = new Intl.NumberFormat('sv-SE');
   const KIND = { sess: 'Pass', match: 'Matcher', mxteam: 'Matchlag', mxform: 'Uppställningar', saved: 'Favoriter', settings: 'Inställningar' };
+  let lager = null, lagerErr = '', upp = null;
   let ping = null, cloud = null, cloudErr = '', searchQ = '', adminClubs = null, adminErr = '', newLink = '';
   const inviteURL = t => location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
   const inYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
@@ -89,13 +90,63 @@
           + '<td>' + c.members + ' / ' + c.seats + '</td><td' + ((c.switches30 || 0) >= 10 ? ' class="of-dev-danger" title="Många byten – kan tyda på delat lösenord"' : '') + '>' + (c.switches30 || 0) + '</td><td' + (c.valid_until < new Date().toISOString().slice(0, 10) ? ' class="of-dev-danger"' : '') + '>' + esc(c.valid_until) + '</td></tr>').join('') + '</tbody></table>'
           : '<p class="of-muted-note">Inga klubbar än.</p>') : '<p class="of-muted-note">Hämtar klubbar …</p>');
 
+    const SK = window.OF_SKYDD;
+    const skydd = rows([
+      ['Appens kod hämtades från', esc(SK?.stats.appKalla || '–')],
+      ['Filmlänkar från lagringen', nf.format(SK?.stats.mediaLagring || 0)],
+      ['Filmlänkar från öppen reserv', nf.format(SK?.stats.mediaReserv || 0)],
+      ['Reserv på GitHub', SK?.RESERV ? 'På (filerna ligger också öppet)' : 'Av – allt kommer från låst lagring'],
+    ]) + (isAdmin ? (lager ? rows([
+        ['Filmer och bilder i lagringen', nf.format(lager.media) + ' av ' + nf.format(lager.mediaTotal) + ' (' + nf.format(Math.round(lager.mb)) + ' MB)'],
+        ['Appens kod (v ' + esc(lager.v) + ')', lager.app ? 'Finns' : 'Saknas'],
+      ]) + '<div class="of-dev-actions"><button class="btn primary" data-dev="upload"' + (upp ? ' disabled' : '') + '>' + (lager.missing ? 'Ladda upp ' + nf.format(lager.missing) + ' saknade filer' : 'Kontrollera igen') + '</button></div>'
+        + '<p class="of-muted-note" id="of-dev-upp">' + esc(upp || '') + '</p>'
+      : '<p class="of-muted-note">' + esc(lagerErr || 'Kontrollerar lagringen …') + '</p>')
+      : '<p class="of-muted-note">Logga in som admin för att ladda upp filer till den låsta lagringen.</p>');
+
     return top + '<div class="of-home2 of-dev">' + '<div class="of-dev-grid">'
       + card('Licenser', 'Admin', lic, true)
+      + card('Skyddad lagring', 'Övningar och filmer', skydd, true)
       + card('Molnet', 'Supabase', moln) + card('Versioner', 'Bygget', version)
       + card('Lokal data', 'Den här enheten', lokal) + card('Tema', 'Utseende', tema)
       + card('Söktest', 'Övningsbanken', search) + card('Filmtäckning', 'Övningsbanken', tack)
       + card('Felogg', 'Sedan sidan laddades', errs) + card('Synklogg', 'Molnet', mlog)
       + '</div></div>';
+  }
+
+  async function checkLager() {
+    const lista = await (await fetch('assets/skydd-lista.json?t=' + Date.now())).json();
+    const st = M().sb.storage.from('skyddat');
+    const have = new Set();
+    for (let off = 0; ; off += 1000) {
+      const { data, error } = await st.list('media', { limit: 1000, offset: off }); if (error) throw error;
+      data.forEach(o => have.add(o.name)); if (data.length < 1000) break;
+    }
+    const { data: apps } = await st.list('app', { limit: 1000 });
+    const need = lista.media.filter(m => !have.has(m.n));
+    const hasApp = (apps || []).some(o => o.name === lista.app.v + '.js');
+    lager = { lista, need, media: lista.media.length - need.length, mediaTotal: lista.media.length, mb: lista.media.filter(m => have.has(m.n)).reduce((a, m) => a + m.s, 0) / 1e6,
+      v: lista.app.v, app: hasApp, missing: need.length + (hasApp ? 0 : 1) };
+    lagerErr = '';
+  }
+  async function upload() {
+    if (upp) return; const st = M().sb.storage.from('skyddat'); const L = lager; let done = 0, fel = 0;
+    const jobs = L.need.map(m => async () => {
+      const r = await fetch('assets/' + m.n); if (!r.ok) throw new Error(m.n + ': HTTP ' + r.status);
+      const { error } = await st.upload('media/' + m.n, await r.blob(), { upsert: true, contentType: m.n.endsWith('.mp4') ? 'video/mp4' : 'image/jpeg', cacheControl: '31536000' });
+      if (error) throw error;
+    });
+    if (!L.app) jobs.unshift(async () => {
+      const r = await fetch('assets/' + L.lista.app.fil + '?v=' + L.v); if (!r.ok) throw new Error('App: HTTP ' + r.status);
+      const { error } = await st.upload('app/' + L.v + '.js', await r.blob(), { upsert: true, contentType: 'text/javascript' }); if (error) throw error;
+    });
+    const total = jobs.length; upp = 'Laddar upp 0 av ' + total + ' …'; rerender();
+    const tick = () => { upp = 'Laddar upp ' + done + ' av ' + total + (fel ? ' · ' + fel + ' fel' : '') + ' …'; const el = document.getElementById('of-dev-upp'); if (el) el.textContent = upp; };
+    let i = 0;
+    await Promise.all(Array.from({ length: 4 }, async () => { while (i < jobs.length) { const j = jobs[i++]; try { await j(); } catch (e) { fel++; ERR.unshift('Uppladdning: ' + (e.message || e)); } done++; tick(); } }));
+    upp = null; try { await checkLager(); } catch (e) { lagerErr = e.message; }
+    (g('toast') || alert)('Klart: ' + (total - fel) + ' filer uppladdade' + (fel ? ', ' + fel + ' fel (se Felogg)' : ''));
+    rerender();
   }
 
   function runSearch() {
@@ -112,11 +163,19 @@
     try { cloud = await M().cloudCounts(); cloudErr = ''; } catch (e) { cloudErr = e.message; }
     if (M().state.user) {
       try { window.OF_ACCESS = await M().rpc('my_access'); } catch (e) { }
-      if (window.OF_ACCESS?.admin) { try { adminClubs = await M().rpc('admin_clubs'); adminErr = ''; } catch (e) { adminErr = e.message; } }
+      if (window.OF_ACCESS?.admin) {
+        try { adminClubs = await M().rpc('admin_clubs'); adminErr = ''; } catch (e) { adminErr = e.message; }
+        try { await checkLager(); } catch (e) { lagerErr = e.message; }
+      }
     }
     rerender();
   }
   function rerender() {
+    if (typeof g('render') !== 'function') {
+      const app = document.getElementById('app'); if (!app || !app.querySelector('.of-dev')) return;
+      const y = scrollY; const head = app.firstElementChild?.matches('p') ? app.firstElementChild.outerHTML : '';
+      app.innerHTML = head + html(); runSearch(); scrollTo(0, y); return;
+    }
     if (g('ST')?.view !== 'dev') return;
     const y = scrollY; const focus = document.activeElement?.id;
     g('render')?.();
@@ -141,6 +200,7 @@
     document.addEventListener('click', async e => {
       const b = e.target.closest('[data-dev]'); if (!b) return;
       const a = b.dataset.dev; const T = g('toast') || alert;
+      if (a === 'upload') { if (lager && !lager.missing) { await checkLager().catch(e => lagerErr = e.message); rerender(); } else upload(); return; }
       if (a === 'copy') { try { await navigator.clipboard.writeText(b.dataset.url); T('Länken är kopierad'); } catch (err) { prompt('Kopiera länken:', b.dataset.url); } }
       if (a === 'ownerlink') { try { newLink = inviteURL(await M().rpc('admin_owner_link', { cid: b.dataset.id })); } catch (err) { adminErr = err.message; } rerender(); }
       if (a === 'devices') {

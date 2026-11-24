@@ -29,7 +29,11 @@ Sams riktiga app (v61) ligger i `app/`, utan server: `index.html` = lagval, `app
 - [x] Utvecklarfliken: slås på med `app.html?utvecklare=1` (av med `?utvecklare=0`). Kräver ingen inloggning.
 - [x] Inloggning krävs i appen (lösenord + inbjudningslänk), klubbar med licens och platser (migrering 0006)
 - [ ] Sam: stäng av "Confirm email" i Supabase och gör sitt konto till admin (se supabase/README.md)
-- [ ] Flytta övningarna bakom databasens säkerhetsregler (i dag ligger de i appens JS-fil, så grinden stoppar bara vanliga besökare)
+- [x] Låst lagring i Supabase för appens kod, filmer och bilder (migrering 0008, verktyg/skydd/LAS_MIG.md)
+- [ ] Sam: ladda upp filerna till låst lagring (Utvecklare → Skyddad lagring) efter adminraden
+- [ ] Gör kodförrådet privat (GitHub Pro eller Cloudflare Pages) och sätt RESERV = false – först då är innehållet låst på riktigt
+- [ ] Vattenmärke med tränarens namn på filmer och bilder, spärra nedladdning
+- [ ] Återställ lösenord via mejl (kräver Resend)
 - [ ] Betalning (Stripe) så att klubbar kan köpa licens själva
 - [ ] Koppla Resend: Supabase skickar bara 2 inloggningsmejl i timmen utan egen e-posttjänst
 

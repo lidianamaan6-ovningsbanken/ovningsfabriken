@@ -35,3 +35,7 @@ och `published_at` till dagens datum. Övningen syns direkt på startsidan.
 1. Authentication → Sign In / Providers → Email: stäng av **Confirm email** (annars väntar nya konton på ett mejl som inte kommer).
 2. Gör dig själv till admin i SQL Editor (byt till din e-post):
    `insert into public.app_admins (user_id) select id from auth.users where email = 'din@epost.se';`
+
+## Skyddad lagring
+Bucket `skyddat` (privat): `app/<version>.js` (appens kod) och `media/<fil>` (filmer och bilder).
+Läses bara av aktiv licens eller admin, via tillfälliga länkar. Se `verktyg/skydd/LAS_MIG.md`.

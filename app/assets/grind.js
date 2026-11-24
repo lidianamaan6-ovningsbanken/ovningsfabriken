@@ -86,10 +86,22 @@
   }
   function hide() { if (root) { root.hidden = true; root.innerHTML = ''; } document.documentElement.classList.remove('of-grind-on'); }
 
+  const appLoaded = () => { try { return typeof (0, eval)('render') === 'function'; } catch (e) { return false; } };
   function refreshApp() {
     const ST = (() => { try { return (0, eval)('ST'); } catch (e) { return null; } })();
-    if (open || (ST && ST.view === 'dev' && devOn())) hide(); else show();
-    try { (0, eval)('render')(); } catch (e) { }
+    if (open) { hide(); if (!appLoaded()) window.OF_SKYDD?.loadApp(); }
+    else if (ST && ST.view === 'dev' && devOn()) hide(); else show();
+    try { if (appLoaded()) (0, eval)('render')(); } catch (e) { }
+  }
+  function devStandalone() {
+    hide();
+    const app = document.getElementById('app');
+    if (app && window.OF_DEV) {
+      app.className = 'wrap of-workspace';
+      app.innerHTML = '<p class="of-muted-note" style="margin:0 0 8px">Utvecklarläge utan inloggning. <button type="button" class="of-text-action" data-g-login>Logga in</button></p>' + OF_DEV.html();
+      if (!app.dataset.gLogin) { app.dataset.gLogin = '1'; app.addEventListener('click', e => { if (e.target.closest('[data-g-login]')) { st.phase = M()?.state.user ? st.phase : 'login'; show(); } }); }
+      OF_DEV.mount();
+    }
   }
 
   /* ---------- Logik ---------- */
@@ -171,12 +183,16 @@
       catch (err) { st.msg = friendly(err); }
       st.busy = false; show();
     }
-    if (a === 'dev') { try { (0, eval)('ST').view = 'dev'; } catch (err) { } hide(); try { (0, eval)('render')(); } catch (err) { } }
+    if (a === 'dev') {
+      if (appLoaded()) { try { (0, eval)('ST').view = 'dev'; } catch (err) { } hide(); try { (0, eval)('render')(); } catch (err) { } }
+      else devStandalone();
+    }
   }
 
   let lastUid;
   function boot() {
     if (!M()) { setTimeout(boot, 50); return; }
+    if (open) window.OF_SKYDD?.loadApp();
     if (!M().sb) { open = false; st.phase = 'nolicense'; st.msg = 'Kunde inte ansluta till Övningsfabriken. Kontrollera nätet och ladda om sidan.'; show(); return; }
     M().ready.then(() => { lastUid = M().state.user?.id; check(); });
     M().on(s => { const uid = s.user?.id; if (uid !== lastUid) { lastUid = uid; open = false; check(); } });
