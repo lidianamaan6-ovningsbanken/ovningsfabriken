@@ -176,6 +176,7 @@ const OPEN = new Set();
 const isBusy = () => progBusy || ST.results.some(r => r.pending);
 function persist() {
   try { const keep = ST.results.filter(r => !r.pending && !r.failed).slice(-50); localStorage.setItem(LS, JSON.stringify({ ST: Object.assign({}, ST, { results: keep }), SAVED })); } catch (e) { }
+  window.OF_MOLN?.changedLocally();
 }
 function restore() { try { const o = JSON.parse(localStorage.getItem(LS) || 'null'); if (o) { ST = Object.assign(ST, o.ST || {}); SAVED = o.SAVED || {}; } } catch (e) { } ST.results = (ST.results || []).filter(r => r && !r.pending && !r.failed); ST.results.forEach(r => { if (r.animStatus === 'pending') delete r.animStatus; }); ST.bankAnimBusy = ''; ST.bankAnims = ST.bankAnims || {}; if (ST.results.length) ST.editOpen = false; }
 const caps = {};
@@ -5006,7 +5007,7 @@ const kindName = k => (KINDS.find(x => x[0] === k) || KINDS[3])[1];
 const sessList = () => Object.values(SESS).filter(s => s && !s.removed).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.updatedAt - a.updatedAt);
 const sessTotal = s => s.blocks.reduce((t, b) => t + (Number(b.min) || 0), 0);
 const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
-function persistSess() { try { localStorage.setItem(LS_S, JSON.stringify(SESS)); } catch (e) { } queueCoachSync('sessions', SESS); }
+function persistSess() { try { localStorage.setItem(LS_S, JSON.stringify(SESS)); } catch (e) { } queueCoachSync('sessions', SESS); window.OF_MOLN?.changedLocally(); }
 function saveSess(s) { s.updatedAt = Date.now(); SESS[s.id] = s; persistSess(); if (db) db.doc('sessions/' + s.id).set(clone(s)).catch(() => { }); }
 function newSess(name) { return { id: 'pass-' + uid(), name: name || 'Träning ' + todayStr(), date: todayStr(), teamId: ST.team || '', players: ST.n, gk: ST.gk, focus: '', blocks: [], reflection: '', createdAt: Date.now(), updatedAt: Date.now() }; }
 function snapEx(ex) { const x = clone(ex); ['adapting', 'animStatus', 'animErr', 'savedAt', 'removed', 'group', 'pending'].forEach(k => delete x[k]); return x; }
@@ -6047,7 +6048,7 @@ async function altAi() {
 const LS_M = workspaceStorageKey('ovningsfabriken.match');
 let MX = { teams: {}, matches: {}, forms: {} };
 try { const o = JSON.parse(localStorage.getItem(LS_M) || 'null'); if (o) MX = Object.assign(MX, o); } catch (e) { }
-function persistMx() { try { localStorage.setItem(LS_M, JSON.stringify(MX)); } catch (e) { } queueCoachSync('matches', MX); }
+function persistMx() { try { localStorage.setItem(LS_M, JSON.stringify(MX)); } catch (e) { } queueCoachSync('matches', MX); window.OF_MOLN?.changedLocally(); }
 function saveMx(kind, o, quiet) { o.updatedAt = Date.now(); MX[kind][o.id] = o; persistMx(); if (db) { clearTimeout(saveMx['t' + o.id]); saveMx['t' + o.id] = setTimeout(() => db.doc('mx' + kind + '/' + o.id).set(clone(o)).catch(() => { }), quiet ? 4000 : 300); } }
 async function syncMx() {
   if (!db) return; let changed = false;
@@ -8823,6 +8824,12 @@ const WORKSPACE_PAGES = [
   ['match', 'Match', 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v4m0 6v4 M3 9h3v6H3m18-6h-3v6h3 M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0'],
   ['tools', 'Verktyg', 'M5 12h.01m7 0h.01m7 0h.01'],
 ];
+const OF_DEV_ON = (() => { try {
+  const u = new URLSearchParams(location.search).get('utvecklare');
+  if (u === '1') localStorage.setItem('of-utvecklare', '1'); if (u === '0') localStorage.removeItem('of-utvecklare');
+  return localStorage.getItem('of-utvecklare') === '1' || location.hostname === 'localhost';
+} catch (e) { return false; } })();
+if (OF_DEV_ON) WORKSPACE_PAGES.push(['dev', 'Utvecklare', 'M8 8l-5 4 5 4m8-8 5 4-5 4M14 4l-4 16']);
 const workspaceIcon = i => '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + WORKSPACE_PAGES[i][2] + '"/></svg>';
 const workspaceDate = (date, options) => new Date(date + 'T12:00').toLocaleDateString('sv-SE', options);
 const workspaceBrand = () => '<img class="of-brand-lockup" src="assets/ovningsfabriken-logo.svg" alt="Övningsfabriken" width="405" height="132">';
@@ -8833,7 +8840,8 @@ renderNav = function () {
     + '<button class="of-brand" type="button" data-a="view" data-v="today">' + workspaceBrand() + '</button>'
     + '<div class="of-links">' + WORKSPACE_PAGES.map(([view, label], i) =>
       '<button type="button" data-a="view" data-v="' + view + '"' + (active === view ? ' aria-current="page"' : '') + '>' + workspaceIcon(i) + '<span>' + label + '</span></button>').join('') + '</div>'
-    + workspaceNavTeam() + workspaceClubBadge('of-nav-club', 'Tränarverktyg') + '</nav>';
+    + workspaceNavTeam() + '<button type="button" class="of-nav-acc" data-a="ofAccount" data-moln-nav>' + (window.OF_KONTO ? OF_KONTO.navHTML() : 'Logga in') + '</button>'
+    + workspaceClubBadge('of-nav-club', 'Tränarverktyg') + '</nav>';
 };
 
 function workspaceNavTeam() {
@@ -9089,16 +9097,20 @@ function workspaceTools() {
   return workspaceTop('Verktyg', 'Övningsfabriken') + '<div class="of-tools-grid">'
     + tools.map(([view, label, text, icon]) => '<button type="button" class="of-card of-tool" data-a="' + (view === 'plan' ? 'workspaceCurriculum' : 'view')
       + '" data-v="' + view + '"><span class="of-card-icon" aria-hidden="true">' + icon + '</span><strong>' + label + '</strong><span>' + text + '</span></button>').join('')
-    + '</div>';
+    + '</div>'
+    + '<button type="button" class="of-card of-tool of-tool-acc" data-a="ofAccount"><span class="of-card-icon" aria-hidden="true">' + workspaceIcon(0) + '</span><strong>Konto och molnsynk</strong>'
+    + '<span data-moln-line-tools>' + (window.OF_MOLN?.state.user ? 'Inloggad som ' + esc(OF_MOLN.state.user.email) : 'Logga in så sparas dina pass på alla enheter.') + '</span></button>';
 }
 
 const renderWorkspacePage = render;
 render = function () {
   const app = $('#app');
-  if (ST.view === 'today' || ST.view === 'tools') {
+  if (ST.view === 'dev' && !OF_DEV_ON) ST.view = 'today';
+  if (ST.view === 'today' || ST.view === 'tools' || ST.view === 'dev') {
     app.className = 'wrap of-workspace';
-    app.innerHTML = ST.view === 'today' ? workspaceToday() : workspaceTools();
+    app.innerHTML = ST.view === 'today' ? workspaceToday() : ST.view === 'dev' ? (window.OF_DEV ? OF_DEV.html() : '<p>Laddar …</p>') : workspaceTools();
     renderNav();
+    if (ST.view === 'dev') window.OF_DEV?.mount();
     return;
   }
   renderWorkspacePage();
@@ -9161,6 +9173,7 @@ Object.assign(A, {
     d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(() => $('#of-focus')?.focus({ preventScroll: true }), 250);
   },
+  ofAccount: () => window.OF_KONTO?.open(),
   workspaceTeamToggle: () => {
     const go = () => { const d = $('.of-team-drawer'); if (!d) return; d.open = !d.open; if (d.open) { d.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => d.querySelector('select,a,button:not(summary)')?.focus({ preventScroll: true }), 250); } };
     if (ST.view !== 'today') { A.view({ dataset: { v: 'today' } }); setTimeout(go, 50); } else go();

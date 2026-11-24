@@ -11,6 +11,7 @@ Projekt: `fwgvfmkdmrpmgririxpt`, region Stockholm (eu-north-1).
 |---|---|---|
 | `categories` | Teman, t.ex. Återerövring | Alla får läsa |
 | `exercises` | Övningsbanken | Alla ser publicerade övningar med `is_public = true`. Övriga syns inte utan inloggning. |
+| `coach_items` | Tränarens pass, matcher, favoriter och inställningar (en rad per sak) | Varje inloggad tränare läser och skriver bara sina egna rader. Utloggade kommer inte åt tabellen alls. |
 | `leads` | Förfrågningar från kontaktformuläret | Besökare får bara skicka in. Läses i Supabase under Table Editor → leads. |
 
 ## Lägga till en övning på startsidan

@@ -23,6 +23,13 @@ Sparat för senare. Bocka av när det är klart.
 Sams riktiga app (v61) ligger i `app/`, utan server: `index.html` = lagval, `app.html` = appen.
 27 nya övningsfilmer är inkopplade (88 filmer totalt). Min första egna version ligger i `app-ny/`.
 
+### Backend i riktiga appen (app/)
+- [x] Inloggning med e-postlänk (valfri – appen fungerar som förut utan konto)
+- [x] Molnsynk av pass, matcher, favoriter och inställningar (tabell `coach_items`, migrering 0005). Fungerar mellan enheter, senast ändrade vinner.
+- [x] Utvecklarfliken: slås på med `app.html?utvecklare=1` (av med `?utvecklare=0`). Kräver ingen inloggning.
+- [ ] Testa inloggningen på riktigt med egen e-post (mejlet går bara att klicka i av en människa)
+- [ ] Koppla Resend: Supabase skickar bara 2 inloggningsmejl i timmen utan egen e-posttjänst
+
 ### Backend (påbörjad i app-ny/)
 - [x] Steg 1: inloggning med e-postlänk, appens skal och övningsbanken (1 450 övningar från databasen)
 - [ ] Steg 2: lag, klubbar och licenser. **Innan leverans:** bara tränare med licens ska komma åt övningarna (i dag räcker det att logga in)
