@@ -53,3 +53,23 @@ html.of-grind-on #nav-root, html.of-grind-on #app, html.of-grind-on body > main,
 .of-grind-devices li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid #dde3da; border-radius:16px; background:#fff; }
 .of-grind-devices b { display:block; font-size:15px; } .of-grind-devices small { display:block; color:#6b7a70; font-size:13px; margin-top:2px; }
 .of-grind-devices .of-grind-btn { min-height:42px; padding:0 16px; font-size:14px; white-space:nowrap; }
+/* Klubbens profil på inloggningssidan */
+.of-grind-club { display:flex; align-items:center; gap:14px; }
+.of-grind-club img { width:64px; height:auto; max-height:72px; object-fit:contain; filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+.of-grind-club b { display:block; font-size:20px; letter-spacing:-.01em; color:#fff; }
+.of-grind-club small { display:block; color:#d8e4da; font-size:12px; letter-spacing:.08em; text-transform:uppercase; margin-top:2px; }
+.of-grind-card.has-club .of-grind-side { background:linear-gradient(180deg, color-mix(in srgb, var(--klubb,#163026) 55%, transparent) 0%, rgba(8,21,15,.88) 100%), url("./assets/traningsplan-kvall.webp") center/cover #163026; }
+.of-grind-card.has-club .of-grind-side .of-grind-club img { width:96px; max-height:110px; }
+.of-grind-card.has-club .of-grind-btn:not(.is-ghost) { background:color-mix(in srgb, var(--klubb,#16392b) 70%, #0b1f17); }
+.of-grind-teams { border:0; padding:0; margin:14px 0 0; display:flex; flex-wrap:wrap; gap:8px; }
+.of-grind-teams legend { font-weight:700; font-size:13px; color:#6b7a70; letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px; }
+.of-grind-team { position:relative; }
+.of-grind-team input { position:absolute; opacity:0; inset:0; cursor:pointer; }
+.of-grind-team span { display:inline-flex; align-items:center; min-height:44px; padding:0 16px; border:1px solid #d6dcd3; border-radius:999px; background:#fff; font-weight:700; font-size:14px; transition:all .15s; }
+.of-grind-team input:checked + span { background:#16392b; border-color:#16392b; color:#fff; }
+.of-grind-team input:focus-visible + span { outline:2px solid #b8924a; outline-offset:2px; }
+@media (max-width:760px) {
+  .of-grind-card.has-club .of-grind-mobile-logo { background:linear-gradient(180deg, color-mix(in srgb, var(--klubb,#163026) 70%, transparent), rgba(8,21,15,.85)), url("./assets/traningsplan-kvall.webp") center/cover #163026; }
+  .of-grind-mobile-logo .of-grind-club img { width:56px; }
+}
+.of-grind-select { min-height:50px; padding:0 14px; border:1px solid #d6dcd3; border-radius:13px; background:#fff; color:#13221b; font:inherit; font-size:16px; }

@@ -59,7 +59,7 @@
       if (RESERV) { await inject('./assets/' + appFile + '?v=' + appVer); stats.app = 'laddad'; stats.appKalla = 'öppen reserv'; return; }
       stats.app = 'fel'; throw new Error('Appen kunde inte laddas');
     })();
-    appPromise.then(() => scan()).catch(e => {
+    appPromise.then(() => { scan(); window.OF_GRIND?.appReady(); }).catch(e => {
       const app = document.getElementById('app');
       if (app) app.innerHTML = '<p role="alert" style="padding:24px">Appen kunde inte laddas. Kontrollera nätet och ladda om sidan.</p>';
     });

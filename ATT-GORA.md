@@ -32,6 +32,8 @@ Sams riktiga app (v61) ligger i `app/`, utan server: `index.html` = lagval, `app
 - [x] Låst lagring i Supabase för appens kod, filmer och bilder (migrering 0008, verktyg/skydd/LAS_MIG.md)
 - [ ] Sam: ladda upp filerna till låst lagring (Utvecklare → Skyddad lagring) efter adminraden
 - [ ] Gör kodförrådet privat (GitHub Pro eller Cloudflare Pages) och sätt RESERV = false – först då är innehållet låst på riktigt
+- [x] Klubbprofil: märke, färg och startbild (JFA), lagval vid första inloggning, hälsning med namn (migrering 0009)
+- [ ] Ansvarig kan ändra kollegors lag i Konto
 - [ ] Vattenmärke med tränarens namn på filmer och bilder, spärra nedladdning
 - [ ] Återställ lösenord via mejl (kräver Resend)
 - [ ] Betalning (Stripe) så att klubbar kan köpa licens själva

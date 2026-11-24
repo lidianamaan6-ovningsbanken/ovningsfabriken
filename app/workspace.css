@@ -705,3 +705,5 @@ i.pass { background:#3f8a5f; } i.done { background:#a9b9ad; } i.match { backgrou
 .of-dev-link { display:grid; gap:8px; margin-top:16px; padding:16px; border-radius:16px; background:var(--accent-soft); }
 .of-dev-link code { font-size:12.5px; overflow-wrap:anywhere; }
 .of-dev-link .btn { justify-self:start; border-radius:999px; }
+.of-nav-team-crest { width:34px; height:34px; object-fit:contain; flex:0 0 34px; }
+.of-nav-team:has(.of-nav-team-crest) ~ .of-nav-club { display:none; }

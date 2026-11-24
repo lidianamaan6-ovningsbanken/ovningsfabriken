@@ -8846,8 +8846,9 @@ renderNav = function () {
 
 function workspaceNavTeam() {
   const team = clubTeam();
-  return '<button type="button" class="of-nav-team" data-a="workspaceTeamToggle"><span class="of-nav-team-dot" aria-hidden="true">' + (team ? esc(team.name.slice(0, 1)) : '+') + '</span>'
-    + '<span><strong>' + esc(team?.name || 'Inget lag valt') + '</strong><small>' + (team ? 'Byt lag' : 'Välj lag') + '</small></span></button>';
+  const crest = window.OF_PROFILE?.crest;
+  return '<button type="button" class="of-nav-team" data-a="workspaceTeamToggle">' + (crest ? '<img class="of-nav-team-crest" src="' + esc(crest) + '" alt="">' : '<span class="of-nav-team-dot" aria-hidden="true">' + (team ? esc(team.name.slice(0, 1)) : '+') + '</span>')
+    + '<span><strong>' + esc(team?.name || 'Inget lag valt') + '</strong><small>' + esc(window.OF_PROFILE?.club?.name || (team ? 'Byt lag' : 'Välj lag')) + '</small></span></button>';
 }
 
 function workspaceTop(title, caption) {
@@ -8931,13 +8932,13 @@ function workspaceToday() {
     : 'Inget planerat idag. Bygg ett pass på några minuter.';
   const stat = (label, value) => '<div class="of-hero-stat"><span>' + label + '</span><strong>' + esc(String(value)) + '</strong></div>';
   const fresh = !weekPasses.length && !nextPass && !todaysPasses.length;
-  const crest = team?.club ? (team.club === JFA_NAME ? CLUB_LOGO : globalThis.OF_SIGN_IN?.crests?.[team.club]) : '';
+  const crest = team?.club ? (team.club === JFA_NAME ? (window.OF_PROFILE?.crest || CLUB_LOGO) : globalThis.OF_SIGN_IN?.crests?.[team.club]) : '';
   const teamChip = '<button type="button" class="of-hero-team" data-a="workspaceTeamToggle" aria-label="' + (team ? 'Byt lag, nu ' + esc(team.name) : 'Välj lag') + '">'
     + (crest ? '<img src="' + esc(crest) + '" alt="">' : '<span class="of-hero-team-dot" aria-hidden="true">' + (team ? esc(team.name.slice(0, 1)) : '+') + '</span>')
     + '<span><strong>' + esc(team?.name || 'Inget lag valt') + '</strong><small>' + (team ? esc(sfOf(team.sf)?.[1] || 'Byt lag') : 'Välj lag') + '</small></span></button>';
   const header = '<header class="of-home-head of-home-photo of-hero2"><div class="of-home-wordmark">' + workspaceBrand() + '</div>'
     + teamChip
-    + '<div class="of-home-headline"><div class="of-eyebrow">' + esc(dateLabel) + ' <i aria-hidden="true">·</i> Vecka ' + workspaceWeekNo(today) + '</div><h1>' + workspaceGreeting() + '</h1>'
+    + '<div class="of-home-headline"><div class="of-eyebrow">' + esc(dateLabel) + ' <i aria-hidden="true">·</i> Vecka ' + workspaceWeekNo(today) + '</div><h1>' + workspaceGreeting() + (window.OF_PROFILE?.name ? ', ' + esc(OF_PROFILE.name) : '') + '</h1>'
     + '<p class="of-hero-status">' + esc(status) + '</p></div>'
     + (fresh
       ? '<div class="of-hero-cta"><button type="button" class="of-hero-btn is-main" data-a="workspaceOpenComposer">Bygg dagens pass <span aria-hidden="true">→</span></button>'
@@ -9177,6 +9178,7 @@ Object.assign(A, {
   },
   ofAccount: () => window.OF_KONTO?.open(),
   workspaceTeamToggle: () => {
+    if (window.OF_GRIND?.pickTeam && OF_GRIND.pickTeam()) return;
     const go = () => { const d = $('.of-team-drawer'); if (!d) return; d.open = !d.open; if (d.open) { d.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => d.querySelector('select,a,button:not(summary)')?.focus({ preventScroll: true }), 250); } };
     if (ST.view !== 'today') { A.view({ dataset: { v: 'today' } }); setTimeout(go, 50); } else go();
   },
