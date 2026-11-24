@@ -14,8 +14,11 @@
   }
   function navHTML() {
     const st = M()?.state || {};
-    return '<span class="of-acc-dot is-' + esc(st.user ? (st.status === 'fel' ? 'fel' : 'ok') : 'av') + '" aria-hidden="true"></span>'
-      + '<span><strong>' + esc(st.user ? st.user.email : 'Logga in') + '</strong><small data-moln-line>' + esc(statusLine(st)) + '</small></span>';
+    if (!st.user) return '<span class="of-acc-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span>'
+      + '<span><strong>Logga in</strong><small>Spara dina pass i molnet</small></span>';
+    const ok = st.status !== 'fel';
+    return '<span class="of-acc-ic is-in" aria-hidden="true">' + esc((st.user.email || '?').slice(0, 1).toUpperCase()) + '<i class="of-acc-dot is-' + (ok ? 'ok' : 'fel') + '"></i></span>'
+      + '<span><strong>' + esc(st.user.email) + '</strong><small data-moln-line>' + esc(statusLine(st)) + '</small></span>';
   }
   function refresh() {
     document.querySelectorAll('[data-moln-nav]').forEach(el => { el.innerHTML = navHTML(); });

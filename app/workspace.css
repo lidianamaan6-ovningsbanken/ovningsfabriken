@@ -669,3 +669,13 @@ i.pass { background:#3f8a5f; } i.done { background:#a9b9ad; } i.match { backgrou
 .of-dev-danger { color:#b3401f!important; }
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 @media (max-width:1049px) { .of-links:has(> :nth-child(6)) { grid-template-columns:repeat(6,minmax(0,1fr)); } .of-links:has(> :nth-child(6)) button span { font-size:10.5px; } }
+/* Tydlig inloggningsknapp i sidomenyn */
+@media (min-width:1050px) {
+  .of-nav-acc { gap:11px; padding:10px; border-radius:16px; border:1px solid rgba(217,189,132,.35); background:rgba(217,189,132,.1); transition:background .2s,border-color .2s; }
+  .of-nav-acc:hover { background:rgba(217,189,132,.18); border-color:rgba(217,189,132,.6); }
+  .of-nav-team + .of-nav-acc { margin-top:-12px; }
+  .of-nav-acc small { color:#d9c79d; }
+}
+.of-acc-ic { position:relative; display:grid; place-items:center; width:34px; height:34px; flex:0 0 34px; border-radius:50%; background:var(--lux-lime); color:#10261c; font-weight:800; font-size:15px; }
+.of-acc-ic.is-in { background:linear-gradient(145deg,#ead3a0,#b8924a); color:#1a2a20; }
+.of-acc-ic .of-acc-dot { position:absolute; right:-1px; bottom:-1px; border:2px solid var(--of-nav); width:11px; height:11px; flex:none; box-shadow:none; }
