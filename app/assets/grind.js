@@ -11,8 +11,9 @@
   const CACHE = 'of-tillgang';
   const DAYS7 = 7 * 864e5;
   const q = new URLSearchParams(location.search);
-  let invite = q.get('inbjudan') || (() => { try { return sessionStorage.getItem('of-inbjudan'); } catch (e) { return null; } })();
-  if (q.get('inbjudan')) { try { sessionStorage.setItem('of-inbjudan', invite); } catch (e) { } }
+  // Inbjudan sparas på enheten så att den följer med även om man loggar in via en länk på mejlen
+  let invite = q.get('inbjudan') || (() => { try { const v = JSON.parse(localStorage.getItem('of-inbjudan') || 'null'); return v && Date.now() - v.at < 864e5 ? v.t : null; } catch (e) { return null; } })();
+  if (q.get('inbjudan')) { try { localStorage.setItem('of-inbjudan', JSON.stringify({ t: invite, at: Date.now() })); } catch (e) { } }
   const devOn = () => { try { return localStorage.getItem('of-utvecklare') === '1' || location.hostname === 'localhost' || q.get('utvecklare') === '1'; } catch (e) { return false; } };
 
   const st = { phase: 'start', access: null, msg: '', mode: invite ? 'signup' : 'login', busy: false, inviteClub: '' };
@@ -53,7 +54,7 @@
         + '<button class="of-grind-btn" type="submit"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Vänta …' : signup ? 'Skapa konto och gå med' : 'Logga in') + '</button></form>' + msg
         + (invite ? '<p class="of-grind-alt">' + (signup ? 'Har du redan ett konto? <button type="button" data-g="mode" data-v="login">Logga in</button>' : 'Inget konto än? <button type="button" data-g="mode" data-v="signup">Skapa konto</button>') + '</p>'
           : '<p class="of-grind-alt">Ny tränare? Be klubbens ansvariga om en inbjudningslänk.</p>')
-        + '<details class="of-grind-more"><summary>Glömt lösenordet?</summary><p>Kontakta klubbens ansvariga eller Övningsfabriken, så hjälper vi dig. Du kan också få en inloggningslänk på mejlen:</p>'
+        + '<details class="of-grind-more"' + (st.mode === 'login' && invite ? ' open' : '') + '><summary>Glömt lösenordet?</summary><p>Kontakta klubbens ansvariga eller Övningsfabriken, så hjälper vi dig. Du kan också få en inloggningslänk på mejlen:</p>'
         + '<form data-g="link" class="of-grind-inline"><input name="email" type="email" required placeholder="din@epost.se" aria-label="E-post för inloggningslänk"><button type="submit">Skicka länk</button></form></details>';
     } else if (st.phase === 'devices') {
       const fmt = t => { try { return new Date(t).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } };
@@ -108,7 +109,7 @@
   const friendly = (e) => {
     const m = e?.message || String(e);
     if (/Invalid login credentials/i.test(m)) return 'Fel e-post eller lösenord.';
-    if (/already registered|already exists/i.test(m)) return 'Det finns redan ett konto med den e-posten. Välj Logga in.';
+    if (/already registered|already exists/i.test(m)) { st.mode = 'login'; return 'Det finns redan ett konto med den e-posten. Logga in med ditt lösenord, eller tryck Glömt lösenordet? nedan så får du en inloggningslänk på mejlen.'; }
     if (/Password should be at least/i.test(m)) return 'Lösenordet måste vara minst 8 tecken.';
     if (/Email not confirmed/i.test(m)) return 'E-postadressen är inte bekräftad än.';
     if (/rate|seconds/i.test(m)) return 'För många försök. Vänta en stund och försök igen.';
@@ -127,7 +128,7 @@
           st.msg = ''; st.inviteClub = r?.club || '';
           (window.toast || (() => { }))(r?.already ? 'Du är redan med i ' + r.club : 'Välkommen till ' + r.club + '!');
         } catch (e) { st.msg = 'Inbjudan kunde inte användas: ' + friendly(e); }
-        invite = null; try { sessionStorage.removeItem('of-inbjudan'); } catch (e) { }
+        invite = null; try { localStorage.removeItem('of-inbjudan'); } catch (e) { }
         const u = new URL(location.href); u.searchParams.delete('inbjudan');
         if (!u.searchParams.get('team') && u.searchParams.get('utan-lag') !== '1' && /app\.html$/.test(u.pathname)) u.searchParams.set('utan-lag', '1');
         history.replaceState(null, '', u.toString());
@@ -166,7 +167,7 @@
     }
     if (kind === 'link') {
       const btn = f.querySelector('button'); btn.disabled = true;
-      try { await M().signIn(f.elements.email.value.trim()); st.msg = 'Om adressen har ett konto kommer en inloggningslänk strax.'; }
+      try { await M().signIn(f.elements.email.value.trim()); st.msg = 'Klart! Öppna mejlet och tryck på länken' + (invite ? ' – inbjudan följer med automatiskt.' : '.') + ' Kolla skräpposten om det dröjer.'; }
       catch (err) { st.msg = friendly(err); }
       show();
     }

@@ -153,6 +153,7 @@
   async function signIn(email) {
     const q = new URLSearchParams(location.search); q.delete('utvecklare');
     if (!q.get('team') && q.get('utan-lag') !== '1') q.set('utan-lag', '1');
+    try { const inv = JSON.parse(localStorage.getItem('of-inbjudan') || 'null'); if (inv?.t) q.set('inbjudan', inv.t); } catch (e) { }
     const redirect = location.origin + location.pathname + '?' + q.toString();
     const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: redirect, shouldCreateUser: true } });
     if (error) throw error;
