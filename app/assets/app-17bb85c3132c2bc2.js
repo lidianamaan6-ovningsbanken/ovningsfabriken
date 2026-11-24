@@ -3610,19 +3610,33 @@ const SYN = [
 const TYPE_SYN = [[/rondo|behålla|innehav/, 'Rondo'], [/1 ?mot ?1|duell|dribbl|närkamp/, 'Duell (1 mot 1, 2 mot 2)'], [/överläg|övertal|fler än/, 'Överlägsenhet (t.ex. 3 mot 2)'], [/smålag|små spel|spela match|matchlik/, 'Smålagsspel'], [/avslut|skott|skjut/, 'Avslutsövning']];
 const STOP = new Set(['vi', 'och', 'att', 'på', 'en', 'ett', 'det', 'som', 'för', 'med', 'är', 'har', 'inte', 'till', 'av', 'om', 'när', 'man', 'de', 'den', 'jag', 'mitt', 'mina', 'vår', 'våra', 'lag', 'laget', 'spelare', 'spelarna', 'övning', 'övningar', 'träna', 'vill', 'ska', 'kan', 'bra', 'mer', 'mycket', 'hur', 'ofta', 'alltid', 'aldrig', 'blir', 'får', 'våran', 'vårt', 'eller', 'sig', 'dem', 'hela', 'tiden', 'något', 'någon', 'bara', 'också', 'efter', 'under', 'över', 'från', 'sen', 'sedan', 'där', 'här', 'vara']);
 const lc = s => String(s || '').toLowerCase();
+const normQ = s => lc(s).replace(/[–—-]/g, ' ').replace(/(\d+)\s*(?:mot|v|vs|x)\s*(\d+)/g, '$1 mot $2').replace(/\s+/g, ' ').trim();
 function searchBank(q, pool = BANK, limit = 8) {
-  const t = lc(q); const toks = t.split(/[^a-zåäöé0-9]+/).filter(w => w.length > 2 && !STOP.has(w));
+  const t = normQ(q);
+  const phrases = t.match(/\d+ mot \d+/g) || [];
+  const rest = t.replace(/\d+ mot \d+/g, ' ');
+  const words = rest.split(/[^a-zåäöé0-9]+/).filter(w => w.length > 2 && !STOP.has(w) && w !== 'mot' && w !== 'från');
+  const toks = [...phrases.map(p => ({ w: p, stem: p, ph: true })), ...words.map(w => ({ w, stem: w.length > 5 ? w.slice(0, w.length - 2) : w }))];
   const stageHits = new Set(); SYN.forEach(([re, st]) => { if (re.test(t)) st.forEach(s => stageHits.add(s)); });
   const typeHits = new Set(); TYPE_SYN.forEach(([re, ty]) => { if (re.test(t)) typeHits.add(ty); });
   return pool.map(b => {
-    const name = lc(b.name); const tx = lc([b.stage, b.phase, b.type, catName(catOf(b)), b.org, b.rules, (b.points || []).join(' '), b.orig].join(' '));
-    let sc = 0;
-    toks.forEach(w => { const stem = w.length > 5 ? w.slice(0, w.length - 2) : w; if (name.includes(stem)) sc += 3; else if (tx.includes(stem)) sc += 1; });
-    if (stageHits.has(b.stage)) sc += 4;
+    const name = normQ(b.name); const tx = normQ([b.stage, b.phase, b.type, catName(catOf(b)), b.org, b.rules, (b.points || []).join(' '), b.orig].join(' '));
+    let sc = 0, inName = 0, inAny = 0;
+    if (t.length > 2) { if (name === t) sc += 200; else if (name.startsWith(t)) sc += 120; else if (name.includes(t)) sc += 100; }
+    toks.forEach(k => {
+      if (name.includes(k.stem)) { sc += k.ph ? 8 : 3; inName++; inAny++; }
+      else if (tx.includes(k.stem)) { sc += k.ph ? 3 : 1; inAny++; }
+    });
+    if (toks.length) {
+      if (inName === toks.length) sc += 20 + 5 * toks.length;
+      else if (inAny === toks.length) sc += 4 + toks.length;
+      else if (phrases.length && !phrases.every(p => name.includes(p) || tx.includes(p))) sc -= 6;
+    }
+    if (stageHits.has(b.stage)) sc += 7;
     if (typeHits.has(b.type)) sc += 2;
     if (sc > 0 && ST.n >= b.min && ST.n <= b.max) sc += 0.5;
     return { b, sc };
-  }).filter(x => x.sc >= 1).sort((x, y) => y.sc - x.sc).slice(0, limit).map(x => x.b);
+  }).filter(x => x.sc >= 1).sort((x, y) => y.sc - x.sc || lc(x.b.name).localeCompare(lc(y.b.name), 'sv')).slice(0, limit).map(x => x.b);
 }
 let SEARCH = null;
 var bankSearchHTML; /* äldre version borttagen, den aktuella definieras längre ner */
