@@ -14,7 +14,10 @@ for i, sl in new.items():
         sys.exit(f'Filnamnet {sl} används redan av en annan övning – välj ett annat namn för {i}.')
 SRC = os.environ.get('OF_FILM_SRC', f'{R}/nya-filmer')   # mappen där de renderade filmerna ligger
 NOTE = '<p class="small muted">Eget animationsexempel utifrån övningens titel och organisation. Originalets fullständiga anvisningar finns hos SvFF.</p>'
-def note(i): return NOTE if i.startswith('svb') else ''   # SvFF-övningarna är egna tolkningar
+NOTE_PDF = '<p class="small muted">Animation utifrån SvFF:s anvisningar i Övningsbanken.</p>'
+def note(i):   # SvFF-övningar: egen tolkning, eller gjord efter SvFF:s anvisningar (OF_SVB_KALLA=pdf)
+    if not i.startswith('svb'): return ''
+    return NOTE_PDF if os.environ.get('OF_SVB_KALLA') == 'pdf' else NOTE
 for i, sl in new.items():
     shutil.copy(f'{SRC}/{sl}.mp4', f'{R}/app/assets/{sl}.mp4')
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', '6', '-i', f'{R}/app/assets/{sl}.mp4', '-frames:v', '1', '-vf', 'scale=720:720', '-q:v', '4', f'{R}/app/assets/{sl}.jpg'], check=True)
