@@ -246,7 +246,7 @@ fp = [(0, 'Två mot två', 'Nya par från kön.'),
       (0.6, 'Närmast pressar – den andra täcker', 'Rätt avstånd mellan press och täckning.'),
       (1.4, 'Byt roll i bollens rullning', 'Prata!'),
       (tw - 0.2, 'Vinn bollen och dribbla över mittlinjen', 'Poäng till försvararna.')]
-finish(d, 'pl08', 'press-och-tackning-2-mot-2', ['Press och täckning', '2 mot 2'], 'Yta 20 × 20 m · Mittlinje',
+finish(d, 'pl08', 'press-och-tackning-2-mot-2-byt-roller', ['Press och täckning', '2 mot 2'], 'Yta 20 × 20 m · Mittlinje',
        fp, 'DUELL', [('box', 12, 12, 88, 88), ('line', [(12, 50), (88, 50)])], [lab(t, t + 1.6, (60, 42), '+1')])
 
 if __name__ == '__main__': render(C, sys.argv)

@@ -8,6 +8,10 @@ bank = {e['id']: e['name'] for e in json.load(open(sys.argv[1]))}
 M = dict(a.split('=', 1) for a in sys.argv[2:])
 js = glob.glob(f'{R}/app/assets/app-*.js')[0]; s = open(js, encoding='utf-8').read()
 new = {i: sl for i, sl in M.items() if f"if (b?.id === '{i}') h += '<video" not in s}
+# Skydd: en ny film får aldrig skriva över en annan övnings film med samma filnamn
+for i, sl in new.items():
+    if f'data-skydd-poster="{sl}.jpg"' in s:
+        sys.exit(f'Filnamnet {sl} används redan av en annan övning – välj ett annat namn för {i}.')
 for i, sl in new.items():
     shutil.copy(f'{R}/nya-filmer/{sl}.mp4', f'{R}/app/assets/{sl}.mp4')
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', '6', '-i', f'{R}/app/assets/{sl}.mp4', '-frames:v', '1', '-vf', 'scale=720:720', '-q:v', '4', f'{R}/app/assets/{sl}.jpg'], check=True)
