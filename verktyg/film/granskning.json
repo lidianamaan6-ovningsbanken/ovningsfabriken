@@ -1,84 +1,65 @@
 {
- "svb140080": {
-  "fil": "render_svff3.py",
-  "titel": "Futsal – Rädd om fötterna U7–U12",
+ "svb140370": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Boll-jage U7–U10",
+  "fel": []
+ },
+ "svb140457": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Driva och skjuta U7+",
+  "fel": []
+ },
+ "svb140371": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – En mot en i yta U7–U8",
   "fel": [
-   "boll ligger still utan spelare vid 5.8s (38,74)"
+   "spelare : skakar fram och tillbaka (7 gånger)"
   ]
  },
- "svb48710": {
-  "fil": "render_svff3.py",
-  "titel": "Ta bollen (framåt) Spelform 3 mot 3",
-  "fel": []
- },
- "svb140471": {
-  "fil": "render_svff3.py",
-  "titel": "Futsal – Hämta bollar U7–U12",
+ "svb140092": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Behålla bollen U7–U12",
   "fel": [
-   "boll ligger still utan spelare vid 0.4s (30,12)",
-   "boll ligger still utan spelare vid 0.4s (36,16)",
-   "boll ligger still utan spelare vid 0.4s (42,14)",
-   "boll ligger still utan spelare vid 0.4s (54,12)",
-   "boll ligger still utan spelare vid 0.4s (60,16)",
-   "boll ligger still utan spelare vid 0.4s (66,14)"
+   "spelare : skakar fram och tillbaka (8 gånger)"
   ]
  },
- "svb140087": {
-  "fil": "render_svff3.py",
-  "titel": "Futsal – Pendelspel Grund · U7–U12",
+ "svb140093": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Fyra sidor U7–U10",
   "fel": []
  },
- "svb140057": {
-  "fil": "render_svff3.py",
-  "titel": "Futsal – Tjuv och polis U7–U15",
+ "svb140448": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Skjuta, rulla och kasta I mål · U7–U12",
+  "fel": []
+ },
+ "svb140083": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Bowling U7–U10",
   "fel": [
-   "spelare TJ: skakar fram och tillbaka (7 gånger)"
+   "boll ligger still utan spelare vid 0.4s (38,42)",
+   "boll ligger still utan spelare vid 0.4s (44,34)",
+   "boll ligger still utan spelare vid 0.4s (50,26)",
+   "boll ligger still utan spelare vid 0.4s (50,42)",
+   "boll ligger still utan spelare vid 0.4s (56,34)",
+   "boll ligger still utan spelare vid 0.4s (62,42)",
+   "boll ligger still utan spelare vid 12.4s (52,18)",
+   "boll ligger still utan spelare vid 12.5s (42,26)",
+   "boll ligger still utan spelare vid 12.7s (52,34)",
+   "boll ligger still utan spelare vid 16.1s (62,26)",
+   "boll ligger still utan spelare vid 16.2s (33,34)",
+   "boll ligger still utan spelare vid 16.3s (71,34)",
+   "boll ligger still utan spelare vid 2.9s (52,18)",
+   "boll ligger still utan spelare vid 3.0s (42,26)",
+   "boll ligger still utan spelare vid 3.2s (52,34)",
+   "boll ligger still utan spelare vid 6.6s (61,26)",
+   "boll ligger still utan spelare vid 6.7s (33,34)",
+   "boll ligger still utan spelare vid 6.8s (71,34)"
   ]
  },
- "svb124187": {
-  "fil": "render_svff3.py",
-  "titel": "Svansleken Speluppbyggnad",
+ "svb140360": {
+  "fil": "render_svff4.py",
+  "titel": "Futsal – Räkor och krabbor U7–U12",
   "fel": []
- },
- "svb68193": {
-  "fil": "render_svff3.py",
-  "titel": "Svansleken Speluppbyggnad",
-  "fel": []
- },
- "svb140479": {
-  "fil": "render_svff3.py",
-  "titel": "Futsal – Hålla bollen inom laget U7–U10",
-  "fel": []
- },
- "svb313": {
-  "fil": "render_svff3.py",
-  "titel": "Färdighetsövning 1 Uppvärmning och koordination (MV)",
-  "fel": []
- },
- "svb263": {
-  "fil": "render_svff3.py",
-  "titel": "Färdighetsövning 3 Skjuta",
-  "fel": [
-   "boll ligger still utan spelare vid 0.4s (50,20)",
-   "boll ligger still utan spelare vid 0.4s (50,40)",
-   "boll ligger still utan spelare vid 0.4s (50,60)",
-   "boll ligger still utan spelare vid 0.4s (50,80)",
-   "boll ligger still utan spelare vid 1.9s (64,16)",
-   "boll ligger still utan spelare vid 11.0s (58,23)",
-   "boll ligger still utan spelare vid 11.1s (64,16)",
-   "boll ligger still utan spelare vid 11.5s (58,43)",
-   "boll ligger still utan spelare vid 11.6s (64,44)",
-   "boll ligger still utan spelare vid 12.2s (80,44)",
-   "boll ligger still utan spelare vid 12.5s (58,83)",
-   "boll ligger still utan spelare vid 12.6s (64,84)",
-   "boll ligger still utan spelare vid 15.2s (60,20)",
-   "boll ligger still utan spelare vid 15.5s (60,40)",
-   "boll ligger still utan spelare vid 15.8s (50,60)",
-   "boll ligger still utan spelare vid 16.1s (60,80)",
-   "boll ligger still utan spelare vid 16.4s (36,62)",
-   "boll ligger still utan spelare vid 2.4s (64,44)",
-   "boll ligger still utan spelare vid 3.4s (64,84)",
-   "boll ligger still utan spelare vid 7.2s (36,62)"
-  ]
  }
 }
