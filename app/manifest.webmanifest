@@ -3,7 +3,7 @@
   "name": "Övningsfabriken",
   "short_name": "Övningsfabriken",
   "lang": "sv",
-  "start_url": "./",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
   "theme_color": "#102820",

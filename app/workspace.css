@@ -710,3 +710,7 @@ i.pass { background:#3f8a5f; } i.done { background:#a9b9ad; } i.match { backgrou
 .of-bank-age { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 14px; padding:12px 16px; margin-bottom:10px; border-radius:14px; background:var(--accent-soft); color:var(--ink); font-size:14px; }
 .of-bank-age b { font-weight:800; }
 .of-bank-age .of-text-action { font-size:13px; font-weight:700; }
+
+/* Prestanda: kort utanför skärmen ritas inte förrän man scrollar dit */
+.of-bank-grid > .of-exercise { content-visibility:auto; contain-intrinsic-size:auto 230px; }
+@media (max-width:719px) { .of-bank-grid > .of-exercise { contain-intrinsic-size:auto 170px; } }

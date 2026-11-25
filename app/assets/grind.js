@@ -39,7 +39,7 @@
   applyTheme();
   function hideSplash() {
     const sp = document.getElementById('of-splash'); if (!sp || sp.dataset.ut) return; sp.dataset.ut = '1';
-    const wait = Math.max(0, 900 - (Date.now() - (window.OF_SPLASH_AT || 0)));
+    const wait = Math.max(0, 450 - (Date.now() - (window.OF_SPLASH_AT || 0)));
     setTimeout(() => { sp.style.opacity = '0'; setTimeout(() => sp.remove(), 450); }, wait);
   }
   const primary = () => (st.access?.clubs || []).find(c => c.active) || (st.access?.clubs || [])[0] || null;

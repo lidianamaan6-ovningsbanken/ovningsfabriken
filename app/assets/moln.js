@@ -55,7 +55,8 @@
   function schedulePush(delay = 800) {
     if (!state.user) return;
     clearTimeout(pushTimer); pushTimer = setTimeout(push, delay);
-    state.pending = diff().length; emit();
+    // Prestanda: jämförelsen av all data görs när synken körs, inte vid varje klick
+    if (!state.pending) { state.pending = 1; emit(); }
   }
   async function push() {
     if (!state.user || state.pushing) return;

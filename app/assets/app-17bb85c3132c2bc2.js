@@ -174,10 +174,17 @@ let SAVED = {};
 let batchCtl = null, progBusy = false, errMsg = '';
 const OPEN = new Set();
 const isBusy = () => progBusy || ST.results.some(r => r.pending);
-function persist() {
+/* Prestanda: sparandet skjuts upp en kort stund så att klick och sidbyten ritas direkt.
+   Allt sparas ändå direkt om fliken stängs eller appen läggs i bakgrunden. */
+let PERSIST_T = null;
+function persistNow() {
+  clearTimeout(PERSIST_T); PERSIST_T = null;
   try { const keep = ST.results.filter(r => !r.pending && !r.failed).slice(-50); localStorage.setItem(LS, JSON.stringify({ ST: Object.assign({}, ST, { results: keep }), SAVED })); } catch (e) { }
   window.OF_MOLN?.changedLocally();
 }
+function persist() { if (!PERSIST_T) PERSIST_T = setTimeout(persistNow, 120); }
+addEventListener('pagehide', () => { if (PERSIST_T) persistNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && PERSIST_T) persistNow(); });
 function restore() { try { const o = JSON.parse(localStorage.getItem(LS) || 'null'); if (o) { ST = Object.assign(ST, o.ST || {}); SAVED = o.SAVED || {}; } } catch (e) { } ST.results = (ST.results || []).filter(r => r && !r.pending && !r.failed); ST.results.forEach(r => { if (r.animStatus === 'pending') delete r.animStatus; }); ST.bankAnimBusy = ''; ST.bankAnims = ST.bankAnims || {}; if (ST.results.length) ST.editOpen = false; }
 const caps = {};
 function useCap(n) {
@@ -5704,12 +5711,20 @@ function shareHTML(s) {
     '<pre class="share-pre">' + esc(txt) + '</pre>' +
     '<p class="small muted">Länken till appen fungerar bara för dem du har delat appen med via Dela-menyn.</p></div></div>';
 }
-async function dlSess(s) {
+
+/* Nedladdning: spara en fil på enheten. Fungerar i vanlig webbläsare (tidigare krävdes Claude-miljön). */
+async function saveFileOnDevice(fn, data, type) {
+  const blob = data instanceof Blob ? data : new Blob([data], { type: type || 'application/octet-stream' });
   const dl = await useCap('downloads');
+  if (dl) { try { await dl.save({ filename: fn, data: blob }); return 'saved'; } catch (e) { if (e && e.code === 'declined') return 'declined'; } }
+  const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = fn; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000);
+  return 'saved';
+}
+async function dlSess(s) {
   const html = sessDocHTML(s, true); const fn = (s.name || 'pass').replace(/[^\wåäöÅÄÖ \-]+/g, '').trim().slice(0, 60) + ' ' + s.date + '.html';
-  if (!dl) { toast('Nedladdning är inte tillgänglig här just nu'); return; }
-  try { await dl.save({ filename: fn, data: html }); toast('Filen är sparad – den går att öppna utan uppkoppling'); }
-  catch (e) { if (!e || e.code !== 'declined') toast('Kunde inte spara filen här'); }
+  try { const r = await saveFileOnDevice(fn, html, 'text/html'); if (r === 'saved') toast('Filen är sparad – den går att öppna utan uppkoppling'); }
+  catch (e) { toast('Kunde inte spara filen här'); }
 }
 function printSess(s) {
   const root = $('#print-root'); root.innerHTML = '<style>' + PD_CSS + '</style>' + sessDocHTML(s, false);
@@ -6966,10 +6981,8 @@ async function shareImg(s) {
     const file = new File([SHARE_IMG.blob], fn, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: s.name }); return; }
   } catch (e) { if (e && e.name === 'AbortError') return; }
-  const dl = await useCap('downloads');
-  if (!dl) { toast('Det går inte att spara bilden här just nu'); return; }
-  try { await dl.save({ filename: fn, data: SHARE_IMG.blob }); toast('Bilden är sparad – skicka den i WhatsApp eller SMS'); }
-  catch (e) { if (!e || e.code !== 'declined') toast('Kunde inte spara bilden här'); }
+  try { const r = await saveFileOnDevice(fn, SHARE_IMG.blob, 'image/png'); if (r === 'saved') toast('Bilden är sparad – skicka den i WhatsApp eller SMS'); }
+  catch (e) { toast('Kunde inte spara bilden här'); }
 }
 const __shareHTML13 = shareHTML;
 shareHTML = function (s) {
@@ -7360,7 +7373,13 @@ const PDF_GREEN = [31, 97, 67], PDF_GOLD = [201, 162, 39], PDF_INK = [25, 28, 26
 function pT(s) {
   return String(s == null ? '' : s).replace(/[→⇒]/g, '->').replace(/[←]/g, '<-').replace(/[–—−]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, '...').replace(/≈/g, '~').replace(/[•·]/g, m => m === '·' ? '·' : '-').replace(/ /g, ' ').replace(/[^\x00-\xff]/g, '').replace(/\s+\n/g, '\n');
 }
-async function exImgData(ex) {
+const PDF_IMG = new Map();   /* Prestanda: varje övningsbild ritas en gång och återanvänds */
+function exImgData(ex) {
+  const k = (ex && (ex.id || ex.name)) + '|' + (ex && ex.anim ? JSON.stringify(ex.anim).length : 0);
+  if (!PDF_IMG.has(k)) { PDF_IMG.set(k, exImgData0(ex).catch(() => null)); if (PDF_IMG.size > 60) PDF_IMG.delete(PDF_IMG.keys().next().value); }
+  return PDF_IMG.get(k);
+}
+async function exImgData0(ex) {
   const svg = svgForImg(ex, 1400); const im = await loadSvgImg(svg); if (!im) return null;
   const c = document.createElement('canvas'); c.width = 1400; c.height = Math.round(1400 * BH / BW);
   const x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
@@ -7431,7 +7450,7 @@ async function runPdf(name, build) {
   catch (e) { toast('PDF:en kunde inte skapas här just nu'); }
   finally { PDF_BUSY = false; }
 }
-function pdfExs(list, name) { return runPdf(name, async P => { for (let i = 0; i < list.length; i++) { if (i) P.newPage(); await pdfExercise(P, list[i]); } }); }
+function pdfExs(list, name) { return runPdf(name, async P => { await Promise.all(list.map(exImgData)); for (let i = 0; i < list.length; i++) { if (i) P.newPage(); await pdfExercise(P, list[i]); } }); }
 function pdfSess(s) {
   return runPdf((s.name || 'Träningspass') + ' ' + (s.date || ''), async P => {
     const doc = P.doc; const kit = sessKit(s);
@@ -7445,6 +7464,7 @@ function pdfSess(s) {
     s.blocks.forEach((b, i) => { const st = t; t += Number(b.min) || 0; P.need(10); doc.setFillColor(i % 2 ? 255 : 244, i % 2 ? 255 : 246, i % 2 ? 255 : 244); doc.rect(14, P.y, 182, 9, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...PDF_INK); doc.text(String(i + 1), 18, P.y + 6); doc.setFont('helvetica', 'normal'); doc.text(pT(kindName(b.kind)), 25, P.y + 6); doc.text(st + '-' + t + ' min', 62, P.y + 6); doc.setFont('helvetica', 'bold'); doc.text(doc.splitTextToSize(pT(b.ex.name), 108)[0], 88, P.y + 6); P.y += 9; });
     P.y += 3; if (s.coach) P.section('Coacha idag', s.coach);
     t = 0;
+    await Promise.all(s.blocks.map(b => b.ex && exImgData(b.ex)));
     for (let i = 0; i < s.blocks.length; i++) { const b = s.blocks[i]; const st = t; t += Number(b.min) || 0; P.newPage(); await pdfExercise(P, b.ex, (i + 1) + '. ' + kindName(b.kind) + ' · ' + b.min + ' min (' + st + '-' + t + ')' + (b.note ? '   ' + b.note.slice(0, 90) : '')); }
   });
 }
@@ -8985,7 +9005,8 @@ const OF_DEV_ON = (() => { try {
 } catch (e) { return false; } })();
 if (OF_DEV_ON) WORKSPACE_PAGES.push(['dev', 'Utvecklare', 'M8 8l-5 4 5 4m8-8 5 4-5 4M14 4l-4 16']);
 const workspaceIcon = i => '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + WORKSPACE_PAGES[i][2] + '"/></svg>';
-const workspaceDate = (date, options) => new Date(date + 'T12:00').toLocaleDateString('sv-SE', options);
+const WS_DATEFMT = new Map();   /* Intl-formaterare är dyra att skapa – återanvänd dem */
+const workspaceDate = (date, options) => { const k = JSON.stringify(options || {}); let f = WS_DATEFMT.get(k); if (!f) { f = new Intl.DateTimeFormat('sv-SE', options); WS_DATEFMT.set(k, f); } return f.format(new Date(date + 'T12:00')); };
 const workspaceBrand = () => '<img class="of-brand-lockup" src="assets/ovningsfabriken-logo.svg" alt="Övningsfabriken" width="405" height="132">';
 
 renderNav = function () {
@@ -9425,19 +9446,29 @@ let workspaceBankLimit = BANK_PAGE_SIZE;
 const workspaceBankOptions = (items, selected) => items.map(([key, label]) =>
   '<option value="' + esc(key) + '"' + (key === selected ? ' selected' : '') + '>' + esc(label) + '</option>').join('');
 
+const WS_BANK_MEMO = { key: '', list: null };
 function workspaceBankCards() {
   const q = (ST.bankQ || '').trim();
   const profile = ST.workspaceBankAllAges ? null : (teamProfile() || bankProf());
   const category = ST.bankCat || 'all';
   const stage = ST.workspaceBankStage || '';
-  const pool = BANK.filter(b => (category === 'all' || catOf(b) === category)
-    && (!stage || b.stage === stage)
-    && (!profile || q || profOk(b, profile))
-    && (!ST.workspaceBankFit || FITS(b, ST.n))
-    && (!ST.bankLand || ST.bankLand === 'all' || landOf(b) === ST.bankLand)
-    && (!ST.lpF || [...lpTags(b).fard, ...lpTags(b).spel].includes(ST.lpF)));
-  const matches = q ? searchBank(q, pool, pool.length) : pool.sort((a, b) =>
-    Number(FITS(b, ST.n)) - Number(FITS(a, ST.n)) || (profile ? profScore(b, profile) - profScore(a, profile) : 0) || Number(a.src === 'svb') - Number(b.src === 'svb'));
+  /* Prestanda: filtrering och sortering av hela banken sparas tills något filter ändras */
+  const memoKey = [q, category, stage, ST.workspaceBankFit ? ST.n : '', ST.n, ST.bankLand || '', ST.lpF || '', profile ? [profile.u, profile.sf, profile.label] : '-', BANK.length].join('|');
+  let matches = WS_BANK_MEMO.key === memoKey ? WS_BANK_MEMO.list : null;
+  if (!matches) {
+    const pool = BANK.filter(b => (category === 'all' || catOf(b) === category)
+      && (!stage || b.stage === stage)
+      && (!profile || q || profOk(b, profile))
+      && (!ST.workspaceBankFit || FITS(b, ST.n))
+      && (!ST.bankLand || ST.bankLand === 'all' || landOf(b) === ST.bankLand)
+      && (!ST.lpF || [...lpTags(b).fard, ...lpTags(b).spel].includes(ST.lpF)));
+    if (q) matches = searchBank(q, pool, pool.length);
+    else {
+      const sc = new Map(pool.map(b => [b, [Number(FITS(b, ST.n)), profile ? profScore(b, profile) : 0, Number(b.src === 'svb')]]));
+      matches = pool.sort((a, b) => { const A = sc.get(a), B = sc.get(b); return B[0] - A[0] || B[1] - A[1] || A[2] - B[2]; });
+    }
+    WS_BANK_MEMO.key = memoKey; WS_BANK_MEMO.list = matches;
+  }
   const tpAll = teamProfile();
   const ageNote = tpAll ? '<div class="of-bank-age">' + (profile
       ? '<span><b>Anpassat för ' + esc(tpAll.label) + '</b> · ' + esc(sfOf(tpAll.sf)?.[1] || '') + ' · bäst lämpade först</span><button type="button" class="of-text-action" data-a="workspaceAllAges" data-v="1">Visa alla åldrar</button>'
@@ -9671,7 +9702,7 @@ root.innerHTML='<div class="ma-backdrop" data-a="closeMatchAnalysis"><section cl
 const video=$('#ma-player'); if(video&&MA_URL) { if(video.src!==MA_URL){video.src=MA_URL;video.addEventListener('loadedmetadata',()=>{video.currentTime=Math.min(restoreTime,video.duration||restoreTime);},{once:true});} video.ontimeupdate=()=>{const t=maFmt(video.currentTime);const a=$('#ma-time'),b=$('#ma-add-time');if(a)a.textContent=t;if(b)b.textContent=t;}; const note=$('#ma-note');if(note)note.value=oldNote;}const start=$('#ma-clip-start');if(start&&window.MA_CLIP_START!=null)start.textContent='Start '+maFmt(window.MA_CLIP_START);const recSel=$('#ma-rec-kind'),kindSel=$('#ma-kind');if(recSel)recSel.value=MA_REC_KIND;if(kindSel)kindSel.value=MA_KIND;
 }
 function maSaveEvent() { const v=$('#ma-player'), note=($('#ma-note')?.value||'').trim(); if(!v||!note){toast(!v?'Ladda upp en video först':'Skriv en kort observation');return;}const rows=maRead(),item=rows.find(x=>x.id===MA_VIDEO);if(!item)return;item.events.push({id:uid(),time:v.currentTime,kind:MA_KIND,note});item.updated=Date.now();maWrite(rows);maRender(); }
-document.addEventListener('change',async e=>{if(e.target.id==='ma-file'&&e.target.files?.[0]){const f=e.target.files[0];if(!f.type.startsWith('video/')){toast('Välj en videofil');return;}const id='ma-'+uid();try{await maVideoPut(id,f);const rows=maRead();rows.unshift({id,name:f.name.slice(0,90),size:f.size,type:f.type,updated:Date.now(),events:[],clips:[]});maWrite(rows);MA_VIDEO=id;if(MA_URL)URL.revokeObjectURL(MA_URL);MA_URL=URL.createObjectURL(f);maRender();toast('Videon är redo för analys');}catch(_){toast('Kunde inte spara videon på enheten');}}if(e.target.id==='ma-kind')MA_KIND=e.target.value;if(e.target.id==='ma-rec-kind'){MA_REC_KIND=e.target.value;maRender();}});
+document.addEventListener('change',async e=>{if(e.target.id==='ma-file'&&e.target.files?.[0]){const f=e.target.files[0];if(!f.type.startsWith('video/')){toast('Välj en videofil');return;}const id='ma-'+uid();/* Prestanda: videon visas direkt – sparandet på enheten sker i bakgrunden */const rows=maRead();rows.unshift({id,name:f.name.slice(0,90),size:f.size,type:f.type,updated:Date.now(),events:[],clips:[]});maWrite(rows);MA_VIDEO=id;if(MA_URL)URL.revokeObjectURL(MA_URL);MA_URL=URL.createObjectURL(f);maRender();toast('Videon är redo – du kan börja analysera direkt');try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(_){}maVideoPut(id,f).then(()=>toast('Videon är sparad på enheten')).catch(()=>toast('Videon kunde inte sparas på enheten – den finns kvar tills du stänger appen'));}if(e.target.id==='ma-kind')MA_KIND=e.target.value;if(e.target.id==='ma-rec-kind'){MA_REC_KIND=e.target.value;maRender();}});
 function maOpen() { MA_OPEN=true; if(!document.querySelector('#match-analysis-root'))document.body.insertAdjacentHTML('beforeend','<div id="match-analysis-root"></div>'); const rows=maRead();MA_VIDEO=MA_VIDEO||rows[0]?.id||null; maRender();if(MA_VIDEO)maVideoGet(MA_VIDEO).then(f=>{if(f){if(MA_URL)URL.revokeObjectURL(MA_URL);MA_URL=URL.createObjectURL(f);maRender();}}).catch(()=>toast('Videofilen finns inte längre på den här enheten'));document.body.style.overflow='hidden'; }
 Object.assign(A,{openMatchAnalysis:()=>maOpen(),maOpenExercise:el=>{const ex=findEx(el.dataset.id);MA_OPEN=false;maRender();document.body.style.overflow=MOPEN?'hidden':'';if(ex)openBoard(ex);},closeMatchAnalysis:(el,e)=>{if(el?.classList.contains('ma-backdrop')&&e.target!==el)return;MA_OPEN=false;maRender();document.body.style.overflow=MOPEN?'hidden':'';},selectMatchAnalysis:el=>{MA_VIDEO=el.dataset.id;MA_URL='';maVideoGet(MA_VIDEO).then(f=>{if(f)MA_URL=URL.createObjectURL(f);maRender();});},addMatchEvent:()=>maSaveEvent(),markClipStart:()=>{const v=$('#ma-player');if(!v)return toast('Ladda upp en video först');window.MA_CLIP_START=v.currentTime;const s=$('#ma-clip-start');if(s)s.textContent='Start '+maFmt(v.currentTime);},saveMatchClip:()=>{const v=$('#ma-player');if(!v||window.MA_CLIP_START==null)return toast('Markera klippets start först');if(v.currentTime<=window.MA_CLIP_START)return toast('Spela fram till klippets slut först');const rows=maRead(),item=rows.find(x=>x.id===MA_VIDEO);item.clips.push({id:uid(),start:window.MA_CLIP_START,end:v.currentTime,note:($('#ma-note')?.value||'').trim()});item.updated=Date.now();window.MA_CLIP_START=null;maWrite(rows);maRender();},deleteMatchEvent:el=>{const rows=maRead(),item=rows.find(x=>x.id===MA_VIDEO);item.events=item.events.filter(x=>x.id!==el.dataset.id);item.updated=Date.now();maWrite(rows);maRender();},deleteMatchClip:el=>{const rows=maRead(),item=rows.find(x=>x.id===MA_VIDEO);item.clips=item.clips.filter(x=>x.id!==el.dataset.id);item.updated=Date.now();maWrite(rows);maRender();}});
 
@@ -9711,3 +9742,16 @@ try {
 
 }
 startWorkspace();
+
+/* Prestanda: när appen är igång och telefonen vilar förbereds övningsbanken (sortering och miniatyrer),
+   så att första besöket i Övningsbanken går lika snabbt som de följande. */
+(function () {
+  const idle = window.requestIdleCallback || (fn => setTimeout(fn, 1200));
+  idle(() => { try { workspaceBankCards(); } catch (e) { } }, { timeout: 4000 });
+})();
+
+/* Prestanda: PDF-biblioteket förladdas i bakgrunden så att första PDF:en skapas utan väntan */
+(function () {
+  const idle = window.requestIdleCallback || (fn => setTimeout(fn, 6000));
+  setTimeout(() => idle(() => { try { const l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; document.head.appendChild(l); } catch (e) { } }, { timeout: 15000 }), 5000);
+})();
