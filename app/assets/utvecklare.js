@@ -64,7 +64,8 @@
 
     const tema = '<div class="of-dev-seg" role="group" aria-label="Tema">' + [['system', 'System'], ['light', 'Ljust'], ['dark', 'Mörkt']].map(([k, l]) =>
       '<button type="button" data-dev="theme" data-v="' + k + '" aria-pressed="' + (theme === k) + '">' + l + '</button>').join('') + '</div>'
-      + '<p class="of-muted-note">Gäller bara den här fliken tills sidan laddas om.</p>';
+      + '<p class="of-muted-note">Gäller bara den här fliken tills sidan laddas om.</p>'
+      + '<div class="of-dev-actions"><button class="btn" data-dev="valkomst">Visa välkomsten</button><button class="btn" data-dev="valkomst-ny">Visa som ny tränare</button></div>';
 
     const search = '<label class="of-dev-search"><span class="sr-only">Söktest</span><input id="of-dev-q" type="search" placeholder="Testa sökningen, t.ex. 3 mot 3" value="' + esc(searchQ) + '"></label><ol class="of-dev-results" id="of-dev-res"></ol>';
 
@@ -192,7 +193,17 @@
     if (!unsub && M()) unsub = M().on(() => { clearTimeout(timer); timer = setTimeout(() => { if (!document.activeElement || document.activeElement.id !== 'of-dev-q') rerender(); }, 400); });
     if (!ping) refreshRemote();
     if (bound) return; bound = true;
-    document.addEventListener('input', e => { if (e.target.id === 'of-dev-q') { searchQ = e.target.value; runSearch(); } });
+    document.addEventListener('input', e => {
+      if (e.target.id === 'of-dev-q') { searchQ = e.target.value; runSearch(); }
+      // välj klubb i katalogen → färg och kortnamn fylls i automatiskt
+      if (e.target.name === 'catalog' && e.target.form?.dataset.devform === 'club') {
+        const f = e.target.form, v = e.target.value.trim(), col = window.OF_CLUB_COLORS?.[v];
+        if (col) f.elements.color.value = col;
+        if (v && !f.elements.name.value) f.elements.name.value = v;
+        if (v && !f.elements.slug.dataset.touched) f.elements.slug.value = v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30);
+      }
+      if (e.target.name === 'slug') e.target.dataset.touched = '1';
+    });
     document.addEventListener('submit', async e => {
       const f = e.target; if (f.dataset.devform !== 'club') return; e.preventDefault();
       try {
@@ -203,6 +214,8 @@
       rerender();
     });
     document.addEventListener('click', async e => {
+      const vb = e.target.closest('[data-dev="valkomst"],[data-dev="valkomst-ny"]');
+      if (vb) { const u = window.OF_MOLN?.state.user; if (!u) { alert('Logga in först för att se välkomsten.'); return; } if (vb.dataset.dev === 'valkomst-ny') try { localStorage.removeItem('of-valkommen.' + u.id); } catch (err) { } window.OF_GRIND?.welcome(); return; }
       const b = e.target.closest('[data-dev]'); if (!b) return;
       const a = b.dataset.dev; const T = g('toast') || alert;
       if (a === 'upload') { if (lager && !lager.missing) { await checkLager().catch(e => lagerErr = e.message); rerender(); } else upload(); return; }

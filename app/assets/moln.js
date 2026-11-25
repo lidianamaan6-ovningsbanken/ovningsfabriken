@@ -180,8 +180,8 @@
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw error; return data;
   }
-  async function signUp(email, password) {
-    const { data, error } = await sb.auth.signUp({ email, password });
+  async function signUp(email, password, name) {
+    const { data, error } = await sb.auth.signUp({ email, password, options: name ? { data: { name } } : undefined });
     if (error) throw error; return data;
   }
   async function setPassword(password) {

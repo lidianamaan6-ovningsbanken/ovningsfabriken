@@ -22,10 +22,12 @@
   /* ---------- Klubbens profil: märke och färg (sparas på enheten för startbilden) ---------- */
   const JFA_CREST = 'assets/club-crests/jfa-stor.png';
   const crestFor = c => c?.crest || (c?.catalog === 'Järfälla FA' ? JFA_CREST : (c?.catalog && window.OF_SIGN_IN?.crests?.[c.catalog])) || '';
+  const DEF_COLOR = '#16392b';
+  const colorFor = c => (c?.color && c.color.toLowerCase() !== DEF_COLOR ? c.color : (c?.catalog && window.OF_CLUB_COLORS?.[c.catalog])) || c?.color || DEF_COLOR;
   let brandInfo = (() => { try { return JSON.parse(localStorage.getItem('of-klubb') || 'null'); } catch (e) { return null; } })();
   function setBrand(c, save) {
     if (!c) return;
-    brandInfo = { name: c.name, crest: crestFor(c), color: c.color || '#16392b' };
+    brandInfo = { name: c.name, crest: crestFor(c), color: colorFor(c) };
     if (save) { try { localStorage.setItem('of-klubb', JSON.stringify(brandInfo)); } catch (e) { } }
     applyTheme();
   }
@@ -53,6 +55,90 @@
 
   function allowed(view) { return open || (view === 'dev' && devOn()); }
 
+
+  /* ---------- Välkomsten: klubbens märke och färg, tränarens namn och dagens tanke ---------- */
+  const THOUGHTS = [
+    'Någon i ditt lag kommer att minnas dagens träning i många år. Kanske inte övningen, men känslan du gav.',
+    'Tänk på varför du blev tränare. Det är samma anledning som får dig att stå på planen i regn och mörker.',
+    'Du tränar inte bara fotbollsspelare. Du formar människor som tar med sig det här hela livet.',
+    'Varför vill du fortfarande utvecklas? För att dina spelare förtjänar en tränare som också lär sig nytt.',
+    'Ett leende på planen är också ett resultat.',
+    'Små framsteg varje vecka blir stora skillnader över en säsong.',
+    'Säg spelarnas namn i dag och beröm något konkret. Det tar fem sekunder och betyder mer än du tror.',
+    'Du ger din tid till andras barn. Det är en av de finaste sakerna man kan göra.',
+    'Den bästa övningen är den där alla får många bollkontakter och ingen står i kö.',
+    'Våga låta spelarna misslyckas. Det är där de lär sig.',
+    'Fråga en spelare i dag: ”Vad tyckte du var roligast?” Svaret säger mycket.',
+    'Bra tränare har svar. Riktigt bra tränare ställer frågor.',
+    'Tänk på den tränare som betydde mest för dig. I dag kan du vara den för någon annan.',
+    'Glädje först, utveckling sen. Ofta kommer de samtidigt.',
+    'Du behöver inte vara perfekt. Du behöver vara där, förberedd och engagerad. Det är du.',
+    'Varje spelare har en egen resa. Din uppgift är att göra den lite roligare och lite längre.',
+    'En bra säsong mäts inte i vinster, utan i hur många som vill fortsätta spela.',
+    'En välplanerad träning är en gåva till spelarna, och till dig själv.',
+    'Tålamod är också en tränarfärdighet.',
+    'Tänk på den tystaste spelaren i laget. Vad kan du göra för att hen ska våga ta plats i dag?',
+    'Utveckling syns inte alltid direkt. Lita på processen och på det du gör.',
+    'Fotboll är ett lagspel, även för tränare. Dela en övning med en kollega i dag.',
+    'För många i ditt lag är träningsdagarna veckans bästa dagar. Det är tack vare dig.',
+    'Ge beröm för ansträngning, inte bara för talang.',
+    'Det finns spelare som kommer till träningen just för att du är där.',
+    'Planera som ett proffs, led som en förebild, skratta som ett barn.',
+    'Det du gör är viktigt. Tack för att du fortfarande står där.',
+    'Varför är du fortfarande tränare? Håll fast vid svaret, det är din bästa motor.'
+  ];
+  const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+  const dayNo = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / 864e5);
+  const hello = () => { const h = new Date().getHours(); return h >= 5 && h < 10 ? 'God morgon' : h >= 17 && h < 23 ? 'God kväll' : 'Hej'; };
+  const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { } };
+  let wEl = null, wTimer = 0;
+  function welcome(force) {
+    const user = M()?.state.user; if (!user || wEl) return;
+    if (!force && (g('ST') || {}).view === 'dev') return;
+    const firstKey = 'of-valkommen.' + user.id, dayK = 'of-hej.' + user.id;
+    const first = !lsGet(firstKey);
+    if (!force && !first && lsGet(dayK) === dayKey()) return;
+    lsSet(dayK, dayKey());
+    const c = primary() || (st.access?.clubs || [])[0];
+    const b = brandInfo || (c ? { name: c.name, crest: crestFor(c), color: colorFor(c) } : null);
+    const club = b?.name || 'Övningsfabriken';
+    const name = (user.user_metadata?.name || '').trim();
+    const team = (() => { const t = [...(window.OF_SIGN_IN?.teams || []), ...(g('CLUB_TEAMS') || [])].find(x => x.id === (c?.teams || [])[0]); return t ? t.name : ''; })();
+    const date = new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
+    const thought = THOUGHTS[((dayNo() % THOUGHTS.length) + THOUGHTS.length) % THOUGHTS.length];
+    const crest = b?.crest ? '<div class="of-valk-crest"><img src="' + esc(b.crest) + '" alt="' + esc(club) + '"></div>' : '<img class="of-valk-of" src="assets/ovningsfabriken-logo-light.svg" alt="Övningsfabriken">';
+    const html = first
+      ? '<span class="of-valk-eyebrow">' + esc(club) + ' · Övningsfabriken</span>'
+        + '<h1>' + (name ? 'Hej ' + esc(name) + ',<br>tack för att du valde oss.' : 'Välkommen,<br>tack för att du valde oss.') + '</h1>'
+        + '<p class="of-valk-lead">Nu är du en del av tränarlaget i ' + esc(club) + (team ? ', som tränare för <b>' + esc(team) + '</b>' : '') + '. Här planerar du träningar, hittar övningar som passar ditt lag och följer spelarnas utveckling.</p>'
+        + '<blockquote>Innan du går vidare: tänk på varför du är tränare. Kanske för glädjen i spelarnas ögon, för gemenskapen eller för att du själv en gång hade en tränare som trodde på dig. Det svaret är det viktigaste du tar med dig ut på planen.</blockquote>'
+        + '<button type="button" class="of-valk-btn" data-valk>Kom igång</button>'
+      : '<span class="of-valk-eyebrow">' + esc(date.charAt(0).toUpperCase() + date.slice(1)) + ' · ' + esc(club) + '</span>'
+        + '<h1>' + hello() + (name ? ', ' + esc(name) : '') + '!</h1>'
+        + '<blockquote>' + esc(thought) + '</blockquote>'
+        + '<button type="button" class="of-valk-btn" data-valk>Till träningen</button>'
+        + '<span class="of-valk-bar" aria-hidden="true"><i></i></span>';
+    wEl = document.createElement('div'); wEl.id = 'of-valkomst'; wEl.className = 'of-valk' + (first ? ' is-first' : '');
+    wEl.setAttribute('role', 'dialog'); wEl.setAttribute('aria-modal', 'true'); wEl.setAttribute('aria-label', 'Välkommen');
+    wEl.style.setProperty('--valk', b?.color || DEF_COLOR);
+    wEl.innerHTML = '<div class="of-valk-inner">' + crest + html + '</div>';
+    const img = wEl.querySelector('.of-valk-crest img');
+    if (img) img.addEventListener('load', () => { if (img.naturalWidth >= 240) img.parentNode.classList.add('is-large'); });
+    document.body.appendChild(wEl);
+    document.getElementById('of-splash')?.remove();
+    requestAnimationFrame(() => wEl && wEl.classList.add('is-in'));
+    const close = () => {
+      if (!wEl) return; const el = wEl; wEl = null; clearTimeout(wTimer);
+      if (first) lsSet(firstKey, '1');
+      el.classList.remove('is-in'); el.classList.add('is-out'); setTimeout(() => el.remove(), 500);
+    };
+    wEl.addEventListener('click', e => { if (!first || e.target.closest('[data-valk]')) close(); });
+    document.addEventListener('keydown', function k(e) { if (e.key === 'Escape' || e.key === 'Enter') { document.removeEventListener('keydown', k); close(); } });
+    wEl.querySelector('[data-valk]').focus({ preventScroll: true });
+    if (!first) wTimer = setTimeout(close, 9000);
+  }
+
   /* ---------- Rendering ---------- */
   let root = null;
   function ensureRoot() {
@@ -78,7 +164,7 @@
       const signup = st.mode === 'signup';
       body = (invite ? '<span class="of-eyebrow">Inbjudan' + (st.inviteClub ? ' · ' + esc(st.inviteClub) : '') + '</span><h1>' + (signup ? 'Skapa ditt konto' : 'Logga in för att gå med') + '</h1><p class="of-grind-lead">Du har blivit inbjuden till ' + (st.inviteClub ? '<b>' + esc(st.inviteClub) + '</b> på ' : '') + 'Övningsfabriken. ' + (signup ? 'Välj e-post och lösenord så kopplas du till klubben.' : 'Logga in så kopplas kontot till klubben.') + '</p>'
         : '<span class="of-eyebrow">' + (brandInfo?.name ? esc(brandInfo.name) : 'Välkommen') + '</span><h1>Logga in</h1><p class="of-grind-lead">' + (brandInfo?.name ? 'Välkommen tillbaka till klubbens träningsplanering.' : 'Övningsfabriken är till för tränare med klubblicens.') + '</p>')
-        + '<form class="of-grind-form" data-g="auth"><label for="g-mail">E-post</label><input id="g-mail" name="email" type="email" autocomplete="email" inputmode="email" required>'
+        + '<form class="of-grind-form" data-g="auth">' + (signup ? '<label for="g-first">Ditt förnamn</label><input id="g-first" name="first" autocomplete="given-name" maxlength="40" required placeholder="Så hälsar appen på dig">' : '') + '<label for="g-mail">E-post</label><input id="g-mail" name="email" type="email" autocomplete="email" inputmode="email" required>'
         + '<label for="g-pass">Lösenord</label><input id="g-pass" name="password" type="password" autocomplete="' + (signup ? 'new-password' : 'current-password') + '" minlength="8" required>'
         + (signup ? '<small class="of-grind-hint">Minst 8 tecken.</small>' : '')
         + '<button class="of-grind-btn" type="submit"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Vänta …' : signup ? 'Skapa konto och gå med' : 'Logga in') + '</button></form>' + msg
@@ -192,7 +278,7 @@
       let skipped = false; try { skipped = localStorage.getItem(skipKey(user.id, pc?.id)) === '1'; } catch (e) { }
       if (ok && pc && !(pc.teams || []).length && clubTeams(pc).length && !skipped) {
         open = false; st.phase = 'team'; st.teamMode = 'first'; st.teamClub = pc; st.picked = [];
-      }
+      } else if (ok) welcome();
     } catch (e) {
       const c = readCache();
       if (c?.ok && c.uid === user.id && Date.now() - c.at < DAYS7) { open = true; st.phase = 'open'; window.OF_ACCESS = c.access; st.access = c.access; }
@@ -209,7 +295,7 @@
       st.busy = true; st.msg = ''; show();
       try {
         if (st.mode === 'signup') {
-          const d = await M().signUp(email, password);
+          const d = await M().signUp(email, password, (f.elements.first?.value || '').trim());
           if (!d.session) { st.msg = 'Kontot är skapat men behöver bekräftas. Kontakta Övningsfabriken.'; }
         } else await M().signInPassword(email, password);
       } catch (err) { st.msg = friendly(err); }
@@ -231,7 +317,7 @@
         c.teams = ordered; (st.access?.clubs || []).forEach(x => { if (x.id === c.id) x.teams = ordered; });
         writeCache({ ok: true, at: Date.now(), uid: M().state.user.id, access: st.access }); window.OF_ACCESS = st.access;
         st.busy = false; open = true; st.phase = 'open'; forceTeam = ordered[0];
-        refreshApp();
+        refreshApp(); if (st.teamMode === 'first') welcome();
       } catch (err) { st.busy = false; st.msg = friendly(err); show(); }
       return;
     }
@@ -248,7 +334,7 @@
     if (a === 'mode') { st.mode = b.dataset.v; st.msg = ''; show(); }
     if (a === 'out') { open = false; writeCache(null); await M().signOut(); st.msg = ''; show(); }
     if (a === 'retry') { st.msg = ''; check(); }
-    if (a === 'teamskip') { try { localStorage.setItem(skipKey(M().state.user.id, st.teamClub?.id), '1'); } catch (err) { } open = true; st.phase = 'open'; refreshApp(); }
+    if (a === 'teamskip') { try { localStorage.setItem(skipKey(M().state.user.id, st.teamClub?.id), '1'); } catch (err) { } open = true; st.phase = 'open'; refreshApp(); welcome(); }
     if (a === 'teamcancel') { open = true; st.phase = 'open'; hide(); }
     if (a === 'replace') {
       st.busy = true; st.msg = ''; show();
@@ -269,7 +355,7 @@
     if (!M().sb) { open = false; st.phase = 'nolicense'; st.msg = 'Kunde inte ansluta till Övningsfabriken. Kontrollera nätet och ladda om sidan.'; show(); return; }
     if (invite && M().sb) M().rpc('invite_info', { invite_token: invite }).then(r => { if (r?.ok) { st.inviteClub = r.name; setBrand(r, false); if (!open) show(); } }).catch(() => { });
     else if (q.get('klubb') && M().sb) M().rpc('club_brand', { club_slug: q.get('klubb') }).then(r => { if (r?.name) { setBrand(r, true); if (!open) show(); } }).catch(() => { });
-    M().ready.then(() => { lastUid = M().state.user?.id; check(); });
+    M().ready.then(() => { lastUid = M().state.user?.id; if (open && lastUid) welcome(); check(); });
     M().on(s => { const uid = s.user?.id; if (uid !== lastUid) { lastUid = uid; open = false; check(); } });
   }
   if (!open) document.documentElement.classList.add('of-grind-on');
@@ -299,6 +385,6 @@
   }
   function appReady() { applyAccount(); hideSplash(); }
   setTimeout(hideSplash, 4000);
-  window.OF_GRIND = { allowed, show, check, isOpen: () => open, pickTeam, appReady, applyAccount };
+  window.OF_GRIND = { allowed, show, check, isOpen: () => open, pickTeam, appReady, applyAccount, welcome: () => welcome(true) };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

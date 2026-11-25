@@ -1037,7 +1037,7 @@ html,body{overflow-x:clip}
 </style>
 
 <link rel="stylesheet" href="./workspace.css?v=36">
-<link rel="stylesheet" href="./grind.css?v=6">
+<link rel="stylesheet" href="./grind.css?v=7">
 <script>try{var c=JSON.parse(localStorage.getItem('of-tillgang')||'null');if(!(c&&c.ok&&Date.now()-c.at<6048e5)||/[?&]inbjudan=/.test(location.search))document.documentElement.classList.add('of-grind-on')}catch(e){document.documentElement.classList.add('of-grind-on')}</script>
 
 <link rel="manifest" href="./manifest.webmanifest">
@@ -1049,7 +1049,7 @@ html,body{overflow-x:clip}
 <script>(function(){try{var q=location.search;if(/[?&]inbjudan=/.test(q))return;var b=JSON.parse(localStorage.getItem('of-klubb')||'null');if(!b||!b.crest)return;
 var c=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#16392b',d=document.createElement('div');d.id='of-splash';d.setAttribute('aria-hidden','true');
 d.style.cssText='position:fixed;inset:0;z-index:9000;display:grid;place-items:center;transition:opacity .45s ease;background:radial-gradient(120% 80% at 50% 35%,'+c+' 0%,'+c+' 45%,rgba(0,0,0,.28) 100%),'+c;
-var i=new Image();i.src=b.crest;i.alt='';i.style.cssText='width:min(54vw,260px);height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))';d.appendChild(i);
+var i=new Image();i.src=b.crest;i.alt='';i.style.cssText='width:min(54vw,260px);height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))';i.onload=function(){if(i.naturalWidth<240)i.style.cssText='width:76px;height:76px;object-fit:contain;padding:22px;background:#fff;border-radius:50%;box-shadow:0 18px 40px rgba(0,0,0,.32)'};d.appendChild(i);
 document.body.appendChild(d);window.OF_SPLASH_AT=Date.now();var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',c);
 setTimeout(function(){if(d.parentNode){d.style.opacity='0';setTimeout(function(){d.remove()},500)}},5000);}catch(e){}})();</script>
 <div class="wrap" id="app"><p role="status">Övningsfabriken startar …</p><noscript>Aktivera JavaScript i webbläsaren för att använda Övningsfabriken.</noscript></div>
@@ -1060,11 +1060,12 @@ setTimeout(function(){if(d.parentNode){d.style.opacity='0';setTimeout(function()
 <script src="./stockholm-p2009.js" defer></script>
 <script src="./lagkatalog.js" defer></script>
 <script src="./assets/vendor/supabase.js?v=2" defer></script>
-<script src="./assets/moln.js?v=5" defer></script>
+<script src="./assets/moln.js?v=6" defer></script>
 <script src="./assets/konto.js?v=4" defer></script>
 <script src="./assets/skydd.js?v=3" defer></script>
-<script src="./assets/grind.js?v=7" defer></script>
-<script src="./assets/utvecklare.js?v=5" defer></script>
+<script src="./assets/klubbfarger.js?v=1" defer></script>
+<script src="./assets/grind.js?v=8" defer></script>
+<script src="./assets/utvecklare.js?v=6" defer></script>
 
 <style>
 .attend-dialog{width:min(520px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;color:var(--ink);background:var(--surface)}
