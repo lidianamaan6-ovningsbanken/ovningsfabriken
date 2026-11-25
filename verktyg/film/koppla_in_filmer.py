@@ -12,14 +12,17 @@ new = {i: sl for i, sl in M.items() if f"if (b?.id === '{i}') h += '<video" not 
 for i, sl in new.items():
     if f'data-skydd-poster="{sl}.jpg"' in s:
         sys.exit(f'Filnamnet {sl} används redan av en annan övning – välj ett annat namn för {i}.')
+SRC = os.environ.get('OF_FILM_SRC', f'{R}/nya-filmer')   # mappen där de renderade filmerna ligger
+NOTE = '<p class="small muted">Eget animationsexempel utifrån övningens titel och organisation. Originalets fullständiga anvisningar finns hos SvFF.</p>'
+def note(i): return NOTE if i.startswith('svb') else ''   # SvFF-övningarna är egna tolkningar
 for i, sl in new.items():
-    shutil.copy(f'{R}/nya-filmer/{sl}.mp4', f'{R}/app/assets/{sl}.mp4')
+    shutil.copy(f'{SRC}/{sl}.mp4', f'{R}/app/assets/{sl}.mp4')
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', '6', '-i', f'{R}/app/assets/{sl}.mp4', '-frames:v', '1', '-vf', 'scale=720:720', '-q:v', '4', f'{R}/app/assets/{sl}.jpg'], check=True)
 a = 'const OF_EXERCISE_FILM_IDS = new Set(['
 s = s.replace(a, a + ''.join(f'"{i}", ' for i in new), 1)
 anchor = "  if (!["
 k = s.index(anchor + "'"); 
-lines = ''.join(f"""  if (b?.id === '{i}') h += '<video class="of-exercise-film" controls playsinline preload="metadata" data-skydd-poster="{sl}.jpg" aria-label="{html.escape(bank[i]).replace("'", "&#39;")} – övningsfilm"><source data-skydd-src="{sl}.mp4" type="video/mp4">Din webbläsare kan inte spela filmen. <a data-skydd-href="{sl}.mp4" target="_blank" rel="noopener">Öppna filmen</a>.</video>';\n""" for i, sl in new.items())
+lines = ''.join(f"""  if (b?.id === '{i}') h += '<video class="of-exercise-film" controls playsinline preload="metadata" data-skydd-poster="{sl}.jpg" aria-label="{html.escape(bank[i]).replace("'", "&#39;")} – övningsfilm"><source data-skydd-src="{sl}.mp4" type="video/mp4">Din webbläsare kan inte spela filmen. <a data-skydd-href="{sl}.mp4" target="_blank" rel="noopener">Öppna filmen</a>.</video>{note(i)}';\n""" for i, sl in new.items())
 s = s[:k] + lines + anchor + ''.join(f"'{i}', " for i in new) + s[k + len(anchor):]
 with open(js, 'w', encoding='utf-8') as fh: fh.write(s)
 print('nya:', len(new), 'totalt filmer i appen:', s[:s.index('])')].count('"'))
