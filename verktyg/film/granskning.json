@@ -1,32 +1,82 @@
 {
- "svb89719": {
-  "fil": "render_svff6.py",
-  "titel": "Ö2 – Färdighetsövning 1 Fånga bollen",
+ "svb89718": {
+  "fil": "render_svff7.py",
+  "titel": "Ö1 – Förberedelseträning Förhindra och rädda avslut",
   "fel": []
  },
- "svb89720": {
-  "fil": "render_svff6.py",
-  "titel": "Ö3 – Färdighetsövning 2 Kasta sig och fånga bollen",
+ "svb201": {
+  "fil": "render_svff7.py",
+  "titel": "Målvakt C – 6–9 år Skott – rädda avslut (SÖ 2)",
   "fel": []
  },
- "svb89721": {
-  "fil": "render_svff6.py",
-  "titel": "Ö4 – Färdighetsövning 3 Skott",
+ "svb312": {
+  "fil": "render_svff7.py",
+  "titel": "Spelövning 1 – skott Rädda avslut (MV)",
   "fel": []
  },
- "svb89722": {
-  "fil": "render_svff6.py",
-  "titel": "Ö5 – Spelövning 1 Skott",
+ "svb198": {
+  "fil": "render_svff7.py",
+  "titel": "Målvakt C – 6–9 år Greppteknik – fånga längs marken",
   "fel": []
  },
- "svb89723": {
-  "fil": "render_svff6.py",
-  "titel": "Ö6 – Spelövning 2 Skott",
+ "svb140364": {
+  "fil": "render_svff7.py",
+  "titel": "Futsal – Par-jage U7+",
   "fel": []
  },
- "svb89724": {
-  "fil": "render_svff6.py",
-  "titel": "Ö7 – Färdighetsövning 4 Bollstafett",
+ "svb140357": {
+  "fil": "render_svff7.py",
+  "titel": "Futsal – Motorikstopp U7–U12",
+  "fel": [
+   "spelare : skakar fram och tillbaka (10 gånger)",
+   "spelare : skakar fram och tillbaka (11 gånger)",
+   "spelare : skakar fram och tillbaka (12 gånger)",
+   "spelare : skakar fram och tillbaka (9 gånger)"
+  ]
+ },
+ "svb140374": {
+  "fil": "render_svff7.py",
+  "titel": "Futsal – Svansleken U7–U12",
+  "fel": []
+ },
+ "svb140359": {
+  "fil": "render_svff7.py",
+  "titel": "Futsal – Kängurustafett U7–U10",
+  "fel": []
+ },
+ "svb142864": {
+  "fil": "render_svff7.py",
+  "titel": "Futsal – Gladiatorerna U7–U10",
+  "fel": []
+ },
+ "svb122289": {
+  "fil": "render_svff7.py",
+  "titel": "1 mot 1 med avslut",
+  "fel": []
+ },
+ "svb48731": {
+  "fil": "render_svff7.py",
+  "titel": "SvFF D – Spelövning Spelform 5 mot 5",
+  "fel": []
+ },
+ "svb122274": {
+  "fil": "render_svff7.py",
+  "titel": "Dubbelkvadrat Speluppbyggnad",
+  "fel": []
+ },
+ "svb289": {
+  "fil": "render_svff7.py",
+  "titel": "Spelövning 1 (smålagsspel) Passa",
+  "fel": []
+ },
+ "svb288": {
+  "fil": "render_svff7.py",
+  "titel": "Färdighetsövning 1 Passa",
+  "fel": []
+ },
+ "svb69819": {
+  "fil": "render_svff7.py",
+  "titel": "Futsal – Passa och ta emot bollen · U9+",
   "fel": []
  }
 }
