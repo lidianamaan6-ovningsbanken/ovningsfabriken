@@ -719,3 +719,14 @@ i.pass { background:#3f8a5f; } i.done { background:#a9b9ad; } i.match { backgrou
 .m-draft { border:2px solid var(--of-green, #1f6143); background:color-mix(in srgb, var(--of-green, #1f6143) 7%, var(--surface)); display:grid; gap:6px; margin-bottom:12px; }
 .m-draft p { margin:0; }
 .mdet.is-draft .live-go, .mdet.is-draft [data-a="delMatch"], .mdet.is-draft .m-day { display:none !important; }
+
+/* G2/G3: på den öppna sidan finns ingen AI – dölj knappar som bara fungerar med den */
+.no-ai [data-a="aiSearch"], .no-ai [data-a="altAi"], .no-ai [data-a="drDescribe"], .no-ai [data-a="mkPlan"],
+.no-ai [data-a="mkRoles"], .no-ai [data-a="aiPatterns"], .no-ai [data-a="aiRetry"], .no-ai [data-a="adaptBlk"],
+.no-ai [data-a="doAdapt"], .no-ai [data-a="fromBank"], .no-ai [data-a="mkAnim"], .no-ai [data-a="ideaChk"],
+.no-ai [data-a="searchMake"], .no-ai [data-a="go"], .no-ai [data-a="more"] { display: none !important; }
+/* G3: generatorn för enskilda övningar kräver AI – på den öppna sidan visas bara Snabbt pass */
+.no-ai .v-make > .or-line, .no-ai .v-make > .or-line ~ * { display: none !important; }
+/* G13: alla flikar i Planering på en rad, lika breda */
+.seg.lp-seg { grid-template-columns: none !important; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+@media (max-width: 420px) { .seg.lp-seg button { font-size: 12px !important; letter-spacing: -.01em; } }

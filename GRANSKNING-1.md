@@ -4,9 +4,9 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 
 ## Etapp 1 – Releaseblockerare
 - G1 ✅ (Match → Ny match: utkast med Spara match/Avbryt, sparas först med motståndare och datum; formationen märkt ”exempel” tills den väljs) Ny match skapas direkt när man öppnar formuläret → ska vara utkast tills man sparar, med Avbryt och krav på uppgifter.
-- G2 ⬜ Texten om ”Claude-versionen” (Lagbanken, AI-anpassning) ska bort helt.
-- G3 ⬜ ”Fota eller ladda upp – Fungerar inte här just nu” och whiteboard-foto i generatorn: färdigställ eller ta bort ur aktiva flöden.
-- G4 ⬜ JFA-innehåll och JFA-logga visas för alla: läroplan, SUP, hjälp, generatorns lag. Ska bara visas för JFA, andra klubbar får neutralt innehåll.
+- G2 ✅ (Sparade → Lagbanken-raden borta när delning saknas; AI-knappar som inte fungerar på den öppna sidan döljs: matchplan, roller, alternativ, anpassa, mönster m.fl.) Texten om ”Claude-versionen” (Lagbanken, AI-anpassning) ska bort helt.
+- G3 ✅ (Verktyg → Rita: bara ”Rita ny övning”; Snabbt pass: whiteboard-fotot och AI-generatorn för enskilda övningar borta; reflektion säger ”Reflektionen är sparad”) ”Fota eller ladda upp – Fungerar inte här just nu” och whiteboard-foto i generatorn: färdigställ eller ta bort ur aktiva flöden.
+- G4 ✅ (Planering: Läroplan-fliken, ”Säsong från JFA-läroplanen”, JFA:s SUP i lagkortet, läroplansfilter i banken och JFA-loggan i hjälpen visas bara för JFA; andra klubbar ser sina egna lag i generatorn och banken) JFA-innehåll och JFA-logga visas för alla: läroplan, SUP, hjälp, generatorns lag. Ska bara visas för JFA, andra klubbar får neutralt innehåll.
 - G5 ✅ Granskarens tomma testmatch ligger bara i granskarens webbläsare. Den kan tas bort där (öppna matchen → Ta bort två gånger) utan att något annat påverkas. Felet som skapade den är rättat (G1).
 
 ## Etapp 2 – Klubb- och lagmodell, data och förtroende
@@ -19,9 +19,9 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 ## Etapp 3 – Arbetsflöde och navigation
 - G11 ⬜ Första vyn: ny tränare hamnar på Idag med tydlig start (inte på Matcher).
 - G12 ⬜ Adress per vy + bakåtknappen fungerar (dela länk till pass/säsongsplan).
-- G13 ⬜ Planering: flikarna jämnt fördelade, inte två navigationsnivåer som förvirrar.
+- G13 🔧 (alla flikar i Planering på en rad, lika breda – Utveckling hamnar inte längre ensam) Planering: flikarna jämnt fördelade, inte två navigationsnivåer som förvirrar.
 - G14 ⬜ Skapa pass: tre vägar → tydliga syften (Snabbt pass / Avancerad planering / Tomt pass / Från övningsbanken).
-- G15 ⬜ ”Träningspass på en minut” – bara om löftet håller; AI-väntestatus, avbryt.
+- G15 🔧 (”Träningspass på en minut” → ”Snabbt pass”) ”Träningspass på en minut” – bara om löftet håller; AI-väntestatus, avbryt.
 - G16 ⬜ Tomma lägen med tydligt nästa steg: Planering, Pass, Match, Utveckling.
 - G17 ⬜ Match och Matchanalys separeras.
 - G18 ⬜ Matchflödet: grundflöde + fördjupningar, unika namn (två ”Efter matchen”).

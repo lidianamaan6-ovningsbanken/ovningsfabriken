@@ -162,6 +162,9 @@ function bankFit(b, n, age) {
 
 /* ---------- Tillstånd ---------- */
 const IS_OPEN = document.querySelector('meta[name="of-open"]')?.content === '1';
+/* G2/G3: på den öppna sidan finns ingen AI – knappar och texter som kräver den visas inte */
+const NO_AI = IS_OPEN;
+if (NO_AI) document.documentElement.classList.add('no-ai');
 const SIGNED_IN_TEAM = document.querySelector('meta[name="of-team"]')?.content || '';
 const HAS_CLUB_LICENSE = document.querySelector('meta[name="of-club-license"]')?.content === '1';
 const IS_APP_ADMIN = document.querySelector('meta[name="of-app-admin"]')?.content === '1';
@@ -3962,11 +3965,11 @@ document.addEventListener('change', e => { if (e.target && e.target.id === 'imp-
 /* ---------- Rita-fliken ---------- */
 function drawTabHTML() {
   const own = ownList();
-  let h = '<div class="stack" style="gap:4px"><h2>Rita och importera</h2><p class="muted small">Rita en egen övning steg för steg, eller fota en övning från en bok, en PDF eller en whiteboard. Den blir en animation precis som övningarna i banken.</p></div>';
+  let h = '<div class="stack" style="gap:4px"><h2>Rita och importera</h2><p class="muted small">' + (NO_AI ? 'Rita en egen övning steg för steg. Den blir en animation precis som övningarna i banken.' : 'Rita en egen övning steg för steg, eller fota en övning från en bok, en PDF eller en whiteboard. Den blir en animation precis som övningarna i banken.') + '</p></div>';
   if (ST.draft && ST.draft.frames) h += '<div class="card draft"><div class="grow"><b>Osparat utkast</b><br><span class="small muted">' + esc(ST.draft.name || 'Namnlös övning') + ' · ' + ST.draft.frames.length + (ST.draft.frames.length === 1 ? ' steg' : ' steg') + '</span></div><button type="button" class="btn sm primary" data-a="drResume">Fortsätt</button><button type="button" class="btn sm ghost" data-a="drDiscard">Släng</button></div>';
   h += '<div class="cta-grid"><button type="button" class="cta" data-a="drNew"><span class="cta-ic"><svg viewBox="0 0 48 32" aria-hidden="true"><rect x="1" y="1" width="46" height="30" rx="3" fill="var(--pitch)"/><path d="M24 1v30" stroke="rgba(255,255,255,.6)" stroke-width="1"/><circle cx="24" cy="16" r="5" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/><circle cx="12" cy="11" r="3" fill="var(--bib-a)" stroke="#fff"/><circle cx="34" cy="20" r="3" fill="var(--bib-b)" stroke="#fff"/><path d="M14 13l15 6" stroke="#FFE45C" stroke-width="1.4" stroke-dasharray="2 1.5"/></svg></span><b>Rita ny övning</b><small>Lägg ut spelare, koner och mål. Dra dem steg för steg och se animationen.</small></button>';
-  h += (IMG_OK === false ? '<div class="cta off"><span class="cta-ic">' + CAM + '</span><b>Fota eller ladda upp</b><small>Fungerar inte här just nu.</small></div>' :
-    '<label class="cta' + (IMP && IMP.busy ? ' busy' : '') + '"><input type="file" id="imp-file" accept="image/*" hidden' + (IMP && IMP.busy ? ' disabled' : '') + '><span class="cta-ic">' + CAM + '</span><b>Fota eller ladda upp</b><small>En skiss, en sida ur en bok eller en whiteboard blir en animation.</small></label>') + '</div>';
+  h += (NO_AI || IMG_OK === false ? '</div>' :
+    '<label class="cta' + (IMP && IMP.busy ? ' busy' : '') + '"><input type="file" id="imp-file" accept="image/*" hidden' + (IMP && IMP.busy ? ' disabled' : '') + '><span class="cta-ic">' + CAM + '</span><b>Fota eller ladda upp</b><small>En skiss, en sida ur en bok eller en whiteboard blir en animation.</small></label></div>');
   if (IMP && IMP.busy) h += '<div class="card phcard">' + BALL + '<div class="grow"><b>AI:n läser bilden …</b><br><span class="small muted">Spelare, pilar och text blir en animation. Det tar en halv minut eller så.</span></div></div>';
   else if (IMP && IMP.err) h += '<div class="err">' + esc(IMP.err) + '</div>';
   h += '<div class="spread" style="margin-top:6px"><h2>Mina övningar <span class="muted num" style="font-size:20px">' + own.length + '</span></h2></div>';
@@ -5297,7 +5300,7 @@ async function buildSession(q, opt) {
 /* ---------- Startsidan: beskriv problemet ---------- */
 function startHeroHTML() {
   const d = ST.passDur || 75;
-  let h = '<section class="ai-hero"><div class="ai-hero-in"><span class="label" style="color:rgba(255,255,255,.85)">Träningspass på en minut</span><h1>Vad behöver ni träna idag?</h1>' +
+  let h = '<section class="ai-hero"><div class="ai-hero-in"><span class="label" style="color:rgba(255,255,255,.85)">Snabbt pass</span><h1>Vad behöver ni träna idag?</h1>' +
     '<textarea id="pq" rows="2" maxlength="300" placeholder="t.ex. vi tappar bollen i omställning, eller vi skapar för få målchanser" aria-label="Beskriv vad ni behöver träna">' + esc(ST.pq || '') + '</textarea>' +
     '<div class="ai-opts"><div class="ai-opt"><span>Längd</span><div class="mini-seg">' + [60, 75, 90].map(m => '<button type="button" data-a="passDur" data-v="' + m + '" class="' + (d === m ? 'on' : '') + '">' + m + ' min</button>').join('') + '</div></div>' +
     '<div class="ai-opt"><span>Spelare</span><div class="mini-step"><button type="button" data-a="n" data-d="-1" aria-label="En spelare färre">−</button><b class="num">' + ST.n + '</b><button type="button" data-a="n" data-d="1" aria-label="En spelare till">+</button></div></div></div>' +
@@ -5305,7 +5308,7 @@ function startHeroHTML() {
     (BUILD && BUILD.err ? '<p class="ai-err">' + esc(BUILD.err) + '</p>' : '') +
     '<p class="ai-note">Uppvärmning, huvudövningar och spel med tider, animationer och materiallista. Du kan ändra allt efteråt.</p></div></section>';
   h += spelformHTML();
-  h += '<div class="promo-grid"><label class="promo"><input type="file" id="imp-file2" accept="image/*" hidden><span class="promo-ic">' + CAM + '</span><span><b>Fota whiteboarden</b><small>AI:n gör om en skiss, en boksida eller en whiteboard till en animation.</small></span></label>' +
+  h += '<div class="promo-grid">' + (NO_AI || IMG_OK === false ? '' : '<label class="promo"><input type="file" id="imp-file2" accept="image/*" hidden><span class="promo-ic">' + CAM + '</span><span><b>Fota whiteboarden</b><small>AI:n gör om en skiss, en boksida eller en whiteboard till en animation.</small></span></label>') +
     '<button type="button" class="promo" data-a="view" data-v="plan"><span class="promo-ic">' + NAV_IC.plan + '</span><span><b>Dina pass och säsong</b><small>' + sessList().length + ' pass · planera teman vecka för vecka</small></span></button></div>';
   h += '<div class="or-line"><span>eller skapa enskilda övningar</span></div>';
   return h;
@@ -5962,7 +5965,7 @@ contextText = function () { return __ctx11() + ideaText(); };
 function saveIdea() { idea().updatedAt = Date.now(); persist(); if (db) db.doc('plans/idea').set(clone(ST.idea)).catch(() => { }); }
 function ideaHTML() {
   const I = idea(); const F = ST.ideaForm || { stage: 'Speluppbyggnad' };
-  let h = '<p class="small muted">Skriv in lagets principer per skede och era egna ord. Allt AI:n skapar – övningar, pass, matchplaner och reflektioner – utgår sedan från dem, och AI:n säger till om något går emot en princip.</p>';
+  let h = '<p class="small muted">' + (NO_AI ? 'Skriv in lagets principer per skede och era egna ord, så har alla tränare samma utgångspunkt när ni planerar pass och matcher.' : 'Skriv in lagets principer per skede och era egna ord. Allt AI:n skapar – övningar, pass, matchplaner och reflektioner – utgår sedan från dem, och AI:n säger till om något går emot en princip.') + '</p>';
   h += '<section class="card stack" style="gap:10px"><h3>Principer</h3>';
   if (!I.principles.length) h += '<p class="small muted">Inga principer än. Exempel: "Vi bygger alltid upp kort", "Vi pressar inåt".</p>';
   else h += '<ol class="princ">' + I.principles.map((p, i) => '<li><span class="princ-n num">' + (i + 1) + '</span><div class="grow"><b>' + esc(p.text) + '</b><span class="small muted"> · ' + esc(p.stage) + '</span></div><button type="button" class="icon-b" data-a="delPrinc" data-i="' + i + '" aria-label="Ta bort principen">✕</button></li>').join('') + '</ol>';
@@ -6423,6 +6426,7 @@ function ensureTeam(m) {
 let PLANBUSY = false;
 const PLAN_K = [['beat', 'a) Så slår vi dem'], ['protect', 'b) Så skyddar vi oss'], ['warnings', 'c) Varningar att tänka på'], ['planB', 'd) Plan B']];
 function planHTML(m) {
+  if (NO_AI) return '';
   const P = m.plan;
   let h = '<p class="small muted">Tryck på knappen så skriver AI:n en matchplan. Den får allt ovan: båda formationerna med var spelarna står, spelstil, skeden, farliga spelare, tidigare möten och lagets spelidé.' + (isUnder13(m.sf) ? ' För lag under 13 år ligger fokus på det egna spelet och utvecklingen.' : '') + '</p>';
   h += '<button type="button" class="btn primary" data-a="mkPlan"' + (PLANBUSY ? ' disabled' : '') + '>' + (PLANBUSY ? BALL.replace('ball-spin', 'ball-spin sm') + ' AI:n skriver matchplanen …' : IC_SPARK + (P ? 'Skapa en ny matchplan' : 'Ja, skapa matchplan')) + '</button>';
@@ -6712,7 +6716,7 @@ Object.assign(A, {
     if (RF.i < s.blocks.length) { RF.i++; renderRefl(); return; }
     s.refl = { done: true, at: Date.now(), items: RF.items, props: [], summary: '' }; s.rpe = RF.rpe || s.rpe || 0; s.reflNote = RF.gen;
     s.reflection = s.blocks.map(b => { const it = RF.items[b.id] || {}; return b.ex.name + ': ' + (RATE.find(x => x[0] === it.r) || [0, 0, 'ej bedömd'])[2] + ((it.tags || []).length ? ' (' + it.tags.map(t => RTAGS.find(x => x[0] === t)[1]).join(', ') + ')' : '') + (it.text ? ' – ' + it.text : ''); }).join('. ') + (RF.gen ? '. ' + RF.gen : '');
-    saveSess(s); RF = null; renderRefl(); if (SOPEN !== s.id) { if (ST.view !== 'plan') { ST.view = 'plan'; ST.planSub = 'pass'; persist(); render(); } openSess(s.id); } toast('Tack! AI:n gör nya versioner av övningarna'); processRefl(s);
+    saveSess(s); RF = null; renderRefl(); if (SOPEN !== s.id) { if (ST.view !== 'plan') { ST.view = 'plan'; ST.planSub = 'pass'; persist(); render(); } openSess(s.id); } toast(NO_AI ? 'Tack! Reflektionen är sparad' : 'Tack! AI:n gör nya versioner av övningarna'); processRefl(s);
   },
   propOk: el => { const s = curSess(); const p = s.refl.props[+el.dataset.i]; approveProp(s, p); openSess(s.id, true); renderNav(); toast('Sparad under Favoriter och används i passet'); },
   propNo: el => { const s = curSess(); s.refl.props[+el.dataset.i].status = 'no'; saveSess(s); openSess(s.id, true); },
@@ -7130,6 +7134,9 @@ const workspaceVisibleTeams = () => {
 };
 const CLUB_NAMES = [...new Set(CLUB_TEAMS.map(t => t.club))].sort((a, b) => a.localeCompare(b, 'sv'));
 const clubTeam = () => CLUB_TEAMS.find(t => t.id === ST.team) || null;
+/* G4: inloggad klubb (eller valt lags klubb). JFA:s läroplan, SUP och logga visas bara för JFA. */
+const ofClubName = () => { const c = window.OF_PROFILE?.club; return (c && (c.catalog || c.name)) || clubTeam()?.club || ''; };
+const ofIsJfa = () => { const c = ofClubName(); return c === 'Järfälla FA' || c === 'Järfälla Football Academy'; };
 const YOUNG_TEAM_DEFAULTS = {
   '3v3': { level: 'UEFA C', n: 8, gk: 0, durDef: 45, days: [2], prefer: ['Lek', 'Smålagsspel'] },
   '5v5': { level: 'UEFA C', n: 10, gk: 1, durDef: 60, days: [2, 4], prefer: ['Teknik och samarbete', 'Smålagsspel'] },
@@ -7195,19 +7202,20 @@ function teamCardHTML(t) {
   const s = supOf(t);
   return '<div class="team-card"><div class="team-top"><div><b>' + esc(t.name) + '</b><small>' + esc(t.g) + ' födda ' + t.y + ' · ' + esc(sfOf(t.sf)[1]) + ' · ' + esc(s.forms) + '</small></div><a class="small" href="' + esc(t.url) + '" target="_blank" rel="noopener">Lagsida ↗</a></div>' +
     '<div class="team-facts"><span><b class="num">' + String(s.per).replace('.5', '–' + Math.ceil(s.per)) + '</b> pass/vecka</span><span><b class="num">' + s.dur + '</b> min</span><span><b class="num">' + ST.n + '</b> spelare</span></div>' +
-    '<p class="small">' + esc(s.style) + '</p>' +
+    (t.club !== JFA_NAME ? '</div>' : '<p class="small">' + esc(s.style) + '</p>' +
     '<details class="team-more"><summary>Klubbens plan för ' + esc(s.age.replace('16–19', '14–19')) + '</summary><dl>' +
     [['Lagets fokus', s.team], ['Spelarens färdigheter', s.skills], ['Målvakt', s.gk], ['Fysik', s.phys], ['Mentalt', s.mental], ['Principer', s.princ], ['Match', s.match]].map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join('') +
     '<dt>Klubbens spelidé</dt><dd><b>Anfall:</b> ' + esc(CLUB_IDEA.anfall) + '<br><b>Försvar:</b> ' + esc(CLUB_IDEA.forsvar) + '<br><b>Omställning:</b> ' + esc(CLUB_IDEA.omst) + '</dd></dl>' +
-    '<p class="tiny muted">Från <a href="' + esc(SOURCES.jfa_sup.url) + '" target="_blank" rel="noopener">JFA:s spelarutbildningsplan 2025</a>. Passen och övningarna anpassas efter detta.</p></details></div>';
+    '<p class="tiny muted">Från <a href="' + esc(SOURCES.jfa_sup.url) + '" target="_blank" rel="noopener">JFA:s spelarutbildningsplan 2025</a>. Passen och övningarna anpassas efter detta.</p></details></div>');
 }
 function teamPickHTML() {
   const t = clubTeam();
   if (SIGNED_IN_TEAM) return t ? teamCardHTML(t) : '';
-  const teams = t ? CLUB_TEAMS.filter(option => option.club === t.club) : JFA_TEAMS;
-  return '<div class="team-pick"><span class="label">Lag i ' + esc(t?.club || JFA_NAME) + '</span><div class="chip-scroll" role="group" aria-label="Välj lag">' +
+  const club = t?.club || ofClubName(); const teams = club ? CLUB_TEAMS.filter(option => option.club === club) : [];
+  if (!teams.length) return t ? teamCardHTML(t) : '';
+  return '<div class="team-pick"><span class="label">Lag i ' + esc(club) + '</span><div class="chip-scroll" role="group" aria-label="Välj lag">' +
     teams.map(x => '<button type="button" class="chip' + (ST.team === x.id ? ' on' : '') + '" data-a="pickTeam" data-k="' + x.id + '" aria-pressed="' + (ST.team === x.id) + '">' + esc(x.name.replace(' – ', ' ')) + '<span class="cnt">' + esc(sfOf(x.sf)[1]) + '</span></button>').join('') +
-    (t ? '<button type="button" class="chip ghost" data-a="pickTeam" data-k="">Inget lag</button>' : '') + '</div>' + (t ? teamCardHTML(t) : '<p class="tiny muted">Välj ett lag så anpassas spelform, ålder, passlängd och övningsval efter klubbens spelarutbildningsplan.</p>') + '</div>';
+    (t ? '<button type="button" class="chip ghost" data-a="pickTeam" data-k="">Inget lag</button>' : '') + '</div>' + (t ? teamCardHTML(t) : '<p class="tiny muted">Välj ett lag så anpassas spelform, ålder, passlängd och övningsval efter laget.</p>') + '</div>';
 }
 const __startHero14 = startHeroHTML;
 startHeroHTML = function () { const h = __startHero14(); const i = h.indexOf('<div class="sf">'); return i >= 0 ? h.slice(0, i) + teamPickHTML() + h.slice(i) : h + teamPickHTML(); };
@@ -7285,12 +7293,13 @@ function withBankFilter(fn) {
 function bankJfaHTML() {
   const s = bankSel(); const p = bankProf();
   const cnt = pr => BANK.filter(b => profOk(b, pr)).length;
-  let h = '<div class="bank-jfa"><div class="bj-row"><span class="label">JFA-lag</span><div class="chip-scroll" role="group" aria-label="Välj lag">' +
+  const myTeams = CLUB_TEAMS.filter(t => t.club === ofClubName());
+  let h = '<div class="bank-jfa">' + (myTeams.length ? '<div class="bj-row"><span class="label">' + (ofIsJfa() ? 'JFA-lag' : 'Lag') + '</span><div class="chip-scroll" role="group" aria-label="Välj lag">' +
     '<button type="button" class="chip' + (!s.t && !s.sf ? ' on' : '') + '" data-a="bankJ" data-t="" data-sf="">Alla</button>' +
-    CLUB_TEAMS.map(t => '<button type="button" class="chip' + (s.t === t.id ? ' on' : '') + '" data-a="bankJ" data-t="' + t.id + '" aria-pressed="' + (s.t === t.id) + '">' + esc(t.name.replace(' – ', ' ')) + '<span class="cnt num">' + cnt(profOfTeam(t)) + '</span></button>').join('') + '</div></div>' +
+    myTeams.map(t => '<button type="button" class="chip' + (s.t === t.id ? ' on' : '') + '" data-a="bankJ" data-t="' + t.id + '" aria-pressed="' + (s.t === t.id) + '">' + esc(t.name.replace(' – ', ' ')) + '<span class="cnt num">' + cnt(profOfTeam(t)) + '</span></button>').join('') + '</div></div>' : '') +
     '<div class="bj-row"><span class="label">Spelform och ålder</span><div class="chip-scroll" role="group" aria-label="Välj spelform">' +
     SF_ORDER.map(k => { const on = s.sf === k || (s.t && p && p.sf === k); return '<button type="button" class="chip' + (on ? ' on' : '') + (s.t && p && p.sf === k ? ' soft' : '') + '" data-a="bankJ" data-t="" data-sf="' + k + '" aria-pressed="' + (s.sf === k) + '">' + esc(sfOf(k)[1]) + '<span class="cnt">' + esc(sfOf(k)[2]) + '</span></button>'; }).join('') + '</div></div>';
-  if (p) h += '<p class="bj-info"><b>' + esc(p.sfOnly ? sfOf(p.sf)[1] + ' (' + sfOf(p.sf)[2] + ')' : p.label + ' · ' + sfOf(p.sf)[1]) + '</b>' + ' · ' + cnt(p) + ' övningar som passar, de mest passande först.' + (p.team ? ' ' + esc(SUP[p.sf].style) : '') + '</p>';
+  if (p) h += '<p class="bj-info"><b>' + esc(p.sfOnly ? sfOf(p.sf)[1] + ' (' + sfOf(p.sf)[2] + ')' : p.label + ' · ' + sfOf(p.sf)[1]) + '</b>' + ' · ' + cnt(p) + ' övningar som passar, de mest passande först.' + (p.team && ofIsJfa() ? ' ' + esc(SUP[p.sf].style) : '') + '</p>';
   return h + '</div>';
 }
 bankBrowseHTML = function () {
@@ -7801,7 +7810,7 @@ seasonHTML = function () {
   const se = ST.season || (ST.season = { periods: [] }); const w0 = isoWeek(new Date());
   const weeks = Array.from({ length: 20 }, (_, i) => ((w0 - 1 + i) % 52) + 1);
   const perOf = w => se.periods.find(p => weekRange(p).includes(w));
-  let h = lpSeasonCard();
+  let h = ofIsJfa() ? lpSeasonCard() : '';
   h += '<div class="weeks" role="list">' + weeks.map(w => { const p = perOf(w); const k = p ? phaseKey(stagePhase(p.stage)) : ''; return '<span role="listitem" class="wk' + (p ? ' on ' + k : '') + (w === w0 ? ' now' : '') + '" title="Vecka ' + w + (p ? ': ' + esc(p.lp ? lpThemeName(p.lp) : p.stage) : '') + '"><b class="num">' + w + '</b></span>'; }).join('') + '</div>';
   const F = Object.assign({ from: w0, to: ((w0 + 1) % 52) + 1, stage: 'Speluppbyggnad' }, ST.perForm || {});
   h += '<details class="card per-form"><summary><b>+ Egen period (bara skede)</b></summary><div class="stack" style="gap:10px;padding-top:10px">' +
@@ -7827,6 +7836,7 @@ seasonHTML = function () {
 };
 const __planTab22 = planTabHTML;
 planTabHTML = function () {
+  if (!ofIsJfa()) { if (ST.planSub === 'lp') ST.planSub = 'pass'; return __planTab22().replace('<div class="seg">', '<div class="seg lp-seg">'); }
   const lpBtn = '<button type="button" data-a="planSub" data-v="lp" class="' + (ST.planSub === 'lp' ? 'on' : '') + '">Läroplan</button>';
   if (ST.planSub === 'lp') {
     const save = ST.planSub; ST.planSub = 'pass'; let h; try { h = __planTab22(); } finally { ST.planSub = save; }
@@ -7851,6 +7861,7 @@ const __sessHTML22 = sessHTML;
 sessHTML = function (s) { const h = __sessHTML22(s); const c = lpSessCard(s); return c ? h.replace('<div class="sess-actions">', c + '<div class="sess-actions">') : h; };
 /* Övningsvyn: vad tränar övningen enligt läroplanen? */
 function lpDetSec(o) {
+  if (!ofIsJfa()) return '';
   const t = lpTags(o); if (!t.fard.length && !t.spel.length) return '';
   const age = lpAge(); const K = lpCard(age);
   const chip = (k, kind) => { const p = (kind === 'fard' ? K.prioritet_fardighet : K.prioritet_spelkoncept)[k]; const g = kind === 'fard' ? 'f' : LP_DEF_SPEL.includes(k) ? 'd' : 'a'; return '<span class="lp-chip g-' + g + (p ? '' : ' off') + '" title="' + esc(p ? LP_PRIO[p][0] : 'Inte på ålderskortet för ' + age + ' år') + '">' + esc(lpName(k)) + (p ? '<i>' + LP_PRIO[p][1] + '</i>' : '') + '</span>'; };
@@ -7876,7 +7887,7 @@ bankBrowseHTML = function () {
   const f = ST.lpF; let h;
   if (f) { const orig = BANK.slice(); const keep = orig.filter(b => { const t = lpTags(b); return t.fard.includes(f) || t.spel.includes(f); }); BANK.splice(0, BANK.length, ...keep); try { h = __bankBrowse22(); } finally { BANK.splice(0, BANK.length, ...orig); } }
   else h = __bankBrowse22();
-  return lpBankBar() + h;
+  return (ofIsJfa() ? lpBankBar() : '') + h;
 };
 /* Väljer man lag följer åldern med */
 const __pickTeam22 = A.pickTeam;
@@ -8226,7 +8237,7 @@ function teamHTML() {
   const ex = lbList('ex'), ss = lbList('sess');
   let h = '<section class="sec team-sec"><div class="sec-head"><span class="sec-bar" style="--c:var(--pitch)"></span><div class="grow"><h2>Lagbanken <span class="cnt num">' + (ex.length + ss.length) + '</span></h2>' +
     '<p class="small muted">Övningar och pass som tränarna i klubben delar. Skriv inga spelarnamn i det du delar. Reflektioner och betyg följer aldrig med.</p></div></div>';
-  if (!db) return h + '<p class="small muted">Lagbanken för delning mellan tränare finns i Claude-versionen.</p></section>';
+  if (!db) return '';
   if (!ex.length && !ss.length) return h + '<div class="card empty"><p>Inget delat än. Öppna ett pass och tryck <b>Dela</b> → <b>Dela med laget</b>, eller tryck <b>Dela med laget</b> på en övning.</p></div></section>';
   if (ss.length) h += '<div class="sess-list">' + ss.map(([id, x]) => { const s = x.sess; const tot = (s.blocks || []).reduce((a, b) => a + (b.min || 0), 0); const mine = ME.owner || (x.by && x.by === ME.uid);
     return '<div class="sess-card sm team-sess"><span class="sess-date">Delat pass · ' + tot + ' min · ' + (s.blocks || []).length + ' block</span><b>' + esc(s.name || 'Pass') + '</b>' + (s.focus ? '<span class="small muted">' + esc(String(s.focus).slice(0, 140)) + '</span>' : '') +
@@ -8717,13 +8728,14 @@ buildSession = async function (q, opt) {
 const __sessHTML31 = sessHTML;
 sessHTML = function (s) {
   const h = __sessHTML31.apply(this, arguments); if (!s || s.ai || !s.q || !s.aiFail) return h;
+  if (NO_AI) return h;
   const note = '<div class="ai-note2"><span class="grow">' + (s.aiFail ? 'AI:n svarade inte, så passet är byggt ur banken.' : 'Byggt ur banken utan AI.') + '</span><button type="button" class="btn sm" data-a="aiRetry" data-id="' + esc(s.id) + '">Försök med AI</button></div>';
   return h.replace('<ol class="blocks">', note + '<ol class="blocks">');
 };
 Object.assign(A, {
   aiRetry: async el => {
     const s = SESS[el.dataset.id]; if (!s || el.disabled) return; el.disabled = true; el.textContent = 'Bygger …';
-    if (!(await useCap('sample'))) { el.disabled = false; el.textContent = 'Försök med AI'; toast('AI-anpassning finns i Claude-versionen'); return; }
+    if (!(await useCap('sample'))) { el.disabled = false; el.textContent = 'Försök med AI'; toast('AI-funktionen är inte tillgänglig här just nu'); return; }
     const old = s.id; const ns = await buildSession(s.q, { dur: s.dur, n: s.players });
     if (ns && ns.ai) { SESS[old] = { id: old, removed: true, updatedAt: Date.now() }; persistSess(); if (db) db.doc('sessions/' + old).set(SESS[old]).catch(() => { }); toast('Nytt pass från AI:n'); }
     else if (ns) { SESS[ns.id] = { id: ns.id, removed: true, updatedAt: Date.now() }; persistSess(); if (db) db.doc('sessions/' + ns.id).set(SESS[ns.id]).catch(() => { }); openSess(old); toast('AI:n svarar fortfarande inte – försök igen om en stund'); }
@@ -8933,10 +8945,10 @@ const WELCOME_V = 1;
 function welcomeHTML() {
   const step = (n, t, d) => '<li><span class="wl-n num">' + n + '</span><div><b>' + t + '</b><p>' + d + '</p></div></li>';
   return '<div class="modal-wrap wl-wrap" role="dialog" aria-modal="true" aria-labelledby="wl-h"><div class="modal wl">' +
-    '<div class="wl-top"><img src="' + CLUB_LOGO + '" alt="Järfälla Football Academy" width="56" height="60"><div><span class="label">Järfälla Football Academy</span><h2 id="wl-h">Välkommen till Övningsfabriken</h2></div></div>' +
-    '<p class="wl-lead">Ett färdigt träningspass på en minut – anpassat efter ditt lag, med tider, materiallista och animationer du kan visa för spelarna.</p>' +
+    (() => { const c = window.OF_PROFILE?.club; const jfa = ofIsJfa(); const nm = jfa ? 'Järfälla Football Academy' : (c?.name || ''); const img = jfa ? CLUB_LOGO : (window.OF_PROFILE?.crest || ''); return '<div class="wl-top">' + (img ? '<img src="' + esc(img) + '" alt="' + esc(nm) + '" width="56" height="60">' : '') + '<div>' + (nm ? '<span class="label">' + esc(nm) + '</span>' : ''); })() + '<h2 id="wl-h">Välkommen till Övningsfabriken</h2></div></div>' +
+    '<p class="wl-lead">Bygg ett träningspass anpassat efter ditt lag, med tider, materiallista och animationer du kan visa för spelarna.</p>' +
     '<ol class="wl-steps">' +
-    step(1, 'Välj ditt lag', 'Övningarna anpassas efter ålder, spelform och klubbens spelarutbildningsplan.') +
+    step(1, 'Välj ditt lag', ofIsJfa() ? 'Övningarna anpassas efter ålder, spelform och klubbens spelarutbildningsplan.' : 'Övningarna anpassas efter lagets ålder och spelform.') +
     step(2, 'Skriv vad ni behöver träna', 'Med egna ord, till exempel "vi tappar bollen när vi spelar ut från målvakten".') +
     step(3, 'Kör passet på planen', 'Stor timer, grupper för dagens antal spelare och "Visa för spelarna" i helskärm.') +
     '</ol>' +
@@ -9287,7 +9299,7 @@ function workspaceTools() {
     ['draw', 'Rita egen övning', 'Placera spelare, mål och koner. Visa hur övningen går till.', NAV_IC.draw],
     ['saved', 'Sparade övningar', 'Hitta dina favoriter och dina egna övningar.', NAV_IC.saved],
     ['make', 'Övningar och progressioner', 'Ta fram övningar i flera steg utifrån spelskede och ålder.', NAV_IC.make],
-    ['plan', 'Läroplan och säsong', 'Se ålderskort och planera träningsperioder.', workspaceIcon(1)],
+    ['plan', ofIsJfa() ? 'Läroplan och säsong' : 'Säsongsplan', ofIsJfa() ? 'Se ålderskort och planera träningsperioder.' : 'Planera träningsperioder vecka för vecka.', workspaceIcon(1)],
   ];
   return workspaceTop('Verktyg', 'Övningsfabriken') + '<div class="of-tools-grid">'
     + tools.map(([view, label, text, icon]) => '<button type="button" class="of-card of-tool" data-a="' + (view === 'plan' ? 'workspaceCurriculum' : 'view')
@@ -9390,7 +9402,7 @@ Object.assign(A, {
     if (field) { field.value = el.dataset.v; field.focus(); }
   },
   workspaceCurriculum: () => {
-    ST.planSub = 'lp';
+    ST.planSub = ofIsJfa() ? 'lp' : 'season';
     A.view({ dataset: { v: 'plan' } });
   },
 });
