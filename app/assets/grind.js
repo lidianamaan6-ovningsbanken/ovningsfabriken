@@ -170,6 +170,10 @@
         + '<label for="g-pass">Lösenord</label><input id="g-pass" name="password" type="password" autocomplete="' + (signup ? 'new-password' : 'current-password') + '" minlength="8" required>'
         + (signup ? '<small class="of-grind-hint">Minst 8 tecken.</small>' : '')
         + '<button class="of-grind-btn" type="submit"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Vänta …' : signup ? 'Skapa konto och gå med' : 'Logga in') + '</button></form>' + msg
+        + (!invite ? '<details class="of-grind-invited"><summary>Har du blivit inbjuden? Så kommer du in</summary><ol class="of-grind-steps2">'
+          + '<li><b>Kolla din e-post eller dina meddelanden.</b> Klubbens ansvariga skickar en inbjudningslänk – den kan komma som mejl, sms eller i en chatt.</li>'
+          + '<li><b>Öppna länken.</b> Då kommer du till Övningsfabriken, väljer ett lösenord och kopplas direkt till klubben.</li>'
+          + '<li><b>Ingen länk?</b> Be klubbens ansvariga bjuda in dig under Konto → Bjud in en kollega. Har klubben ingen licens än: tryck på Begär tillgång nedan.</li></ol></details>' : '')
         + (invite ? '<p class="of-grind-alt">' + (signup ? 'Har du redan ett konto? <button type="button" data-g="mode" data-v="login">Logga in</button>' : 'Inget konto än? <button type="button" data-g="mode" data-v="signup">Skapa konto</button>') + '</p>'
           : '<p class="of-grind-alt">Ny tränare? Be klubbens ansvariga om en inbjudningslänk.<br>Har klubben ingen licens än? <button type="button" data-g="req">Begär tillgång</button></p>')
         + '<details class="of-grind-more"' + (st.mode === 'login' && invite ? ' open' : '') + '><summary>Glömt lösenordet?</summary><p>Kontakta klubbens ansvariga eller Övningsfabriken, så hjälper vi dig. Du kan också få en inloggningslänk på mejlen:</p>'

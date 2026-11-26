@@ -5558,11 +5558,11 @@ function sessHTML(s) {
       (b.attendanceReplaces ? '<p class="small muted">Ersätter ' + esc(b.attendanceReplaces) + '</p>' : '') +
       sessionBlockNote(b.ex, n, sessionGoalkeepers(s, n)) +
       (b.adapting ? '<p class="small">' + BALL.replace('ball-spin', 'ball-spin sm') + ' Anpassar till ' + n + ' spelare …</p>' : off ? '<button type="button" class="btn sm primary" data-a="adaptBlk" data-i="' + i + '">' + IC_SPARK + 'Anpassa till ' + n + '</button>' : '') + '</div></div>' +
-      '<details class="of-block-edit"><summary>Ändra block</summary><div class="blk-ctl"><div class="mini-seg">' + KINDS.slice(0, 3).map(k => '<button type="button" data-a="blkKind" data-i="' + i + '" data-v="' + k[0] + '" class="' + (b.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>').join('') + '</div><span class="grow"></span>' +
+      '<details class="of-block-edit"><summary>Ändra block</summary><div class="blk-ctl"><div class="mini-seg">' + KINDS.slice(0, 5).map(k => '<button type="button" data-a="blkKind" data-i="' + i + '" data-v="' + k[0] + '" class="' + (b.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>').join('') + '</div><span class="grow"></span>' +
       '<button type="button" class="icon-b" data-a="blkMove" data-i="' + i + '" data-d="-1" aria-label="Flytta upp"' + (i ? '' : ' disabled') + '>↑</button><button type="button" class="icon-b" data-a="blkMove" data-i="' + i + '" data-d="1" aria-label="Flytta ner"' + (i < s.blocks.length - 1 ? '' : ' disabled') + '>↓</button><button type="button" class="icon-b" data-a="blkDel" data-i="' + i + '" aria-label="Ta bort blocket">✕</button></div></details></li>';
   });
   h += '</ol>';
-  h += '<div class="add-row">' + KINDS.slice(0, 3).map(k => '<button type="button" class="btn add-b k-' + k[0] + '" data-a="pickOpen" data-k="' + k[0] + '">+ ' + k[1] + '</button>').join('') + '</div>';
+  h += '<div class="add-row">' + KINDS.slice(0, 5).map(k => '<button type="button" class="btn add-b k-' + k[0] + '" data-a="pickOpen" data-k="' + k[0] + '">+ ' + k[1] + '</button>').join('') + '</div>';
   h += '<section class="card refl"><h3>Efter träningen</h3><p class="small muted">Vad fungerade? Vad behöver ni jobba mer med? AI:n föreslår nästa pass utifrån det du skriver.</p><textarea data-sf="reflection" rows="3" maxlength="800" placeholder="t.ex. bra intensitet i rondon, men vi hittade sällan den tredje spelaren i spelet">' + esc(s.reflection || '') + '</textarea>' +
     '<button type="button" class="btn primary" data-a="nextPass"' + (BUILD && BUILD.busy ? ' disabled' : '') + '>' + (BUILD && BUILD.busy ? BALL.replace('ball-spin', 'ball-spin sm') + ' Bygger nästa pass …' : IC_SPARK + 'Föreslå nästa pass') + '</button></section>';
   h += '</div></div>';
@@ -5622,7 +5622,7 @@ function addToHTML() {
   const ex = findEx(ADDTO.id); if (!ex) return '';
   const list = sessList().slice(0, 8);
   let h = '<div class="modal-wrap m2" data-a="m2Bg"><div class="modal" role="dialog" aria-modal="true" aria-label="Lägg i pass"><div class="spread"><h2>Lägg i pass</h2><button type="button" class="btn sm ghost" data-a="m2Close">Stäng</button></div><p class="muted">' + esc(ex.name) + '</p>';
-  h += '<div class="mini-seg wide">' + KINDS.slice(0, 3).map(k => '<button type="button" data-a="addKind" data-v="' + k[0] + '" class="' + (ADDTO.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>').join('') + '</div>';
+  h += '<div class="mini-seg wide">' + KINDS.slice(0, 5).map(k => '<button type="button" data-a="addKind" data-v="' + k[0] + '" class="' + (ADDTO.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>').join('') + '</div>';
   h += '<div class="stack" style="gap:8px"><button type="button" class="btn primary" data-a="addToNew">+ Nytt pass med den här övningen</button>' + list.map(s => '<button type="button" class="sess-card sm" data-a="addToSess2" data-id="' + s.id + '"><b>' + esc(s.name) + '</b><span class="small muted">' + esc(s.date) + ' · ' + s.blocks.length + ' block · ' + sessTotal(s) + ' min</span></button>').join('') + '</div>';
   return h + '</div></div>';
 }
@@ -10457,3 +10457,115 @@ exImgData0 = async function (ex) {
   const sc = Math.min(W / t.width, H / t.height); o.drawImage(t, (W - t.width * sc) / 2, (H - t.height * sc) / 2, t.width * sc, t.height * sc);
   return out.toDataURL('image/jpeg', 0.9);
 };
+
+/* ---------- B: passet i fem färgade delar ---------- */
+KINDS.splice(0, KINDS.length, ['warm', 'Uppvärmning', 10], ['skill', 'Färdighet', 15], ['main', 'Huvuddel', 15], ['game', 'Spelform', 15], ['cool', 'Avslutning', 10], ['other', 'Övrigt', 10]);
+function sessPartsHTML(s) {
+  const tot = {}; (s.blocks || []).forEach(b => { tot[b.kind] = (tot[b.kind] || 0) + (b.min || 0); });
+  const parts = KINDS.filter(k => tot[k[0]]); if (!parts.length) return '';
+  const all = parts.reduce((a, k) => a + tot[k[0]], 0) || 1;
+  return '<div class="sess-parts" aria-label="Passets delar">'
+    + '<div class="sp-list">' + parts.map(k => '<span class="sp-i k-' + k[0] + '"><i></i>' + k[1] + ' <b class="num">' + tot[k[0]] + ' min</b></span>').join('') + '</div></div>';
+}
+const __sessHTMLParts = sessHTML;
+sessHTML = function (s) { const h = __sessHTMLParts.apply(this, arguments); const bar = s ? sessPartsHTML(s) : ''; const i = h.indexOf('<ol class="blocks'); return bar && i >= 0 ? h.slice(0, i) + bar + h.slice(i) : h; };
+
+/* ---------- A: månadskalender i Planering (pass, matcher, helgdagar och lov) ---------- */
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function seHolidays(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const em = Math.floor((h + l - 7 * m + 114) / 31), ed = ((h + l - 7 * m + 114) % 31) + 1; const E = new Date(y, em - 1, ed);
+  const add = (dt, n) => { const x = new Date(dt); x.setDate(x.getDate() + n); return x; };
+  const firstDow = (mo, from, dow) => { for (let dd = from; dd < from + 7; dd++) { const x = new Date(y, mo, dd); if (x.getDay() === dow) return x; } };
+  const H = {};
+  [[new Date(y, 0, 1), 'Nyårsdagen'], [new Date(y, 0, 6), 'Trettondedag jul'], [add(E, -2), 'Långfredagen'], [E, 'Påskdagen'], [add(E, 1), 'Annandag påsk'], [new Date(y, 4, 1), 'Första maj'], [add(E, 39), 'Kristi himmelsfärd'], [add(E, 49), 'Pingstdagen'], [new Date(y, 5, 6), 'Nationaldagen'],
+   [firstDow(5, 19, 5), 'Midsommarafton'], [firstDow(5, 20, 6), 'Midsommardagen'], [firstDow(9, 31, 6), 'Alla helgons dag'], [new Date(y, 11, 24), 'Julafton'], [new Date(y, 11, 25), 'Juldagen'], [new Date(y, 11, 26), 'Annandag jul'], [new Date(y, 11, 31), 'Nyårsafton']].forEach(([dt, n]) => { if (dt) H[ymd(dt)] = n; });
+  return H;
+}
+const calLov = w => w === 44 ? 'Höstlov' : (w === 52 || w === 1) ? 'Jullov' : w === 9 ? 'Sportlov' : (w >= 26 && w <= 32) ? 'Sommaruppehåll' : '';
+function calendarHTML() {
+  const now = new Date(); const [cy, cm] = (ST.calM || ymd(now).slice(0, 7)).split('-').map(Number);
+  const first = new Date(cy, cm - 1, 1); const start = new Date(first); start.setDate(1 - ((first.getDay() + 6) % 7));
+  const H = Object.assign(seHolidays(cy - 1), seHolidays(cy), seHolidays(cy + 1)); const today = ymd(now);
+  const byDate = {}; sessList().forEach(s => { if (s.date) (byDate[s.date] = byDate[s.date] || []).push(['s', s]); });
+  matchList().forEach(m => { if (m.date) (byDate[m.date] = byDate[m.date] || []).push(['m', m]); });
+  const mName = first.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+  let h = '<section class="cal" aria-label="Kalender ' + esc(mName) + '"><div class="cal-head"><button type="button" class="btn sm" data-a="calMove" data-v="-1" aria-label="Föregående månad">‹</button><h3>' + esc(mName[0].toUpperCase() + mName.slice(1)) + '</h3><button type="button" class="btn sm" data-a="calMove" data-v="1" aria-label="Nästa månad">›</button><button type="button" class="btn sm ghost" data-a="calMove" data-v="0">Idag</button></div>';
+  h += '<div class="cal-grid" role="grid"><div class="cal-wk" role="row">' + ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'].map(d => '<span role="columnheader">' + d + '</span>').join('') + '</div>';
+  for (let w = 0; w < 6; w++) {
+    const d0 = new Date(start); d0.setDate(start.getDate() + w * 7); if (w === 5 && d0.getMonth() !== cm - 1) break;
+    h += '<div class="cal-row" role="row">';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(d0); d.setDate(d0.getDate() + i); const k = ymd(d); const out = d.getMonth() !== cm - 1; const hol = H[k]; const lov = calLov(isoWeek(d)); const ev = byDate[k] || [];
+      h += '<div role="gridcell" class="cal-d' + (out ? ' out' : '') + (k === today ? ' today' : '') + (hol || i === 6 ? ' red' : '') + (lov ? ' lov' : '') + '"' + (lov ? ' title="' + lov + '"' : '') + '>'
+        + '<button type="button" class="cal-n" data-a="calNew" data-d="' + k + '" aria-label="' + esc(d.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })) + (hol ? ', ' + hol : '') + ' – nytt pass">' + d.getDate() + (hol ? '<small>' + esc(hol) + '</small>' : '') + '</button>'
+        + ev.slice(0, 3).map(([t, x]) => t === 's' ? '<button type="button" class="cal-e s" data-a="openSess" data-id="' + esc(x.id) + '" title="' + esc(x.name) + '">' + esc(x.name) + '</button>' : '<button type="button" class="cal-e m" data-a="openMatchV" data-id="' + esc(x.id) + '" title="Match mot ' + esc(x.oppName || '') + '">⚽ ' + esc(x.oppName || 'Match') + '</button>').join('')
+        + (ev.length > 3 ? '<span class="cal-more">+' + (ev.length - 3) + '</span>' : '') + '</div>';
+    }
+    h += '</div>';
+  }
+  h += '</div><p class="small muted cal-key"><span class="cal-key-s"></span> Träningspass <span class="cal-key-m"></span> Match <span class="cal-key-r">röd</span> = helgdag · randigt = vanligt lov. Tryck på ett datum för att planera ett pass den dagen.</p></section>';
+  return h;
+}
+const __passListCal = passListHTML;
+passListHTML = function () {
+  const cal = ST.passView === 'cal';
+  const seg = '<div class="seg pass-view"><button type="button" data-a="passView" data-v="list" class="' + (cal ? '' : 'on') + '" aria-pressed="' + !cal + '">Lista</button><button type="button" data-a="passView" data-v="cal" class="' + (cal ? 'on' : '') + '" aria-pressed="' + cal + '">Kalender</button></div>';
+  if (cal) return passWaysHTML(false) + seg + calendarHTML();
+  const h = __passListCal(); const i = h.indexOf('<div class="sess-list">');
+  return i >= 0 ? h.slice(0, i) + seg + h.slice(i) : h + seg;
+};
+Object.assign(A, {
+  passView: el => { ST.passView = el.dataset.v; persist(); render(); },
+  calMove: el => { const v = +el.dataset.v; if (!v) ST.calM = ymd(new Date()).slice(0, 7); else { const [y, m] = (ST.calM || ymd(new Date()).slice(0, 7)).split('-').map(Number); const d = new Date(y, m - 1 + v, 1); ST.calM = ymd(d).slice(0, 7); } persist(); render(); },
+  calNew: el => { const s = newSess(); s.date = el.dataset.d; s.name = 'Träning ' + new Date(s.date + 'T12:00').toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' }); saveSess(s); render(); openSess(s.id); toast('Nytt pass ' + new Date(s.date + 'T12:00').toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })); },
+});
+
+/* ---------- C: Tränarlaget på Idag – vilka som är med, bjud in kollega, lämna laget ---------- */
+let COACHES = null, COACHES_BUSY = false;
+function coachClub() { const cs = window.OF_ACCESS?.clubs || []; const pc = window.OF_PROFILE?.club; return (pc && cs.find(c => c.id === pc.id || c.name === pc.name)) || cs.find(c => c.active) || null; }
+async function loadCoaches(force) {
+  const M = window.OF_MOLN, c = coachClub(); if (!M?.sb || !M.state?.user || !c || COACHES_BUSY) return;
+  if (!force && COACHES && COACHES.club === c.id && Date.now() - COACHES.at < 60000) return;
+  COACHES_BUSY = true;
+  try { const { data, error } = await M.sb.from('club_members').select('user_id,email,role,joined_at').eq('club_id', c.id).order('joined_at'); if (error) throw error; COACHES = { club: c.id, list: Array.isArray(data) ? data : [], at: Date.now() }; }
+  catch (e) { COACHES = { club: c.id, list: null, at: Date.now(), err: true }; }
+  COACHES_BUSY = false; const box = $('#of-coaches'); if (box) box.outerHTML = coachesHTML();
+}
+function coachesHTML() {
+  const c = coachClub(); if (!c || !window.OF_MOLN?.state?.user) return '';
+  const me = window.OF_MOLN.state.user.id; const L = COACHES && COACHES.club === c.id ? COACHES.list : undefined; const owner = c.role === 'owner';
+  let h = '<section class="of-home-panel of-coaches" id="of-coaches"><div class="of-panel-head"><div><span class="of-eyebrow">Tränarlaget</span><h2>' + esc(c.name) + '</h2></div><span class="small muted num">' + (c.used ?? (L ? L.length : '–')) + ' / ' + (c.seats ?? '–') + ' platser</span></div>';
+  if (L === undefined) h += '<p class="small muted">Hämtar tränarna …</p>';
+  else if (!Array.isArray(L)) h += '<p class="small muted">Tränarlistan kunde inte hämtas just nu.</p>';
+  else h += '<ul class="coach-list">' + L.map(m => '<li><span class="coach-av">' + esc((m.email || '?')[0].toUpperCase()) + '</span><span class="grow">' + esc(m.email || 'Tränare') + (m.user_id === me ? ' <small>(du)</small>' : '') + '</span><span class="pill' + (m.role === 'owner' ? ' owner' : '') + '">' + (m.role === 'owner' ? 'Ansvarig' : 'Tränare') + '</span></li>').join('') + '</ul>';
+  h += owner ? '<button type="button" class="btn primary coach-inv" data-a="coachInvite">Bjud in kollega</button><p class="tiny muted">Du får en länk att skicka via sms, mejl eller chatt. Den gäller för en person.</p>'
+    : '<p class="small muted">Vill du ha med en kollega? Be klubbens ansvariga bjuda in hen.</p>';
+  h += '<button type="button" class="of-text-action coach-leave" data-a="coachLeave">Lämna laget</button></section>';
+  if (L === undefined) setTimeout(() => loadCoaches(), 0);
+  return h;
+}
+const __workspaceTodayCoach = workspaceToday;
+workspaceToday = function () {
+  const h = __workspaceTodayCoach.apply(this, arguments); let p = ''; try { p = coachesHTML(); } catch (e) { p = ''; } if (!p) return h;
+  const i = h.lastIndexOf('</aside>'); return i >= 0 ? h.slice(0, i) + p + h.slice(i) : h + p;
+};
+Object.assign(A, {
+  coachInvite: async el => {
+    const c = coachClub(); if (!c) return; el.disabled = true; el.textContent = 'Skapar länk …';
+    try {
+      const t = await window.OF_MOLN.rpc('create_invite', { cid: c.id, invite_label: null });
+      const url = location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
+      let shared = false; try { if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) { await navigator.share({ title: 'Inbjudan till ' + c.name + ' i Övningsfabriken', url }); shared = true; } } catch (e) { if (e && e.name === 'AbortError') shared = true; }
+      if (!shared) { try { await navigator.clipboard.writeText(url); toast('Länken är kopierad – skicka den till din kollega'); } catch (e) { prompt('Kopiera länken och skicka den till din kollega:', url); } }
+      loadCoaches(true);
+    } catch (e) { toast(/plats|seats|full/i.test(e?.message || '') ? 'Alla platser är använda. Ta bort någon eller utöka licensen.' : 'Kunde inte skapa länken: ' + (e?.message || 'försök igen')); }
+    el.disabled = false; el.textContent = 'Bjud in kollega';
+  },
+  coachLeave: async () => {
+    const c = coachClub(); if (!c) return;
+    if (!confirm('Lämna ' + c.name + '? Du kommer inte längre åt klubbens licens. Dina egna pass och övningar finns kvar på ditt konto.')) return;
+    try { await window.OF_MOLN.rpc('leave_club', { cid: c.id }); toast('Du har lämnat ' + c.name); setTimeout(() => location.reload(), 1200); }
+    catch (e) { toast(/function|does not exist|schema cache/i.test(e?.message || '') ? 'Funktionen är inte påslagen än – kontakta klubbens ansvariga.' : (e?.message || 'Kunde inte lämna laget')); }
+  },
+});

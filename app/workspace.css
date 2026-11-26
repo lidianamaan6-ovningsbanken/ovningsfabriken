@@ -917,3 +917,51 @@ html[data-sun] .pass-way.primary small, html[data-sun] .of-hero .of-eyebrow { co
   .d2-foot { padding: 8px 10px; }
   .d2-foot .small { display: none; }
 }
+
+/* B: passets delar */
+.k-skill { --k: #2563eb; }
+.k-cool { --k: #64748b; }
+.sess-parts { margin: 6px 0 12px; display: grid; gap: 8px; }
+.sp-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; gap: 2px; }
+.sp-bar span { background: var(--k); }
+.sp-list { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 13.5px; }
+.sp-i { display: inline-flex; align-items: center; gap: 6px; }
+.sp-i i { width: 10px; height: 10px; border-radius: 3px; background: var(--k); }
+.blk[class*="k-"] { border-left: 5px solid var(--k) !important; }
+.k-main { --k: #e07a3c; }
+/* A: månadskalender */
+.pass-view { margin: 4px 0 12px; max-width: 280px; }
+.cal { background: var(--surface, #fff); border: 1px solid var(--line, #dcdcd4); border-radius: 16px; padding: 12px; }
+.cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.cal-head h3 { margin: 0 auto 0 4px; order: -1; font-size: 18px; }
+.cal-grid { display: grid; gap: 1px; background: var(--line, #e3e3dc); border: 1px solid var(--line, #e3e3dc); border-radius: 10px; overflow: hidden; }
+.cal-wk, .cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; }
+.cal-wk span { background: var(--surface-2, #f3f3ee); text-align: center; font-size: 12px; font-weight: 700; padding: 6px 0; color: var(--muted, #5b6660); }
+.cal-d { background: var(--surface, #fff); min-height: 92px; padding: 4px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cal-d.out { background: #fafaf7; }
+.cal-d.out .cal-n { color: #9aa29d; }
+.cal-d.lov { background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.035) 0 5px, transparent 5px 10px); }
+.cal-n { align-self: stretch; text-align: left; border: 0; background: none; font: inherit; font-weight: 700; font-size: 13px; padding: 2px 3px; border-radius: 6px; cursor: pointer; color: inherit; display: flex; flex-direction: column; line-height: 1.15; }
+.cal-n:hover { background: rgba(31,90,67,.08); }
+.cal-n small { font-weight: 500; font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-d.red .cal-n { color: #b42318; }
+.cal-d.today .cal-n { background: var(--pitch, #1f5a43); color: #fff; }
+.cal-e { display: block; width: 100%; text-align: left; border: 1px solid var(--line, #dcdcd4); background: #f6f8f6; border-radius: 6px; padding: 2px 5px; font: inherit; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: inherit; }
+.cal-e.s { border-left: 3px solid var(--pitch, #1f5a43); }
+.cal-e.m { border-left: 3px solid #e07a3c; background: #fff5ee; }
+.cal-more { font-size: 11px; color: var(--muted, #5b6660); }
+.cal-key { margin: 8px 0 0; }
+.cal-key-s, .cal-key-m { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--pitch, #1f5a43); vertical-align: middle; }
+.cal-key-m { background: #e07a3c; margin-left: 6px; }
+.cal-key-r { color: #b42318; font-weight: 700; }
+@media (max-width: 600px) { .cal { padding: 8px; } .cal-d { min-height: 64px; padding: 2px; } .cal-e { font-size: 0; height: 7px; padding: 0; border-radius: 4px; } .cal-e.s { background: var(--pitch, #1f5a43); } .cal-e.m { background: #e07a3c; } .cal-n small { font-size: 9px; } }
+/* C: Tränarlaget */
+.of-coaches .of-panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.coach-list { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
+.coach-list li { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.coach-list .grow { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.coach-av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: rgba(31,90,67,.12); color: var(--pitch, #1f5a43); font-weight: 700; flex: none; }
+.coach-list .pill { font-size: 12px; }
+.coach-list .pill.owner { background: var(--pitch, #1f5a43); color: #fff; }
+.coach-inv { width: 100%; }
+.coach-leave { margin-top: 10px; color: #a12a1f; }
