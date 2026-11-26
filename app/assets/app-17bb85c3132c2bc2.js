@@ -7129,7 +7129,9 @@ const importedIds = new Set(IMPORTED_TEAMS.map(t => t.id));
 const CLUB_TEAMS = [...JFA_TEAMS, ...STOCKHOLM_TEAMS.filter(t => !importedIds.has(t.id)), ...IMPORTED_TEAMS];
 const workspaceVisibleTeams = () => {
   const signedIn = CLUB_TEAMS.find(t => t.id === SIGNED_IN_TEAM);
-  if (!signedIn) return SIGNED_IN_TEAM ? [] : CLUB_TEAMS;
+  /* G7: inloggad klubb ser bara sina egna lag */
+  const pc = window.OF_PROFILE?.club; const myClub = pc && (pc.catalog || pc.name);
+  if (!signedIn) return SIGNED_IN_TEAM ? [] : myClub ? CLUB_TEAMS.filter(t => t.club === myClub) : CLUB_TEAMS;
   return HAS_CLUB_LICENSE ? CLUB_TEAMS.filter(t => t.club === signedIn.club) : [signedIn];
 };
 const CLUB_NAMES = [...new Set(CLUB_TEAMS.map(t => t.club))].sort((a, b) => a.localeCompare(b, 'sv'));
@@ -7211,7 +7213,7 @@ function teamCardHTML(t) {
 function teamPickHTML() {
   const t = clubTeam();
   if (SIGNED_IN_TEAM) return t ? teamCardHTML(t) : '';
-  const club = t?.club || ofClubName(); const teams = club ? CLUB_TEAMS.filter(option => option.club === club) : [];
+  const club = ofClubName() || t?.club; const teams = club ? CLUB_TEAMS.filter(option => option.club === club) : [];
   if (!teams.length) return t ? teamCardHTML(t) : '';
   return '<div class="team-pick"><span class="label">Lag i ' + esc(club) + '</span><div class="chip-scroll" role="group" aria-label="Välj lag">' +
     teams.map(x => '<button type="button" class="chip' + (ST.team === x.id ? ' on' : '') + '" data-a="pickTeam" data-k="' + x.id + '" aria-pressed="' + (ST.team === x.id) + '">' + esc(x.name.replace(' – ', ' ')) + '<span class="cnt">' + esc(sfOf(x.sf)[1]) + '</span></button>').join('') +
@@ -9080,14 +9082,17 @@ function workspaceTeamOptions(club, selected) {
 }
 
 function workspaceTeamChoice(team, firstVisit) {
+  /* G7: inloggad tränare byter bara bland klubbens egna lag (via inloggningens lagval) */
+  const pc = window.OF_PROFILE?.club;
+  if (pc) return '<div class="of-home-team-form"><p class="small">Du tränar i <b>' + esc(pc.name || '') + '</b>. Du ser bara klubbens egna lag och material.</p>'
+    + '<div class="of-home-actions"><button type="button" class="btn primary" data-a="workspaceTeamToggle">' + (team ? 'Byt lag' : 'Välj lag') + '</button></div></div>';
   const club = team?.club || '';
   return '<form class="of-home-team-form" id="of-home-team-form">'
-    + '<label for="of-home-club">Klubb</label><select id="of-home-club" name="club" required>'
-    + '<option value="">Välj klubb</option>'
-    + CLUB_NAMES.map(name => '<option' + (name === club ? ' selected' : '') + '>' + esc(name) + '</option>').join('') + '</select>'
+    + '<label for="of-home-club">Klubb</label><input id="of-home-club" name="club" list="of-home-clubs" required autocomplete="off" placeholder="Sök klubb …" value="' + esc(club) + '">'
+    + '<datalist id="of-home-clubs">' + CLUB_NAMES.map(name => '<option value="' + esc(name) + '">').join('') + '</datalist>'
+    + '<p class="small muted">Saknas klubben? Be klubbens ansvariga kontakta Övningsfabriken.</p>'
     + '<label for="of-home-team">Lag</label><select id="of-home-team" name="team" required' + (club ? '' : ' disabled') + '>'
     + workspaceTeamOptions(club, team?.id) + '</select>'
-    + '<p class="of-team-source">Stockholm · Pojkar 2009 · <a href="https://www.stff.se/tavling/valj-tavling/?filterType=1&amp;associationId=16&amp;ageCategoryId=3&amp;footballTypeId=1&amp;typeId=Inget&amp;seasonId=119" target="_blank" rel="noopener">StFF 2026 ↗</a></p>'
     + '<div class="of-home-actions"><button class="btn primary" type="submit"' + (club ? '' : ' disabled') + '>' + (firstVisit ? 'Fortsätt' : 'Spara lag') + '</button>'
     + (!IS_OPEN || team ? '<button type="button" class="of-text-action" data-a="workspaceSkipTeam">' + (firstVisit ? 'Fortsätt utan lag' : 'Ta bort lagval') + '</button>' : '')
     + '</div></form>';
@@ -9413,15 +9418,16 @@ document.addEventListener('input', e => {
   keepers.max = Math.max(0, form.elements.players.valueAsNumber - 2) || 0;
   if (+keepers.value > +keepers.max) keepers.value = keepers.max;
 });
-document.addEventListener('change', e => {
+['change', 'input'].forEach(ev => document.addEventListener(ev, e => {
   const form = e.target.form;
   if (form?.id !== 'of-home-team-form' || e.target.name !== 'club') return;
   const hasClub = CLUB_NAMES.includes(e.target.value);
+  if (form.dataset.club === (hasClub ? e.target.value : '')) return; form.dataset.club = hasClub ? e.target.value : '';
   const team = form.elements.team;
-  team.innerHTML = workspaceTeamOptions(e.target.value);
+  team.innerHTML = workspaceTeamOptions(hasClub ? e.target.value : '');
   team.disabled = !hasClub;
   form.querySelector('[type="submit"]').disabled = !hasClub;
-});
+}));
 document.addEventListener('submit', e => {
   const form = e.target;
   if (form.id === 'of-home-team-form') {

@@ -104,3 +104,8 @@ html.of-grind-on #nav-root, html.of-grind-on #app, html.of-grind-on body > main,
 @media (prefers-reduced-motion:reduce){.of-valk,.of-valk-inner{transition:none}.of-valk-inner{transform:none}}
 @media (max-width:600px){.of-valk{padding:20px 16px}.of-valk-crest.is-large img{width:min(34vw,130px)}.of-valk-crest{width:92px;height:92px;margin-bottom:16px}.of-valk-crest img{height:64px}
   .of-valk-lead{font-size:15.5px;margin-bottom:14px}.of-valk blockquote{font-size:16.5px;padding:14px 16px;margin-bottom:20px}.of-valk h1{margin-bottom:12px}}
+/* G6: Begär tillgång */
+.of-grind-text { padding:12px 14px; border:1px solid #d6dcd3; border-radius:13px; background:#fff; color:#13221b; font:inherit; font-size:16px; resize:vertical; }
+.of-grind-check { display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.4; font-weight:400; }
+.of-grind-check input { width:20px; height:20px; min-height:0; padding:0; margin-top:1px; flex:none; }
+.of-grind-inlink { background:none; border:0; padding:0; font:inherit; font-weight:700; color:inherit; text-decoration:underline; cursor:pointer; }

@@ -160,6 +160,8 @@
     let body = '';
     if (st.phase === 'start' || st.phase === 'checking') {
       body = '<div class="of-grind-wait"><span class="of-grind-spin" aria-hidden="true"></span><p>Kontrollerar inloggningen …</p></div>';
+    } else if (st.phase === 'request') {
+      body = requestHTML(user, msg);
     } else if (!user) {
       const signup = st.mode === 'signup';
       body = (invite ? '<span class="of-eyebrow">Inbjudan' + (st.inviteClub ? ' · ' + esc(st.inviteClub) : '') + '</span><h1>' + (signup ? 'Skapa ditt konto' : 'Logga in för att gå med') + '</h1><p class="of-grind-lead">Du har blivit inbjuden till ' + (st.inviteClub ? '<b>' + esc(st.inviteClub) + '</b> på ' : '') + 'Övningsfabriken. ' + (signup ? 'Välj e-post och lösenord så kopplas du till klubben.' : 'Logga in så kopplas kontot till klubben.') + '</p>'
@@ -169,7 +171,7 @@
         + (signup ? '<small class="of-grind-hint">Minst 8 tecken.</small>' : '')
         + '<button class="of-grind-btn" type="submit"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Vänta …' : signup ? 'Skapa konto och gå med' : 'Logga in') + '</button></form>' + msg
         + (invite ? '<p class="of-grind-alt">' + (signup ? 'Har du redan ett konto? <button type="button" data-g="mode" data-v="login">Logga in</button>' : 'Inget konto än? <button type="button" data-g="mode" data-v="signup">Skapa konto</button>') + '</p>'
-          : '<p class="of-grind-alt">Ny tränare? Be klubbens ansvariga om en inbjudningslänk.</p>')
+          : '<p class="of-grind-alt">Ny tränare? Be klubbens ansvariga om en inbjudningslänk.<br>Har klubben ingen licens än? <button type="button" data-g="req">Begär tillgång</button></p>')
         + '<details class="of-grind-more"' + (st.mode === 'login' && invite ? ' open' : '') + '><summary>Glömt lösenordet?</summary><p>Kontakta klubbens ansvariga eller Övningsfabriken, så hjälper vi dig. Du kan också få en inloggningslänk på mejlen:</p>'
         + '<form data-g="link" class="of-grind-inline"><input name="email" type="email" required placeholder="din@epost.se" aria-label="E-post för inloggningslänk"><button type="submit">Skicka länk</button></form></details>';
     } else if (st.phase === 'team') {
@@ -199,12 +201,42 @@
         + '<p class="of-grind-lead">Du är inloggad som <b>' + esc(user.email) + '</b>, men kontot är inte kopplat till någon klubb med aktiv licens.</p>'
         + (expired.length ? '<p class="of-grind-msg">' + expired.map(c => esc(c.name) + 's licens gick ut ' + esc(c.valid_until)).join('<br>') + '. Kontakta klubbens ansvariga.</p>' : '')
         + msg
-        + '<ul class="of-grind-steps"><li>Har du fått en <b>inbjudningslänk</b>? Öppna den igen, så kopplas du till klubben.</li><li>Ansvarig för klubben? Kontakta Övningsfabriken för en licens.</li></ul>'
+        + '<ul class="of-grind-steps"><li>Har du fått en <b>inbjudningslänk</b>? Öppna den igen, så kopplas du till klubben.</li><li>Ansvarig för klubben, eller saknas klubben? <button type="button" class="of-grind-inlink" data-g="req">Begär tillgång</button> så hör vi av oss.</li></ul>'
         + '<div class="of-grind-row"><button type="button" class="of-grind-btn is-ghost" data-g="retry">Försök igen</button><button type="button" class="of-grind-link" data-g="out">Logga ut</button></div>';
     }
     const club = brandInfo?.crest ? ' has-club' : '';
     return '<div class="of-grind-card' + club + '" role="dialog" aria-modal="true" aria-labelledby="g-title"><div class="of-grind-side" aria-hidden="true"><div>' + brandHTML() + '<p>Planera träningen.<br>Utveckla spelarna.</p></div></div>'
       + '<div class="of-grind-main"><div class="of-grind-mobile-logo">' + brandHTML() + '</div>' + body.replace('<h1>', '<h1 id="g-title">') + dev + '</div></div>';
+  }
+  /* ---------- G6: Begär tillgång – sparas i tabellen leads ---------- */
+  const knownClubs = () => [...new Set((window.OF_SIGN_IN?.teams || []).map(t => t.club))].sort((a, b) => a.localeCompare(b, 'sv'));
+  function requestHTML(user, msg) {
+    if (st.reqDone) return '<span class="of-eyebrow">Tack!</span><h1>Förfrågan är skickad</h1><p class="of-grind-lead">Vi hör av oss till <b>' + esc(st.reqDone) + '</b> så snart vi kan, oftast inom ett par dagar.</p>'
+      + '<div class="of-grind-row"><button type="button" class="of-grind-btn is-ghost" data-g="reqback">Tillbaka</button></div>';
+    const meta = user?.user_metadata || {};
+    return '<span class="of-eyebrow">Begär tillgång</span><h1>Vilken klubb gäller det?</h1>'
+      + '<p class="of-grind-lead">Övningsfabriken används av klubbar med licens. Fyll i uppgifterna så kontaktar vi dig eller klubbens ansvariga.</p>'
+      + '<form class="of-grind-form" data-g="req">'
+      + '<label for="g-req-club">Klubb</label><input id="g-req-club" name="club" list="g-req-clubs" required maxlength="160" autocomplete="organization" placeholder="Sök eller skriv klubbens namn">'
+      + '<datalist id="g-req-clubs">' + knownClubs().map(c => '<option value="' + esc(c) + '">').join('') + '</datalist>'
+      + '<label for="g-req-name">Ditt namn</label><input id="g-req-name" name="name" required maxlength="120" autocomplete="name" value="' + esc(meta.name || '') + '">'
+      + '<label for="g-req-mail">E-post</label><input id="g-req-mail" name="email" type="email" required autocomplete="email" value="' + esc(user?.email || '') + '">'
+      + '<label for="g-req-role">Din roll</label><select id="g-req-role" name="role" class="of-grind-select"><option value="coach">Tränare – vill gå med i klubbens licens</option><option value="owner">Ansvarig – vill ha licens för klubben</option></select>'
+      + '<label for="g-req-n">Ungefär hur många tränare? (valfritt)</label><input id="g-req-n" name="n" type="number" inputmode="numeric" min="1" max="500">'
+      + '<label for="g-req-msg">Meddelande (valfritt)</label><textarea id="g-req-msg" name="message" rows="3" maxlength="1500" class="of-grind-text"></textarea>'
+      + '<label class="of-grind-check"><input type="checkbox" name="consent" required> Jag godkänner att Övningsfabriken sparar uppgifterna för att kontakta mig.</label>'
+      + '<button class="of-grind-btn" type="submit"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Skickar …' : 'Skicka förfrågan') + '</button></form>' + msg
+      + '<div class="of-grind-row"><button type="button" class="of-grind-link" data-g="reqback">Tillbaka</button></div>';
+  }
+  async function sendRequest(f) {
+    const v = n => (f.elements[n]?.value || '').trim();
+    const owner = v('role') === 'owner'; const n = parseInt(v('n'), 10);
+    const row = { name: v('name').slice(0, 120), club: v('club').slice(0, 160), email: v('email').slice(0, 254), coaches_count: n >= 1 && n <= 500 ? n : null,
+      interest: owner ? 'Licens för hela klubben' : 'Tränarlicens', message: ('[Från appen – ' + (owner ? 'ansvarig' : 'tränare') + '] ' + v('message')).slice(0, 2000), consent: true };
+    st.busy = true; st.msg = ''; show();
+    try { const { error } = await M().sb.from('leads').insert(row); if (error) throw error; st.reqDone = row.email; }
+    catch (err) { st.msg = 'Förfrågan kunde inte skickas just nu. Kontrollera uppkopplingen och försök igen.'; }
+    st.busy = false; show();
   }
   function show() {
     hideSplash();
@@ -290,6 +322,7 @@
   async function onSubmit(e) {
     const f = e.target; const kind = f.dataset.g; if (!kind) return;
     e.preventDefault();
+    if (kind === 'req') { sendRequest(f); return; }
     if (kind === 'auth') {
       const email = f.elements.email.value.trim(), password = f.elements.password.value;
       st.busy = true; st.msg = ''; show();
@@ -332,6 +365,8 @@
     const b = e.target.closest('[data-g]'); if (!b || b.tagName === 'FORM') return;
     const a = b.dataset.g;
     if (a === 'mode') { st.mode = b.dataset.v; st.msg = ''; show(); }
+    if (a === 'req') { st.reqFrom = st.phase; st.phase = 'request'; st.reqDone = ''; st.msg = ''; show(); }
+    if (a === 'reqback') { st.phase = st.reqFrom || 'login'; st.reqDone = ''; st.msg = ''; show(); }
     if (a === 'out') { open = false; writeCache(null); await M().signOut(); st.msg = ''; show(); }
     if (a === 'retry') { st.msg = ''; check(); }
     if (a === 'teamskip') { try { localStorage.setItem(skipKey(M().state.user.id, st.teamClub?.id), '1'); } catch (err) { } open = true; st.phase = 'open'; refreshApp(); welcome(); }

@@ -10,8 +10,8 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G5 ✅ Granskarens tomma testmatch ligger bara i granskarens webbläsare. Den kan tas bort där (öppna matchen → Ta bort två gånger) utan att något annat påverkas. Felet som skapade den är rättat (G1).
 
 ## Etapp 2 – Klubb- och lagmodell, data och förtroende
-- G6 ⬜ Klubblistan: sökbar, väg för klubbar som saknas (begär tillgång).
-- G7 ⬜ Inloggad klubb ser bara sina lag och sitt material (generator, filter, läroplan).
+- G6 ✅ (Inloggning → ”Begär tillgång”: sökbar klubblista, namn, e-post, roll, antal tränare – sparas i Supabase-tabellen leads; finns även på sidan ”Ingen aktiv licens”. Lagväljaren utan inloggning har sökbar klubb) Klubblistan: sökbar, väg för klubbar som saknas (begär tillgång).
+- G7 ✅ (Inloggad tränare ser bara klubbens lag: Idag → lagrutan, bankens lagfilter, generatorns lag; byte av lag går via klubbens lagval) Inloggad klubb ser bara sina lag och sitt material (generator, filter, läroplan).
 - G8 ⬜ Tydlig modell för var data sparas (enhet / konto / delat), samma besked överallt + sida ”Så sparas dina data”.
 - G9 ⬜ Matchvideo: tydligt att den bara finns på enheten, vem som ser den, hur länge, hur den tas bort.
 - G10 ⬜ Klubbadministration: roller (ansvarig/tränare), bjuda in/ta bort tränare – finns, ska synas tydligt.
