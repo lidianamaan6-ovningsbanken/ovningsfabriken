@@ -16,13 +16,13 @@ self.addEventListener('activate', e => {
 
 const MEDIA = /\.(png|jpe?g|webp|svg|gif|woff2?|ico)$/i;
 const CODE = /\.(js|css|json|webmanifest)$/i;
-const JSPDF = /cdnjs\.cloudflare\.com\/ajax\/libs\/jspdf\//;
+const JSPDF = /cdnjs\.cloudflare\.com\/ajax\/libs\/(jspdf|pdf\.js)\//;
 
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (JSPDF.test(req.url)) { e.respondWith(cacheFirst(req)); return; }              // PDF-biblioteket: hämtas en gång
+  if (JSPDF.test(req.url)) { e.respondWith(cacheFirst(req)); return; }              // PDF-biblioteken (jsPDF, PDF.js): hämtas en gång
   if (url.origin !== location.origin) return;                                        // Supabase m.m.: alltid nätet
   if (/\/assets\/app-[0-9a-f]+\.js$/.test(url.pathname)) return;                     // appens kod: skydd.js sköter den
   if (/\.(mp4|webm|mov)$/i.test(url.pathname)) return;                               // filmer: webbläsarens egen hantering (spolning)

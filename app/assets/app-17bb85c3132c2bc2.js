@@ -3972,7 +3972,7 @@ function drawTabHTML() {
     '<label class="cta' + (IMP && IMP.busy ? ' busy' : '') + '"><input type="file" id="imp-file" accept="image/*" hidden' + (IMP && IMP.busy ? ' disabled' : '') + '><span class="cta-ic">' + CAM + '</span><b>Fota eller ladda upp</b><small>En skiss, en sida ur en bok eller en whiteboard blir en animation.</small></label></div>');
   if (IMP && IMP.busy) h += '<div class="card phcard">' + BALL + '<div class="grow"><b>AI:n läser bilden …</b><br><span class="small muted">Spelare, pilar och text blir en animation. Det tar en halv minut eller så.</span></div></div>';
   else if (IMP && IMP.err) h += '<div class="err">' + esc(IMP.err) + '</div>';
-  h += '<div class="spread" style="margin-top:6px"><h2>Mina egna övningar <span class="muted num" style="font-size:20px">' + own.length + '</span></h2></div>';
+  h += '<div class="spread" style="margin-top:6px"><h2>Mina egna övningar <span class="muted num" style="font-size:20px">' + own.length + '</span></h2><label class="btn sm up-own-btn"><input type="file" id="up-file3" accept="image/*,application/pdf,.pdf" hidden>+ Ladda upp bild eller PDF</label></div>';
   if (!own.length) h += '<div class="card empty"><h3 style="color:var(--ink)">Inga egna övningar än</h3><p>Övningar du ritar eller laddar upp hamnar här och synkas till dina andra enheter. Du kan också trycka på "Rita egen version" på en övning i banken.</p></div>';
   else h += '<div class="tiles">' + own.map(ex => exTile(ex)).join('') + '</div>';
   return h;
@@ -4184,7 +4184,7 @@ function exCat(ex) { const b = ex.fromBank ? bankById(ex.basedOn) : null; return
 function exSource(ex) {
   const b = ex.fromBank ? bankById(ex.basedOn) : null;
   if (b) return b.style === 'mine' ? 'Din övning' : b.style ? STYLES[b.style].short : ((SOURCES[b.src] || {}).org || '');
-  return ex.own ? (ex.fromPhoto ? 'Från foto' : 'Ritad av dig') : 'Skapad åt dig';
+  return ex.own ? (ex.fromPdf ? 'Från PDF' : ex.fromPhoto ? 'Från foto' : 'Ritad av dig') : 'Skapad åt dig';
 }
 function exTile(ex, why) {
   const b = ex.fromBank ? bankById(ex.basedOn) : null; const c = exCat(ex); const on = !!(SAVED[ex.id] && !SAVED[ex.id].removed);
@@ -5308,7 +5308,7 @@ function startHeroHTML() {
     (BUILD && BUILD.err ? '<p class="ai-err">' + esc(BUILD.err) + '</p>' : '') +
     '<p class="ai-note">Uppvärmning, huvudövningar och spel med tider, animationer och materiallista. Du kan ändra allt efteråt.</p></div></section>';
   h += spelformHTML();
-  h += '<div class="promo-grid">' + '<label class="promo"><input type="file" id="up-file2" accept="image/*" hidden><span class="promo-ic">' + CAM + '</span><span><b>Ladda upp en övning</b><small>Foto, skärmbild eller whiteboard – sparas under Mina egna övningar.</small></span></label>' +
+  h += '<div class="promo-grid">' + '<label class="promo"><input type="file" id="up-file2" accept="image/*,application/pdf,.pdf" hidden><span class="promo-ic">' + CAM + '</span><span><b>Ladda upp en övning</b><small>Foto, skärmbild, whiteboard eller PDF – sparas under Mina egna övningar.</small></span></label>' +
     '<button type="button" class="promo" data-a="view" data-v="plan"><span class="promo-ic">' + NAV_IC.plan + '</span><span><b>Dina pass och säsong</b><small>' + sessList().length + ' pass · planera teman vecka för vecka</small></span></button></div>';
   h += '<div class="or-line"><span>eller skapa enskilda övningar</span></div>';
   return h;
@@ -9784,21 +9784,72 @@ startWorkspace();
 /* ---------- Ladda upp egen övning (foto, skärmbild, whiteboard) – fungerar utan AI ---------- */
 let UPL = null;
 function upCtaHTML() {
-  return '<label class="cta"><input type="file" id="up-file" accept="image/*" hidden><span class="cta-ic">' + CAM + '</span><b>Ladda upp övning</b><small>Ett foto, en skärmbild eller en whiteboard. Sparas med bild under Mina egna övningar.</small></label>';
+  return '<label class="cta"><input type="file" id="up-file" accept="image/*,application/pdf,.pdf" hidden><span class="cta-ic">' + CAM + '</span><b>Ladda upp övning</b><small>Ett foto, en skärmbild, en whiteboard eller en PDF. Sparas under Mina egna övningar.</small></label>';
+}
+/* Bild eller PDF-sida → komprimerad JPEG som ryms i synken */
+function upCompress(src, w, h, maxSide, limit) {
+  const sc = Math.min(1, maxSide / Math.max(w, h)); w = Math.round(w * sc); h = Math.round(h * sc);
+  const cv = document.createElement('canvas'); let out = '';
+  for (const [q, f] of [[.8, 1], [.7, 1], [.62, .85], [.55, .7], [.5, .55]]) {
+    cv.width = Math.round(w * f); cv.height = Math.round(h * f); const cx = cv.getContext('2d');
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(src, 0, 0, cv.width, cv.height);
+    out = cv.toDataURL('image/jpeg', q); if (out.length < limit) break;
+  }
+  return out;
+}
+const PDFJS_V = '3.11.174', PDFJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + PDFJS_V + '/';
+let PDFJS_P = null;
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (PDFJS_P) return PDFJS_P;
+  PDFJS_P = new Promise((res, rej) => { const s = document.createElement('script'); s.src = PDFJS_BASE + 'pdf.min.js';
+    s.onload = () => { const L = window.pdfjsLib; if (!L) { PDFJS_P = null; rej(new Error('pdfjs')); return; } L.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js'; res(L); };
+    s.onerror = () => { PDFJS_P = null; s.remove(); rej(new Error('pdfjs')); }; document.head.appendChild(s); });
+  return PDFJS_P;
+}
+/* Skär bort vita marginaler runt innehållet på en PDF-sida */
+function upTrim(cx, W, H) {
+  let d; try { d = cx.getImageData(0, 0, W, H).data; } catch (e) { return null; }
+  let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) { const i = (y * W + x) * 4; if (d[i] < 235 || d[i + 1] < 235 || d[i + 2] < 235) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+  if (x1 < 0) return null; const pad = Math.round(Math.max(W, H) * .02);
+  x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(W, x1 + pad); y1 = Math.min(H, y1 + pad);
+  const w = x1 - x0, h = y1 - y0; if (w * h > W * H * .9) return null; return { x: x0, y: y0, w, h };
+}
+async function upPdfPage(n) {
+  const U = UPL; if (!U || !U.pdf) return;
+  const page = await U.pdf.getPage(n); const v0 = page.getViewport({ scale: 1 });
+  const scale = Math.min(3, 1700 / Math.max(v0.width, v0.height)); const vp = page.getViewport({ scale });
+  const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+  const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+  await page.render({ canvasContext: cx, viewport: vp }).promise;
+  const cr = upTrim(cx, cv.width, cv.height); let src = cv;
+  if (cr) { src = document.createElement('canvas'); src.width = cr.w; src.height = cr.h; src.getContext('2d').drawImage(cv, cr.x, cr.y, cr.w, cr.h, 0, 0, cr.w, cr.h); }
+  U.img = upCompress(src, src.width, src.height, 1500, 330000); U.page = n;
+  if (U.orgAuto || !U.org) {
+    let txt = ''; try { const tc = await page.getTextContent(); txt = tc.items.map(it => (it.str || '') + (it.hasEOL ? '\n' : ' ')).join('').replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim(); } catch (e) { }
+    U.org = txt.slice(0, 1200); U.orgAuto = !!txt;
+  }
+}
+async function upOpenPdf(file) {
+  if (file.size > 30 * 1024 * 1024) { toast('PDF:en är för stor (högst 30 MB).'); return; }
+  UPL = { busy: true }; const r = $('#m2-root'); if (r) r.innerHTML = '<div class="modal-wrap up-wrap" role="dialog" aria-modal="true" aria-label="Läser PDF"><div class="modal up up-busy">' + BALL + '<p>Läser PDF:en …</p></div></div>';
+  try {
+    const L = await loadPdfJs(); const data = new Uint8Array(await file.arrayBuffer());
+    const pdf = await L.getDocument({ data, isEvalSupported: false }).promise;
+    UPL = { pdf, pages: pdf.numPages, page: 1, img: '', name: '', phase: 'Anfall', players: ST.n || 12, minutes: 15, org: '', points: '', err: '', fromPdf: true };
+    await upPdfPage(1); upRender(); setTimeout(() => $('#up-name')?.focus(), 50);
+  } catch (e) {
+    UPL = null; closeM2();
+    toast(e && /password/i.test(e.name || e.message || '') ? 'PDF:en är lösenordsskyddad och kan inte läsas.' : !navigator.onLine ? 'Första PDF-uppladdningen kräver internet. Försök igen när du är uppkopplad.' : 'PDF:en gick inte att läsa. Prova en annan fil eller ta en skärmbild.');
+  }
 }
 function upShrink(file) {
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file); const img = new Image();
     img.onload = () => {
       URL.revokeObjectURL(url);
-      let w = img.naturalWidth, h = img.naturalHeight; const sc = Math.min(1, 1200 / Math.max(w, h)); w = Math.round(w * sc); h = Math.round(h * sc);
-      const cv = document.createElement('canvas'); let out = '';
-      for (const [q, f] of [[.78, 1], [.68, 1], [.6, .85], [.55, .7], [.5, .55]]) {
-        cv.width = Math.round(w * f); cv.height = Math.round(h * f); const cx = cv.getContext('2d');
-        cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
-        out = cv.toDataURL('image/jpeg', q); if (out.length < 260000) break;
-      }
-      res(out);
+      res(upCompress(img, img.naturalWidth, img.naturalHeight, 1200, 260000));
     };
     img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('img')); };
     img.src = url;
@@ -9806,22 +9857,24 @@ function upShrink(file) {
 }
 async function upOpen(file) {
   if (!file) return;
-  if (/pdf$/i.test(file.type || '') || /\.pdf$/i.test(file.name || '')) { toast('PDF går inte att ladda upp än. Ta en skärmbild av övningen och ladda upp bilden.'); return; }
-  if (!/^image\//.test(file.type || '')) { toast('Välj en bild, till exempel ett foto eller en skärmbild'); return; }
+  if (/pdf$/i.test(file.type || '') || /\.pdf$/i.test(file.name || '')) { upOpenPdf(file); return; }
+  if (!/^image\//.test(file.type || '')) { toast('Välj en bild eller en PDF'); return; }
   let img; try { img = await upShrink(file); } catch (e) { toast('Bilden gick inte att läsa. Prova en annan bild (JPG eller PNG).'); return; }
   UPL = { img, name: '', phase: 'Anfall', players: ST.n || 12, minutes: 15, org: '', points: '', err: '' };
   upRender(); setTimeout(() => $('#up-name')?.focus(), 50);
 }
 function upRead() {
   if (!UPL) return; const v = id => ($('#' + id) || {}).value;
-  UPL.name = String(v('up-name') ?? UPL.name).trim(); UPL.org = String(v('up-org') ?? UPL.org); UPL.points = String(v('up-points') ?? UPL.points);
+  UPL.name = String(v('up-name') ?? UPL.name).trim(); { const o = v('up-org'); if (o != null && o !== UPL.org) UPL.orgAuto = false; if (o != null) UPL.org = String(o); } UPL.points = String(v('up-points') ?? UPL.points);
   UPL.players = Math.max(1, Math.min(40, parseInt(v('up-players'), 10) || UPL.players)); UPL.minutes = Math.max(1, Math.min(120, parseInt(v('up-min'), 10) || UPL.minutes));
 }
 function upHTML() {
   const U = UPL;
   return '<div class="modal-wrap up-wrap" role="dialog" aria-modal="true" aria-labelledby="up-h"><div class="modal up">' +
     '<h2 id="up-h">' + (U.id ? 'Ändra övningen' : 'Ny egen övning') + '</h2>' +
-    '<figure class="up-fig"><img src="' + U.img + '" alt="Bilden du laddade upp"></figure>' +
+    '<figure class="up-fig"><img src="' + U.img + '" alt="' + (U.pdf ? 'Sida ' + U.page + ' i PDF:en' : 'Bilden du laddade upp') + '"></figure>' +
+    (U.pdf && U.pages > 1 ? '<div class="up-pages"><button type="button" class="btn sm" data-a="upPage" data-d="-1"' + (U.page <= 1 || U.busyPage ? ' disabled' : '') + ' aria-label="Föregående sida">‹</button><span>Sida <b class="num">' + U.page + '</b> av ' + U.pages + ' – välj sidan med övningen</span><button type="button" class="btn sm" data-a="upPage" data-d="1"' + (U.page >= U.pages || U.busyPage ? ' disabled' : '') + ' aria-label="Nästa sida">›</button></div>' : '') +
+    (U.orgAuto ? '<p class="tiny muted">Texten från PDF:en är ifylld nedan – ändra eller korta den som du vill.</p>' : '') +
     '<label class="up-f"><span class="up-q">Vad heter övningen?</span><input id="up-name" required aria-required="true" maxlength="80" value="' + esc(U.name) + '" placeholder="t.ex. Rondo 4 mot 2" autocomplete="off"></label>' +
     '<div class="up-f"><span class="label" id="up-ph-l">Skede</span><div class="mini-seg" role="group" aria-labelledby="up-ph-l">' + ['Anfall', 'Försvar', 'Omställning'].map(p => '<button type="button" data-a="upPhase" data-v="' + p + '" class="' + (U.phase === p ? 'on' : '') + '" aria-pressed="' + (U.phase === p) + '">' + p + '</button>').join('') + '</div></div>' +
     '<div class="up-row"><label class="up-f"><span class="label">Antal spelare</span><input id="up-players" type="number" inputmode="numeric" min="1" max="40" value="' + U.players + '"></label>' +
@@ -9836,18 +9889,21 @@ function upHTML() {
 function upRender() { const r = $('#m2-root'); if (r && UPL) r.innerHTML = upHTML(); }
 Object.assign(A, {
   upPhase: el => { upRead(); UPL.phase = el.dataset.v; upRender(); },
-  upCancel: () => { UPL = null; closeM2(); },
+  upCancel: () => { if (UPL && UPL.pdf) try { UPL.pdf.destroy(); } catch (e) { } UPL = null; closeM2(); },
+  upPage: async el => { const U = UPL; if (!U || !U.pdf || U.busyPage) return; upRead(); const n = Math.max(1, Math.min(U.pages, U.page + (+el.dataset.d))); if (n === U.page) return; U.busyPage = true; upRender();
+    try { await upPdfPage(n); } catch (e) { toast('Sidan gick inte att visa'); } U.busyPage = false; upRender(); },
   upSave: () => {
     upRead(); const U = UPL; if (!U) return;
     if (!U.name) { U.err = 'Skriv vad övningen heter, så sparas den.'; upRender(); $('#up-name')?.focus(); return; }
     const ex = { id: 'own-' + uid(), own: true, name: U.name, phase: U.phase, stage: '', type: 'Egen övning', minutes: U.minutes, area: '', division: '',
       organisation: U.org.trim(), rules: '', coachingPoints: U.points.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 6), questions: [], criteria: [], sketch: [],
-      anim: null, players: U.players, created: Date.now(), fromPhoto: true, img: U.img };
+      anim: null, players: U.players, created: Date.now(), fromPhoto: !U.fromPdf, fromPdf: !!U.fromPdf, img: U.img };
+    if (U.pdf) try { U.pdf.destroy(); } catch (e) { }
     const old = U.id && SAVED[U.id]; if (old) { ex.id = old.id; ex.created = old.created || ex.created; ex.minutesSet = true; }
     saveFav(ex); UPL = null; closeM2(); ST.view = 'draw'; persist(); render(); window.scrollTo(0, 0); toast(old ? 'Övningen är uppdaterad' : '”' + ex.name + '” är sparad i appen under Mina egna övningar');
   },
 });
-document.addEventListener('change', e => { const t = e.target; if (t && (t.id === 'up-file' || t.id === 'up-file2')) { const f = t.files && t.files[0]; t.value = ''; upOpen(f); } });
+document.addEventListener('change', e => { const t = e.target; if (t && (t.id === 'up-file' || t.id === 'up-file2' || t.id === 'up-file3')) { const f = t.files && t.files[0]; t.value = ''; upOpen(f); } });
 /* Bilden visas i stället för animationen: kort, övningsdetalj och PDF */
 const __thumbUp = thumbSVG;
 thumbSVG = function (ex) { return ex && ex.img ? '<img class="thumb own-photo" src="' + ex.img + '" alt="" loading="lazy" decoding="async">' : __thumbUp.apply(this, arguments); };
@@ -9864,7 +9920,7 @@ exImgData0 = async function (ex) {
 const __drEditUp = A.drEdit, __showUp = A.show;
 A.drEdit = el => {
   const ex = findEx(el.dataset.id);
-  if (ex && ex.img) { UPL = { id: ex.id, img: ex.img, name: ex.name || '', phase: ex.phase || 'Anfall', players: ex.players || ST.n || 12, minutes: ex.minutes || 15, org: ex.organisation || '', points: (ex.coachingPoints || []).join('\n'), err: '' }; if (DET) closeDet(); upRender(); return; }
+  if (ex && ex.img) { UPL = { id: ex.id, img: ex.img, name: ex.name || '', phase: ex.phase || 'Anfall', players: ex.players || ST.n || 12, minutes: ex.minutes || 15, org: ex.organisation || '', points: (ex.coachingPoints || []).join('\n'), err: '', fromPdf: !!ex.fromPdf }; if (DET) closeDet(); upRender(); return; }
   return __drEditUp(el);
 };
 A.show = el => {
