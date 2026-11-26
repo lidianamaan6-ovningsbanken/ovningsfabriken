@@ -3646,6 +3646,7 @@ function searchBank(q, pool = BANK, limit = 8) {
     }
     if (stageHits.has(b.stage)) sc += 7;
     if (typeHits.has(b.type)) sc += 2;
+    if (toks.length && inAny < Math.ceil(toks.length / 2) && !(t.length > 2 && name.includes(t))) sc = 0;   /* G19: bara övningar där sökordet faktiskt finns */
     if (sc > 0 && ST.n >= b.min && ST.n <= b.max) sc += 0.5;
     return { b, sc };
   }).filter(x => x.sc >= 1).sort((x, y) => y.sc - x.sc || lc(x.b.name).localeCompare(lc(y.b.name), 'sv')).slice(0, limit).map(x => x.b);
@@ -7777,7 +7778,10 @@ function lpChain(on) {
 function lpAgePick() {
   const a = lpAge(); const t = clubTeam();
   return '<div class="lp-ages"><span class="label">Ålder' + (t ? ' · ' + esc(t.name.split(' – ')[0]) : '') + '</span><div class="chip-scroll" role="group" aria-label="Välj ålder">' +
-    LP_AGES.map(x => '<button type="button" class="chip' + (x === a ? ' on' : '') + '" data-a="lpAge" data-v="' + x + '" aria-pressed="' + (x === a) + '">' + x + ' år<span class="cnt">' + esc(lpCard(x).spelform.replace('v', ' mot ')) + '</span></button>').join('') + '</div></div>';
+    '<button type="button" class="chip' + (ST.lpYoung ? ' on' : '') + '" data-a="lpYoung" aria-pressed="' + !!ST.lpYoung + '">6–7 år<span class="cnt">3 mot 3</span></button>' +
+    LP_AGES.map(x => '<button type="button" class="chip' + (x === a && !ST.lpYoung ? ' on' : '') + '" data-a="lpAge" data-v="' + x + '" aria-pressed="' + (x === a && !ST.lpYoung) + '">' + x + ' år<span class="cnt">' + esc(lpCard(x).spelform.replace('v', ' mot ')) + '</span></button>').join('') + '</div>'
+    + (ST.lpYoung ? '<div class="card lp-young"><b>6–7 år</b><p class="small">Ålderskorten i läroplanen börjar vid 8 år. För 6–7 år gäller lek och 3 mot 3: många bollkontakter, korta lekar och alla får spela. Korten nedan visar 8 år som nästa steg.</p><button type="button" class="btn sm" data-a="lpYoungBank">Visa övningar för 3 mot 3</button></div>'
+      : (!t && !Number(ST.lpAge) ? '<p class="small muted lp-default">Inget lag valt – visar ' + a + ' år. Tryck på lagets ålder ovan.</p>' : '')) + '</div>';
 }
 function lpBar(k, p, kind, age, grp) {
   const pr = LP_PRIO[p] || ['', 4]; const goal = kind === 'fard' ? lpGoal('fard', k, age) : kind === 'spel' ? lpGoal('spel', k, age) : '';
@@ -7824,7 +7828,12 @@ seasonHTML = function () {
   const weeks = Array.from({ length: 20 }, (_, i) => ((w0 - 1 + i) % 52) + 1);
   const perOf = w => se.periods.find(p => weekRange(p).includes(w));
   let h = ofIsJfa() ? lpSeasonCard() : '';
-  h += '<div class="weeks" role="list">' + weeks.map(w => { const p = perOf(w); const k = p ? phaseKey(stagePhase(p.stage)) : ''; return '<span role="listitem" class="wk' + (p ? ' on ' + k : '') + (w === w0 ? ' now' : '') + '" title="Vecka ' + w + (p ? ': ' + esc(p.lp ? lpThemeName(p.lp) : p.stage) : '') + '"><b class="num">' + w + '</b></span>'; }).join('') + '</div>';
+  /* G24: kalendern visar lika många veckor som planen (minst 12), med årtal och vanliga lov */
+  const ahead = p => ((p.to - w0 + 52) % 52) + 1; const span = Math.min(52, Math.max(12, ...se.periods.map(ahead)));
+  const y0 = new Date().getFullYear(); const cal = Array.from({ length: span }, (_, i) => { const w = ((w0 - 1 + i) % 52) + 1; return { w, y: y0 + (w0 - 1 + i >= 52 ? 1 : 0), first: i === 0 || w === 1 }; });
+  const lov = w => w === 44 ? 'Höstlov' : (w === 52 || w === 1) ? 'Jullov' : w === 9 ? 'Sportlov (Stockholm)' : (w >= 26 && w <= 32) ? 'Sommaruppehåll' : '';
+  h += '<p class="small muted wk-legend">' + span + ' veckor framåt' + (se.periods.length ? ' – så långt planen räcker' : '') + '. <span class="wk-lov-key"></span> = vanligt lov eller uppehåll (kontrollera er kommun).</p>';
+  h += '<div class="weeks" role="list">' + cal.map(({ w, y, first }) => { const p = perOf(w); const k = p ? phaseKey(stagePhase(p.stage)) : ''; const l = lov(w); return (first ? '<span class="wk-year">' + y + '</span>' : '') + '<span role="listitem" class="wk' + (p ? ' on ' + k : '') + (w === w0 ? ' now' : '') + (l ? ' lov' : '') + '" title="Vecka ' + w + ' ' + y + (l ? ' · ' + l : '') + (p ? ': ' + esc(p.lp ? lpThemeName(p.lp) : p.stage) : '') + '"><b class="num">' + w + '</b></span>'; }).join('') + '</div>';
   const F = Object.assign({ from: w0, to: ((w0 + 1) % 52) + 1, stage: 'Speluppbyggnad' }, ST.perForm || {});
   if (!se.periods.length) h += '<div class="card empty"><h3 style="color:var(--ink)">Ingen säsongsplan än</h3><p>Lägg till en period, till exempel <i>Speluppbyggnad v. ' + w0 + '–' + (((w0 + 2) % 52) + 1) + '</i>. Då får du förslag på pass vecka för vecka.</p><button type="button" class="btn primary" data-a="perFormOpen">+ Lägg till en period</button></div>';
   h += '<details class="card per-form"' + (ST.perFormOpen ? ' open' : '') + '><summary><b>+ Egen period (bara skede)</b></summary><div class="stack" style="gap:10px;padding-top:10px">' +
@@ -9277,6 +9286,7 @@ function workspaceComposer(primary) {
     + '<label>Träningsfokus<textarea id="of-focus" name="focus" rows="2" maxlength="300" minlength="3" required placeholder="Till exempel: spela ut från målvakten.">' + esc(ST.pq || '') + '</textarea></label>'
     + '<div class="of-examples" aria-label="Förslag på träningsfokus">' + EXAMPLES.slice(0, 3).map(x =>
       '<button type="button" data-a="workspaceExample" data-v="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>'
+    + (() => { const t = clubTeam(); return '<p class="small muted of-defaults">' + (t ? (() => { const d = supOf(t) || {}; const same = d.n === ST.n && (d.durDef || 75) === (ST.passDur || 75); return 'Förval från <b>' + esc(t.name) + '</b>: ' + (d.n || ST.n) + ' spelare, ' + (d.durDef || 75) + ' min. ' + (same ? 'Ändra nedan om det är annorlunda i dag.' : 'Du har ändrat till ' + ST.n + ' spelare och ' + (ST.passDur || 75) + ' min. <button type="button" class="of-text-action" data-a="workspaceTeamDefaults">Återställ lagets förval</button>'); })() : 'Inget lag valt. Välj lag så fylls lagets antal spelare och passlängd i automatiskt.') + '</p>'; })()
     + '<div class="of-inputs"><label>Spelare totalt<input name="players" type="number" inputmode="numeric" min="2" max="40" required value="' + ST.n + '"></label>'
     + '<label>Målvakter<input name="keepers" type="number" inputmode="numeric" min="0" max="' + Math.max(0, ST.n - 2) + '" required value="' + ST.gk + '"></label>'
     + '<label>Längd<select name="duration">' + [...new Set([60, 75, 90, ST.passDur || 75])].sort((a, b) => a - b).map(minutes =>
@@ -9537,7 +9547,7 @@ function workspaceBankCards() {
       + '<p class="of-exercise-source' + (state === 'reviewed' ? ' of-exercise-reviewed' : '') + '">' + media + '</p>'
       + '<button type="button" class="btn of-exercise-add" data-a="addTo" data-id="' + id + '" aria-label="Lägg till ' + label + ' i pass">Lägg i pass</button></div></article>';
   });
-  return ageNote + '<p class="of-bank-count" role="status">' + matches.length + (matches.length === 1 ? ' övning' : ' övningar') + (profile && !q ? ' av ' + BANK.length.toLocaleString('sv-SE') : '') + '</p>'
+  return ageNote + '<p class="of-bank-count" role="status">' + matches.length + (matches.length === 1 ? ' övning' : ' övningar') + (q ? ' för ”' + esc(q) + '” <button type="button" class="of-text-action" data-a="workspaceBankClearQ">Rensa sökningen</button>' : profile ? ' av ' + BANK.length.toLocaleString('sv-SE') : '') + '</p>'
     + (matches.length ? '<div class="of-bank-grid">' + cards.join('') + '</div>'
       : '<div class="of-card"><h2>Inga övningar matchar</h2><p>Prova ett annat sökord eller välj färre filter.</p>'
         + '<button type="button" class="of-text-action" data-a="workspaceBankReset">Rensa sökning och filter</button></div>')
@@ -9557,10 +9567,11 @@ bankHTML = function () {
     + '<details class="of-bank-filters"' + (ST.workspaceFiltersOpen ? ' open' : '') + '><summary>Fler filter' + (hasFilters ? ' · Aktiva' : '') + '</summary>'
     + '<div class="of-bank-fields"><label>Skede<select data-bank-field="stage">' + workspaceBankOptions([['', 'Alla skeden'], ...stages.map(stage => [stage, stage])], ST.workspaceBankStage || '') + '</select></label>'
     + '<label>Kategori<select data-bank-field="category">' + workspaceBankOptions([['all', 'Alla kategorier'], ...CATS.map(([k, l]) => [k, l])], ST.bankCat || 'all') + '</select></label>'
-    + '<label>Lag eller spelform<select data-bank-field="profile">' + workspaceBankOptions([['', 'Alla lag och spelformer'], ...workspaceVisibleTeams().map(t => ['team:' + t.id, t.name]), ...SPELFORMER.map(([id, label]) => ['form:' + id, label])], selection.t ? 'team:' + selection.t : selection.sf ? 'form:' + selection.sf : '') + '</select></label>'
+    + '<label>Lag eller spelform<select data-bank-field="profile">' + workspaceBankOptions([['', 'Alla lag och spelformer']], '') + (workspaceVisibleTeams().length ? '<optgroup label="' + esc((window.OF_PROFILE?.club?.name || 'Klubbens') + ' – lag') + '">' + workspaceBankOptions(workspaceVisibleTeams().map(t => ['team:' + t.id, t.name]), selection.t ? 'team:' + selection.t : '') + '</optgroup>' : '') + '<optgroup label="Spelform">' + workspaceBankOptions(SPELFORMER.map(([id, label]) => ['form:' + id, label]), selection.sf && !selection.t ? 'form:' + selection.sf : '') + '</optgroup>' + '</select></label>'
     + '<label>Läroplan<select data-bank-field="curriculum">' + workspaceBankOptions([['', 'Alla lärandemål'], ...curriculum.map(k => [k, lpName(k)])], ST.lpF || '') + '</select></label>'
-    + '<label>Land<select data-bank-field="country">' + workspaceBankOptions([['all', 'Alla länder'], ...LANDS], ST.bankLand || 'all') + '</select></label>'
+    + '<label>Källa (land eller förbund)<select data-bank-field="country">' + workspaceBankOptions([['all', 'Alla källor'], ...LANDS], ST.bankLand || 'all') + '</select></label>'
     + '<label class="of-bank-fit"><input type="checkbox" data-bank-field="fit"' + (ST.workspaceBankFit ? ' checked' : '') + '>Passar ' + ST.n + ' spelare</label></div>'
+    + '<p class="small muted of-bank-hint">Filtren gäller samtidigt: en övning visas bara om den passar alla val. Sökordet söker inom de valda filtren.</p>'
     + '<button class="of-text-action" type="button" data-a="workspaceBankReset">Rensa sökning och filter</button></details></div>'
     + '<div id="of-bank-results">' + workspaceBankCards() + '</div></section>';
 };
@@ -10031,6 +10042,7 @@ window.addEventListener('popstate', () => {
 (function navStart() {
   const p = navParse(location.hash);
   const allowed = p && !(p.view === 'dev' && typeof OF_DEV_ON !== 'undefined' && !OF_DEV_ON) && !(p.view === 'plan' && p.sub === 'lp' && !ofIsJfa());
+  ST.bankQ = '';   /* G19: en gammal sökning ligger aldrig kvar i sökfältet vid start */
   ST.view = allowed ? p.view : 'today'; if (allowed && p.sub) ST.planSub = p.sub; if (allowed && p.msub) ST.matchSub = p.msub;
   try { history.replaceState({ v: ST.view, sub: ST.planSub || 'pass' }, '', navHash()); } catch (e) { }
   persist(); try { render(); } catch (e) { }
@@ -10070,3 +10082,17 @@ matchTabHTML = function () {
   return head2 + seg + entry.replace('NYTT · MATCHVIDEO', 'MATCHVIDEO') + how;
 };
 Object.assign(A, { matchSub: el => { ST.matchSub = el.dataset.v; persist(); render(); } });
+
+/* G19: sökfältet och resultaten visar alltid samma sak */
+Object.assign(A, { workspaceBankClearQ: () => { ST.bankQ = ''; workspaceBankLimit = BANK_PAGE_SIZE; persist(); render(); $('#of-bank-query')?.focus(); } });
+const bankSyncQ = () => { const i = $('#of-bank-query'); if (i && i.value !== (ST.bankQ || '')) { ST.bankQ = i.value; refreshWorkspaceBank(); } };
+window.addEventListener('pageshow', () => setTimeout(bankSyncQ, 0));
+
+Object.assign(A, { workspaceTeamDefaults: () => { const t = clubTeam(); if (!t) return; const d = supOf(t); if (d) { ST.n = d.n; ST.gk = typeof d.gk === 'number' ? d.gk : ST.gk; ST.passDur = d.durDef; } persist(); render(); toast('Lagets förval är tillbaka'); } });
+
+/* G23: 6–7 år i läroplanen */
+Object.assign(A, {
+  lpYoung: () => { ST.lpYoung = !ST.lpYoung; if (ST.lpYoung) ST.lpAge = 8; persist(); render(); },
+  lpYoungBank: () => { ST.bankJ = { t: '', sf: '3v3' }; ST.workspaceBankAllAges = false; ST.view = 'bank'; persist(); render(); window.scrollTo(0, 0); },
+});
+const __lpAgeAct = A.lpAge; A.lpAge = el => { ST.lpYoung = false; return __lpAgeAct(el); };

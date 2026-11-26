@@ -27,12 +27,12 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G18 🔧 (unika namn: ”Utvärdera motståndaren” (7), ”Vårt eget spel” (8), för yngre ”Efter matchen: vårt eget spel”; yngre lag har grundflöde + Fördjupning – samma upplägg för äldre lag återstår) Matchflödet: grundflöde + fördjupningar, unika namn (två ”Efter matchen”).
 
 ## Etapp 4 – Förval och innehåll
-- G19 ⬜ Övningsbanken: sökfältet visade ”6 mot 4 till 6 mot 6” – bara platshållare, resultat följer alltid sökfältet.
-- G20 ⬜ Filter lag/spelform: klubb → lag, sökbart.
-- G21 ⬜ Filtret ”Land” → ”Källa”, förklara kombination.
-- G22 ⬜ Generatorn: 12 spelare/75 min, 13–15 år/UEFA B → värden från valt lag, tydligt vad man ändrar.
-- G23 ⬜ Läroplan: 14 år förvalt utan lag; 6–7 år saknas; åldersraden kapas på mobil.
-- G24 ⬜ Säsong: 16 valda veckor men 20 i kalendern; årtal; lov/uppehåll.
+- G19 ✅ (Övningsbank: sökfältet är tomt vid start, raden visar ”N övningar för ’sökord’ · Rensa sökningen”, och sökningen visar bara övningar där ordet faktiskt finns – bäst träff först) Övningsbanken: sökfältet visade ”6 mot 4 till 6 mot 6” – bara platshållare, resultat följer alltid sökfältet.
+- G20 ✅ (Filtret ”Lag eller spelform” grupperat: klubbens lag / spelform; bara den egna klubbens lag) Filter lag/spelform: klubb → lag, sökbart.
+- G21 ✅ (”Land” → ”Källa (land eller förbund)”, med förklaring att filtren gäller samtidigt) Filtret ”Land” → ”Källa”, förklara kombination.
+- G22 ✅ (Snabbt pass visar ”Förval från <lag>: X spelare, Y min”, säger när man ändrat och har ”Återställ lagets förval”) Generatorn: 12 spelare/75 min, 13–15 år/UEFA B → värden från valt lag, tydligt vad man ändrar.
+- G23 ✅ (Läroplan (JFA): ”Inget lag valt – visar 14 år” syns; 6–7 år finns med förklaring och knapp till 3 mot 3-övningar; åldersraden bryts på mobil) Läroplan: 14 år förvalt utan lag; 6–7 år saknas; åldersraden kapas på mobil.
+- G24 ✅ (Säsong: kalendern visar lika många veckor som planen (16 val = 16 veckor), årtal vid årsskiftet, vanliga lov markerade) Säsong: 16 valda veckor men 20 i kalendern; årtal; lov/uppehåll.
 - G25 ⬜ Spelidé: synliga etiketter, lag eller klubb, ”sparat”-besked, AI-förslag granskas.
 - G26 ✅ (Utveckling hänvisar till ”Vårt eget spel” i matchen; tomläge visar vad som behövs med knappar) Utveckling: hänvisningen ”Match → steg 8” stämmer inte; riktigt tomläge.
 - G27 🔧 (formation märkt exempel klar, lagnamn kräver ifyllt namn)  Motståndarens formation förvald 1-2-3-1; ”Motståndare” sparas som lagnamn.

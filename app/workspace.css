@@ -781,3 +781,12 @@ img.thumb.own-photo { width: 100%; height: 100%; object-fit: cover; display: blo
 /* G17: Matchanalys som egen flik */
 .m-seg { margin: 4px 0 14px; }
 .ma-how { margin: 14px 0 0; padding-left: 22px; display: grid; gap: 8px; line-height: 1.45; }
+/* G24: säsongskalender med årtal och lov */
+.weeks .wk-year { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--muted, #5b6660); margin-top: 4px; }
+.weeks .wk.lov:not(.on) { background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.07) 0 4px, transparent 4px 8px); }
+.wk-lov-key { display: inline-block; width: 14px; height: 10px; border-radius: 3px; vertical-align: middle; background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.25) 0 3px, transparent 3px 6px); border: 1px solid rgba(0,0,0,.15); }
+.wk-legend { margin: 4px 0 6px; }
+/* G23/G36: åldersraden i läroplanen bryts i stället för att kapas */
+.lp-ages .chip-scroll { flex-wrap: wrap; overflow: visible; }
+.lp-young { margin-top: 8px; display: grid; gap: 6px; justify-items: start; }
+.of-defaults { margin: 0 0 6px; }
