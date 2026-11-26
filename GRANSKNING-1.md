@@ -33,14 +33,14 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G22 ✅ (Snabbt pass visar ”Förval från <lag>: X spelare, Y min”, säger när man ändrat och har ”Återställ lagets förval”) Generatorn: 12 spelare/75 min, 13–15 år/UEFA B → värden från valt lag, tydligt vad man ändrar.
 - G23 ✅ (Läroplan (JFA): ”Inget lag valt – visar 14 år” syns; 6–7 år finns med förklaring och knapp till 3 mot 3-övningar; åldersraden bryts på mobil) Läroplan: 14 år förvalt utan lag; 6–7 år saknas; åldersraden kapas på mobil.
 - G24 ✅ (Säsong: kalendern visar lika många veckor som planen (16 val = 16 veckor), årtal vid årsskiftet, vanliga lov markerade) Säsong: 16 valda veckor men 20 i kalendern; årtal; lov/uppehåll.
-- G25 ⬜ Spelidé: synliga etiketter, lag eller klubb, ”sparat”-besked, AI-förslag granskas.
+- G25 ✅ (Spelidé: synliga etiketter Skede/Princip/Ord/Betydelse, rad om att spelidén är din och gäller dina lag, ”✓ Sparad <tid>” och besked vid varje ändring; spelidé och säsongsplan synkas nu till kontot. AI-granskning blir aktuell först om AI slås på) Spelidé: synliga etiketter, lag eller klubb, ”sparat”-besked, AI-förslag granskas.
 - G26 ✅ (Utveckling hänvisar till ”Vårt eget spel” i matchen; tomläge visar vad som behövs med knappar) Utveckling: hänvisningen ”Match → steg 8” stämmer inte; riktigt tomläge.
-- G27 🔧 (formation märkt exempel klar, lagnamn kräver ifyllt namn)  Motståndarens formation förvald 1-2-3-1; ”Motståndare” sparas som lagnamn.
-- G28 ⬜ Övningsdetalj: ”Lägg i pass” huvudknapp, övriga sekundära; tom videokolumn vid scroll.
-- G29 ⬜ Samma ord för samma handling (”Lägg i pass”), ikoner med synlig text.
-- G30 ⬜ FIFA-länk med /test/ i adressen.
-- G31 ⬜ Sparade: Favoriter / Mina övningar / Klubbens delade, tydligt privat/delat.
-- G32 ⬜ PDF: förhandsvisning och tydlig status.
+- G27 ✅ (formationen märkt ”exempel / Inte vald” tills den väljs; matchen sparas inte utan motståndarens namn)  Motståndarens formation förvald 1-2-3-1; ”Motståndare” sparas som lagnamn.
+- G28 ✅ (Övningsdetalj: bara ”+ Lägg i pass” är huvudknapp; på dator följer filmen/animationen med när man scrollar texten) Övningsdetalj: ”Lägg i pass” huvudknapp, övriga sekundära; tom videokolumn vid scroll.
+- G29 ✅ (”Lägg i pass” överallt – knappar och rubrik; hjälpknappen har synlig text ”Hjälp” när det finns plats) Samma ord för samma handling (”Lägg i pass”), ikoner med synlig text.
+- G30 ✅ (FIFA-källor med /test/ i adressen länkar först till FIFA Training Centre; PDF:en finns som direktlänk under. Adressen är FIFA:s egen) FIFA-länk med /test/ i adressen.
+- G31 ✅ (Sparade: flikarna Favoriter / Mina egna / Klubbens delade, med text om vad som är privat; ”Dela med laget” visas bara när delning finns) Sparade: Favoriter / Mina övningar / Klubbens delade, tydligt privat/delat.
+- G32 ✅ (PDF: ”Skapar PDF …”, sedan ruta ”✓ PDF:en är klar” med namn, antal sidor, storlek, förhandsvisning på dator och Öppna / Dela / Ladda ner) PDF: förhandsvisning och tydlig status.
 
 ## Etapp 5 – Prestanda, mobil, tillgänglighet
 - G33 ⬜ Mätning av flikbyten, sök, film, pass, PDF, video – före/efter (se Prestanda nedan).

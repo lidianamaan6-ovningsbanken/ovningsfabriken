@@ -522,11 +522,13 @@ function render() {
   h += '<div class="seg tabs4" role="tablist">' + [['make', 'Skapa'], ['bank', 'Bank'], ['draw', 'Rita'], ['saved', 'Favoriter (' + sv.length + ')']].map(([v, l]) => '<button type="button" role="tab" data-a="view" data-v="' + v + '" class="' + (ST.view === v ? 'on' : '') + '" aria-selected="' + (ST.view === v) + '">' + l + '</button>').join('') + '</div>';
   if (ST.view === 'bank') { app.innerHTML = h + bankHTML(); if (ACT) setTimeout(animDraw, 0); return; }
   if (ST.view === 'draw') { app.innerHTML = h + drawTabHTML(); if (ACT) setTimeout(animDraw, 0); return; }
+  if (ST.view === 'saved' && typeof savedSplitHTML === 'function' && ST.savedSub && ST.savedSub !== 'fav') { app.innerHTML = h + savedSplitHTML(); if (ACT) setTimeout(animDraw, 0); return; }
   if (ST.view === 'saved') {
     const f = ST.savedFilter; const list = sv.filter(x => f === 'all' || phaseKey(x.phase) === f);
+    if (typeof savedSegHTML === 'function') h += savedSegHTML();
     h += packHTML();
     h += sv.length ? '<div class="chips">' + [['all', 'Alla'], ['att', 'Anfall'], ['def', 'Försvar'], ['tra', 'Omställning']].map(([k, l]) => '<button type="button" class="chip' + (f === k ? ' on' : '') + '" data-a="savedFilter" data-k="' + k + '">' + l + ' <span class="muted num">' + sv.filter(x => k === 'all' || phaseKey(x.phase) === k).length + '</span></button>').join('') + '</div>' : '';
-    h += list.length ? '<div class="tiles">' + list.map(ex => exTile(ex)).join('') + '</div>' : '<div class="card empty"><h3 style="color:var(--ink)">' + (sv.length ? 'Inga favoriter i den här fasen' : 'Inga favoriter än') + '</h3><p>Tryck på + under en övning så hamnar den här, även på dina andra enheter.</p><button type="button" class="btn primary" data-a="view" data-v="make">Skapa övningar</button></div>';
+    h += list.length ? '<div class="tiles">' + list.map(ex => exTile(ex)).join('') + '</div>' : '<div class="card empty"><h3 style="color:var(--ink)">' + (sv.length ? 'Inga favoriter i den här fasen' : 'Inga favoriter än') + '</h3><p>Tryck på ☆ på en övning i övningsbanken så hamnar den här, även på dina andra enheter.</p><button type="button" class="btn primary" data-a="view" data-v="bank">Gå till övningsbanken</button></div>';
     app.innerHTML = h; if (ACT) setTimeout(animDraw, 0); return;
   }
   if (!ST.editOpen && ST.results.length) {
@@ -5044,8 +5046,8 @@ function detHTML(ex) {
   h += '</div><div class="det-side">';
   h += kitRow(ex);
   h += '<div class="det-actions">' +
-    (b ? '<button type="button" class="btn primary" data-a="fromBank" data-id="' + b.id + '"' + (isBusy() ? ' disabled' : '') + '>' + IC_SPARK + 'Anpassa till mina ' + ST.n + ' spelare</button>' : '') +
-    '<button type="button" class="btn' + (ex.own ? ' primary' : '') + '" data-a="drEdit" data-id="' + esc(ex.id) + '">' + (ex.own ? 'Redigera ritningen' : 'Rita egen version') + '</button>' +
+    (b ? '<button type="button" class="btn" data-a="fromBank" data-id="' + b.id + '"' + (isBusy() ? ' disabled' : '') + '>' + IC_SPARK + 'Anpassa till mina ' + ST.n + ' spelare</button>' : '') +
+    '<button type="button" class="btn" data-a="drEdit" data-id="' + esc(ex.id) + '">' + (ex.own ? 'Redigera ritningen' : 'Rita egen version') + '</button>' +
     '<button type="button" class="btn" data-a="show" data-id="' + esc(ex.id) + '">Visa för spelarna</button>' +
     '<button type="button" class="btn" data-a="copy" data-id="' + esc(ex.id) + '">Kopiera text</button>' +
     (ex.own ? '<button type="button" class="btn ghost danger" data-a="ownDel" data-id="' + esc(ex.id) + '">Ta bort</button>' : '') + '</div>';
@@ -5054,7 +5056,10 @@ function detHTML(ex) {
     h += detSection('Regler och poäng', pTxt(b.rules));
     h += detSection('Coachpunkter', ulTxt(b.points));
     if (b.easier || b.harder) h += detSection('Variera', '<div class="ladder">' + (b.easier ? '<div><div class="label">Lättare</div>' + esc(b.easier) + '</div>' : '') + (b.harder ? '<div><div class="label">Svårare</div>' + esc(b.harder) + '</div>' : '') + '</div>');
-    const src = SOURCES[b.src]; if (src) h += detSection('Källa', '<p><a href="' + esc(src.url) + '" target="_blank" rel="noopener">' + esc(src.org + ' – ' + src.title) + ' ↗</a></p>');
+    const src = SOURCES[b.src]; if (src) h += detSection('Källa', /\/test\//.test(src.url)
+      /* G30: FIFA lägger vissa planer under en sökväg som heter /test/ – visa huvudsidan först och PDF:en som direktlänk */
+      ? '<p><a href="https://www.fifatrainingcentre.com/" target="_blank" rel="noopener">' + esc(src.org + ' – ' + src.title) + ' ↗</a></p><p class="small muted">Planen finns som PDF hos FIFA Training Centre: <a href="' + esc(src.url) + '" target="_blank" rel="noopener">öppna PDF:en direkt</a>.</p>'
+      : '<p><a href="' + esc(src.url) + '" target="_blank" rel="noopener">' + esc(src.org + ' – ' + src.title) + ' ↗</a></p>');
   } else {
     if (ex.purpose || ex.explanation) h += detSection('Syfte', pTxt(ex.purpose) + pTxt(ex.explanation));
     if ((ex.criteria || []).length) h += detSection('Spelkriterier', '<div class="crit">' + ex.criteria.map(x => '<span>' + esc(x) + '</span>').join('') + '</div>');
@@ -5614,7 +5619,7 @@ let ADDTO = null;
 function addToHTML() {
   const ex = findEx(ADDTO.id); if (!ex) return '';
   const list = sessList().slice(0, 8);
-  let h = '<div class="modal-wrap m2" data-a="m2Bg"><div class="modal" role="dialog" aria-modal="true" aria-label="Lägg till i pass"><div class="spread"><h2>Lägg till i pass</h2><button type="button" class="btn sm ghost" data-a="m2Close">Stäng</button></div><p class="muted">' + esc(ex.name) + '</p>';
+  let h = '<div class="modal-wrap m2" data-a="m2Bg"><div class="modal" role="dialog" aria-modal="true" aria-label="Lägg i pass"><div class="spread"><h2>Lägg i pass</h2><button type="button" class="btn sm ghost" data-a="m2Close">Stäng</button></div><p class="muted">' + esc(ex.name) + '</p>';
   h += '<div class="mini-seg wide">' + KINDS.slice(0, 3).map(k => '<button type="button" data-a="addKind" data-v="' + k[0] + '" class="' + (ADDTO.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>').join('') + '</div>';
   h += '<div class="stack" style="gap:8px"><button type="button" class="btn primary" data-a="addToNew">+ Nytt pass med den här övningen</button>' + list.map(s => '<button type="button" class="sess-card sm" data-a="addToSess2" data-id="' + s.id + '"><b>' + esc(s.name) + '</b><span class="small muted">' + esc(s.date) + ' · ' + s.blocks.length + ' block · ' + sessTotal(s) + ' min</span></button>').join('') + '</div>';
   return h + '</div></div>';
@@ -5794,7 +5799,7 @@ async function mkRoles(ex) {
 const __detHTML = detHTML;
 detHTML = function (ex) {
   let h = __detHTML(ex);
-  h = h.replace('<div class="det-actions">', '<div class="det-actions"><button type="button" class="btn primary" data-a="addTo" data-id="' + esc(ex.id) + '">+ Lägg till i träningspass</button>');
+  h = h.replace('<div class="det-actions">', '<div class="det-actions"><button type="button" class="btn primary" data-a="addTo" data-id="' + esc(ex.id) + '">+ Lägg i pass</button>');
   const b = ex.fromBank ? bankById(ex.basedOn) : null;
   const disc = b ? (b.style === 'mine' ? '<p class="disc">Från din egen övningstavla. Texten är formulerad utifrån din bild.</p>' : '<p class="disc"><b>Tolkning:</b> övningen är beskriven med egna ord utifrån källan ovan. Originalet kan skilja sig i detaljer, så kolla källan om du vill köra den exakt.</p>') : '';
   const end = '</div></div></div>'; const at = h.lastIndexOf(end);
@@ -5978,20 +5983,22 @@ function saveIdea() { idea().updatedAt = Date.now(); persist(); if (db) db.doc('
 function ideaHTML() {
   const I = idea(); const F = ST.ideaForm || { stage: 'Speluppbyggnad' };
   let h = '<p class="small muted">' + (NO_AI ? 'Skriv in lagets principer per skede och era egna ord, så har alla tränare samma utgångspunkt när ni planerar pass och matcher.' : 'Skriv in lagets principer per skede och era egna ord. Allt AI:n skapar – övningar, pass, matchplaner och reflektioner – utgår sedan från dem, och AI:n säger till om något går emot en princip.') + '</p>';
+  const who = clubTeam(); const at = I.updatedAt;
+  h += '<p class="small idea-who">Spelidén är <b>din</b>' + (who ? ' och gäller alla dina lag, även ' + esc(who.name) : '') + '. ' + (window.OF_MOLN?.state.user ? 'Den sparas på ditt konto och finns på alla dina enheter.' : 'Den sparas i den här webbläsaren.') + (at ? ' <span class="idea-saved">✓ Sparad ' + esc(new Date(at).toLocaleString('sv-SE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })) + '</span>' : '') + '</p>';
   h += '<section class="card stack" style="gap:10px"><h3>Principer</h3>';
   if (!I.principles.length) h += '<p class="small muted">Inga principer än. Exempel: "Vi bygger alltid upp kort", "Vi pressar inåt".</p>';
   else h += '<ol class="princ">' + I.principles.map((p, i) => '<li><span class="princ-n num">' + (i + 1) + '</span><div class="grow"><b>' + esc(p.text) + '</b><span class="small muted"> · ' + esc(p.stage) + '</span></div><button type="button" class="icon-b" data-a="delPrinc" data-i="' + i + '" aria-label="Ta bort principen">✕</button></li>').join('') + '</ol>';
-  h += '<div class="idea-form"><select id="pr-stage" aria-label="Skede">' + IDEA_STAGES.map(s => '<option' + (F.stage === s ? ' selected' : '') + '>' + esc(s) + '</option>').join('') + '</select><input type="text" id="pr-text" maxlength="140" placeholder="t.ex. Vi pressar inåt mot mitten"><button type="button" class="btn primary" data-a="addPrinc">Lägg till</button></div></section>';
+  h += '<div class="idea-form idea-form-l"><label class="idea-f"><span class="label">Skede</span><select id="pr-stage">' + IDEA_STAGES.map(s => '<option' + (F.stage === s ? ' selected' : '') + '>' + esc(s) + '</option>').join('') + '</select></label><label class="idea-f grow"><span class="label">Princip</span><input type="text" id="pr-text" maxlength="140" placeholder="t.ex. Vi pressar inåt mot mitten"></label><button type="button" class="btn primary" data-a="addPrinc">Lägg till</button></div></section>';
   h += '<section class="card stack" style="gap:10px"><h3>Lagets ord och begrepp</h3>';
   if (I.terms.length) h += '<dl class="terms">' + I.terms.map((t, i) => '<div><dt>' + esc(t.t) + '</dt><dd>' + esc(t.d) + '</dd><button type="button" class="icon-b sm" data-a="delTerm" data-i="' + i + '" aria-label="Ta bort begreppet">✕</button></div>').join('') + '</dl>';
-  h += '<div class="idea-form"><input type="text" id="tm-t" maxlength="40" placeholder="Ord, t.ex. Fällan"><input type="text" id="tm-d" maxlength="160" placeholder="Betydelse, t.ex. vi lockar in dem centralt och pressar"><button type="button" class="btn primary" data-a="addTerm">Lägg till</button></div></section>';
+  h += '<div class="idea-form idea-form-l"><label class="idea-f"><span class="label">Ord</span><input type="text" id="tm-t" maxlength="40" placeholder="t.ex. Fällan"></label><label class="idea-f grow"><span class="label">Betydelse</span><input type="text" id="tm-d" maxlength="160" placeholder="t.ex. vi lockar in dem centralt och pressar"></label><button type="button" class="btn primary" data-a="addTerm">Lägg till</button></div></section>';
   return h;
 }
 const __planTab11 = planTabHTML;
 planTabHTML = function () {
   const sub = ST.planSub || 'pass';
   if (sub !== 'idea') return __planTab11().replace('Säsongsplan</button></div>', 'Säsongsplan</button><button type="button" data-a="planSub" data-v="idea">Spelidé</button></div>');
-  return '<div class="spread"><h2>Planera</h2></div><div class="seg"><button type="button" data-a="planSub" data-v="pass">Träningspass</button><button type="button" data-a="planSub" data-v="season">Säsongsplan</button><button type="button" data-a="planSub" data-v="idea" class="on">Spelidé</button></div>' + ideaHTML();
+  return '<div class="of-page-heading"><div><h1>Planering</h1><p>Dina träningspass, säsongen och lagets utveckling.</p></div></div><div class="seg"><button type="button" data-a="planSub" data-v="pass">Träningspass</button><button type="button" data-a="planSub" data-v="season">Säsongsplan</button><button type="button" data-a="planSub" data-v="idea" class="on">Spelidé</button></div>' + ideaHTML();
 };
 /* principer i detaljvyn */
 let IDEABUSY = '';
@@ -8285,7 +8292,7 @@ sessHTML = function (s) {
 const __render27 = render;
 render = function () {
   __render27.apply(this, arguments);
-  if (ST.view === 'saved') { const top = $('#app header.top'); if (top) { const after = top.nextElementSibling && top.nextElementSibling.classList.contains('club-bar') ? top.nextElementSibling : top; after.insertAdjacentHTML('afterend', teamHTML()); } }
+  if (ST.view === 'saved' && ST.savedSub === 'club' && db) { const box = $('#saved-club'); if (box) box.innerHTML = teamHTML(); }
   paintSync();
 };
 Object.assign(A, {
@@ -8986,7 +8993,7 @@ render = function () {
   if (ST.view === 'vt') ST.view = 'make';
   __render33.apply(this, arguments);
   /* hjälp-knapp i sidhuvudet */
-  const top = $('#app header.top'); if (top && !top.querySelector('.help-b')) { const sun = top.querySelector('.sun-b'); const b = '<button type="button" class="help-b" data-a="wlShow" aria-label="Så funkar appen">?</button>'; if (sun) sun.insertAdjacentHTML('beforebegin', b); else top.insertAdjacentHTML('beforeend', b); }
+  const top = $('#app header.top'); if (top && !top.querySelector('.help-b')) { const sun = top.querySelector('.sun-b'); const b = '<button type="button" class="help-b" data-a="wlShow" aria-label="Hjälp – så funkar appen" title="Hjälp">?<span class="help-t">Hjälp</span></button>'; if (sun) sun.insertAdjacentHTML('beforebegin', b); else top.insertAdjacentHTML('beforeend', b); }
   if (ST.view !== 'make') return;
   const hero = $('#app .ai-hero'); if (!hero) return;
   const ta = hero.querySelector('textarea');
@@ -10096,3 +10103,59 @@ Object.assign(A, {
   lpYoungBank: () => { ST.bankJ = { t: '', sf: '3v3' }; ST.workspaceBankAllAges = false; ST.view = 'bank'; persist(); render(); window.scrollTo(0, 0); },
 });
 const __lpAgeAct = A.lpAge; A.lpAge = el => { ST.lpYoung = false; return __lpAgeAct(el); };
+
+/* G25: tydligt besked när spelidén sparas */
+const __addPrincT = A.addPrinc, __addTermT = A.addTerm, __delPrincT = A.delPrinc, __delTermT = A.delTerm;
+A.addPrinc = el => { const n = idea().principles.length; __addPrincT(el); if (idea().principles.length > n) toast('Principen är sparad'); };
+A.addTerm = el => { const n = idea().terms.length; __addTermT(el); if (idea().terms.length > n) toast('Ordet är sparat'); };
+if (__delPrincT) A.delPrinc = el => { __delPrincT(el); toast('Principen är borttagen'); };
+if (__delTermT) A.delTerm = el => { __delTermT(el); toast('Ordet är borttaget'); };
+
+/* ---------- G31: Sparade – Favoriter / Mina egna övningar / Klubbens delade ---------- */
+function savedSegHTML() {
+  const sub = ST.savedSub || 'fav'; const fav = savedList().length, own = ownList().length;
+  const b = (v, t) => '<button type="button" data-a="savedSub" data-v="' + v + '" class="' + (sub === v ? 'on' : '') + '" aria-pressed="' + (sub === v) + '">' + t + '</button>';
+  return '<div class="of-page-heading"><div><h1>Sparade övningar</h1><p>' + (sub === 'fav' ? 'Övningar du har stjärnmärkt. Bara du ser dem.' : sub === 'own' ? 'Övningar du har ritat eller laddat upp. Bara du ser dem.' : 'Övningar och pass som tränarna i klubben delar med varandra.') + '</p></div></div>'
+    + '<div class="seg lp-seg">' + b('fav', 'Favoriter (' + fav + ')') + b('own', 'Mina egna (' + own + ')') + b('club', 'Klubbens delade') + '</div>';
+}
+function savedSplitHTML() {
+  const sub = ST.savedSub; let h = savedSegHTML();
+  if (sub === 'own') {
+    const own = ownList();
+    h += '<div class="pass-ways"><label class="pass-way primary"><input type="file" id="up-file3" accept="image/*,application/pdf,.pdf" hidden><b>Ladda upp bild eller PDF</b><small>Foto, skärmbild, whiteboard eller PDF.</small></label>'
+      + '<button type="button" class="pass-way" data-a="drNew"><b>Rita ny övning</b><small>Lägg ut spelare och dra dem steg för steg.</small></button></div>';
+    h += own.length ? '<div class="tiles">' + own.map(ex => exTile(ex)).join('') + '</div>' : '<div class="card empty"><h3 style="color:var(--ink)">Inga egna övningar än</h3><p>Det du ritar eller laddar upp hamnar här och synkas till dina andra enheter.</p></div>';
+    return h;
+  }
+  h += '<div id="saved-club">' + (db ? '' : '<div class="card empty"><h3 style="color:var(--ink)">Inget delat än</h3><p>Här kommer övningar och pass som tränarna i klubben delar med varandra. Delning mellan tränare är inte påslagen ännu – tills dess delar du ett pass med <b>Dela</b> eller som PDF.</p><p class="small muted">Dina favoriter och egna övningar är privata och delas aldrig automatiskt.</p></div>') + '</div>';
+  return h;
+}
+Object.assign(A, { savedSub: el => { ST.savedSub = el.dataset.v; persist(); render(); window.scrollTo(0, 0); } });
+
+/* ---------- G32: PDF – förhandsvisning och tydlig status ---------- */
+let PDF_LAST = null;
+savePdf = async function (doc, name) {
+  const blob = doc.output('blob'); const fn = (String(name || 'ovningar').replace(/[^\wåäöÅÄÖ \-]+/g, '').trim().slice(0, 60) || 'ovningar') + '.pdf';
+  const pages = typeof doc.getNumberOfPages === 'function' ? doc.getNumberOfPages() : 0;
+  if (PDF_LAST?.url) URL.revokeObjectURL(PDF_LAST.url);
+  PDF_LAST = { blob, fn, name, pages, url: URL.createObjectURL(blob) };
+  const canShare = (() => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File([blob], fn, { type: 'application/pdf' })] })); } catch (e) { return false; } })();
+  const big = matchMedia('(min-width: 760px)').matches;
+  const r = $('#m2-root'); if (!r) return;
+  r.innerHTML = '<div class="modal-wrap pdf-wrap" role="dialog" aria-modal="true" aria-labelledby="pdf-h"><div class="modal pdfm">'
+    + '<p class="pdf-status" role="status"><span class="pdf-ok">✓</span> PDF:en är klar</p>'
+    + '<h2 id="pdf-h">' + esc(fn) + '</h2><p class="small muted">' + (pages ? pages + (pages === 1 ? ' sida' : ' sidor') + ' · ' : '') + Math.max(1, Math.round(blob.size / 1024)) + ' kB</p>'
+    + (big ? '<object class="pdf-prev" data="' + PDF_LAST.url + '#view=FitH" type="application/pdf" aria-label="Förhandsvisning av PDF:en"><p class="small">Förhandsvisningen går inte att visa här. Tryck på Öppna.</p></object>' : '')
+    + '<div class="up-btns pdf-btns"><button type="button" class="btn ghost" data-a="pdfClose">Stäng</button><button type="button" class="btn" data-a="pdfOpen">Öppna' + (big ? ' i ny flik' : '') + '</button>'
+    + (canShare ? '<button type="button" class="btn" data-a="pdfShare">Dela</button>' : '')
+    + '<button type="button" class="btn primary" data-a="pdfDl">Ladda ner</button></div></div></div>';
+  r.querySelector('[data-a=pdfDl]')?.focus();
+};
+Object.assign(A, {
+  pdfDl: () => { const P = PDF_LAST; if (!P) return; const a = document.createElement('a'); a.href = P.url; a.download = P.fn; document.body.appendChild(a); a.click(); a.remove(); toast('PDF:en laddas ner som ' + P.fn); },
+  pdfOpen: () => { const P = PDF_LAST; if (!P) return; const w = window.open(P.url, '_blank', 'noopener'); if (!w) A.pdfDl(); },
+  pdfShare: async () => { const P = PDF_LAST; if (!P) return; try { await navigator.share({ files: [new File([P.blob], P.fn, { type: 'application/pdf' })], title: P.name }); } catch (e) { if (!e || e.name !== 'AbortError') toast('Kunde inte dela – ladda ner i stället'); } },
+  pdfClose: () => { closeM2(); },
+});
+/* G31: ”Dela med laget” visas bara när klubbens delning finns */
+if (IS_OPEN) document.documentElement.classList.add('no-team-bank');

@@ -7,7 +7,7 @@
   'use strict';
   const URL_ = 'https://fwgvfmkdmrpmgririxpt.supabase.co';
   const KEY = 'sb_publishable_Gi3qXYCia2WPxGIXcT8spQ_0ck6NMiT'; // publik nyckel, data skyddas av RLS
-  const SETTINGS_KEYS = ['team', 'n', 'gk', 'age', 'level', 'passDur', 'workspaceTeamChoice', 'bankJ'];
+  const SETTINGS_KEYS = ['team', 'n', 'gk', 'age', 'level', 'passDur', 'workspaceTeamChoice', 'bankJ', 'idea', 'season', 'lpAge', 'lpWeeks', 'lpLen'];   // spelidé och säsongsplan följer också med kontot
 
   const state = { user: null, status: 'av', lastSync: 0, lastError: '', pushing: false, pulling: false, pending: 0, log: [] };
   const listeners = new Set();

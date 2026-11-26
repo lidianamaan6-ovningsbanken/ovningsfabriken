@@ -790,3 +790,25 @@ img.thumb.own-photo { width: 100%; height: 100%; object-fit: cover; display: blo
 .lp-ages .chip-scroll { flex-wrap: wrap; overflow: visible; }
 .lp-young { margin-top: 8px; display: grid; gap: 6px; justify-items: start; }
 .of-defaults { margin: 0 0 6px; }
+/* G25: Spelidé med synliga etiketter */
+.idea-form-l { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.idea-f { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
+.idea-f.grow { flex: 1 1 220px; }
+.idea-saved { color: var(--pitch, #1f5a43); font-weight: 600; white-space: nowrap; }
+.idea-who { margin: 0 0 10px; }
+/* G28: på dator följer videon/animationen med när man läser texten till höger */
+@media (min-width: 900px) { .det-in > .det-main { align-self: stretch; } .det-main > .of-exercise-film, .det-main > .anim-big { position: sticky; top: 72px; max-height: calc(100vh - 88px); } .det-main > .of-exercise-film { object-fit: contain; } }
+/* G29: hjälpknappen har synlig text när det finns plats */
+.help-b .help-t { display: none; }
+@media (min-width: 421px) { .help-b { width: auto !important; padding: 0 14px 0 12px; border-radius: 999px !important; display: inline-flex; align-items: center; gap: 6px; } .help-b .help-t { display: inline; font-family: var(--f-body, inherit); font-size: 14px; } }
+/* G32: PDF-förhandsvisning */
+.pdfm { display: flex; flex-direction: column; gap: 10px; max-width: 860px; width: 100%; max-height: 94vh; }
+.pdfm > * { flex-shrink: 0; }
+.pdfm h2 { margin: 0; word-break: break-word; }
+.pdf-status { margin: 0; font-weight: 700; color: var(--pitch, #1f5a43); }
+.pdf-ok { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--pitch, #1f5a43); color: #fff; font-size: 13px; margin-right: 4px; }
+.pdf-prev { width: 100%; height: min(62vh, 680px); border: 1px solid var(--line, #d6d6cf); border-radius: 12px; background: #fff; flex-shrink: 1; }
+.pdf-btns { flex-wrap: wrap; }
+.no-team-bank [data-a="teamShareEx"], .no-team-bank [data-a="teamShareSess"] { display: none !important; }
+/* Rutor (Lägg i pass, PDF, uppladdning m.m.) ligger alltid överst – även över en öppen övning */
+#m2-root > .modal-wrap { z-index: 200; }
