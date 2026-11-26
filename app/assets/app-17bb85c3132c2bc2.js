@@ -10006,6 +10006,7 @@ maRender = function () {
     + '<li>Ingen annan ser den – inte andra tränare och inte klubben.</li>'
     + '<li>Ligger kvar tills du tar bort den eller rensar webbläsarens data.</li>'
     + '<li>Observationerna sparas också bara här.</li></ul>'
+    + (item && MA_SAVE[item.id] ? '<p class="ma-save" role="status">' + (MA_SAVE[item.id] === 'saving' ? '<span class="ball-spin sm"></span> Sparar videon på enheten … du kan börja analysera under tiden.' : MA_SAVE[item.id] === 'saved' ? '✓ Videon är sparad på enheten.' : '⚠ Videon kunde inte sparas på enheten – den finns kvar tills du stänger sidan.') + '</p>' : '')
     + (item ? '<button type="button" class="btn sm ma-del" data-a="deleteMatchAnalysis" data-id="' + esc(item.id) + '">Ta bort videon och analysen</button>' : '') + '</div>');
 };
 Object.assign(A, {
@@ -10159,3 +10160,15 @@ Object.assign(A, {
 });
 /* G31: ”Dela med laget” visas bara när klubbens delning finns */
 if (IS_OPEN) document.documentElement.classList.add('no-team-bank');
+
+/* G34: matchvideo – status medan videon sparas på enheten */
+const MA_SAVE = {};
+const __maVideoPutS = maVideoPut;
+maVideoPut = function (id, file) {
+  MA_SAVE[id] = 'saving'; if (MA_OPEN) maRender();
+  return __maVideoPutS(id, file).then(r => { MA_SAVE[id] = 'saved'; if (MA_OPEN) maRender(); return r; }, e => { MA_SAVE[id] = 'error'; if (MA_OPEN) maRender(); throw e; });
+};
+/* G37: Solläge (hög kontrast utomhus) gäller alla vyer, även den nya layouten */
+const __renderSun = render;
+render = function () { applySun(); return __renderSun.apply(this, arguments); };
+applySun();

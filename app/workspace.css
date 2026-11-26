@@ -812,3 +812,20 @@ img.thumb.own-photo { width: 100%; height: 100%; object-fit: cover; display: blo
 .no-team-bank [data-a="teamShareEx"], .no-team-bank [data-a="teamShareSess"] { display: none !important; }
 /* Rutor (Lägg i pass, PDF, uppladdning m.m.) ligger alltid överst – även över en öppen övning */
 #m2-root > .modal-wrap { z-index: 200; }
+/* G34: status när matchvideon sparas */
+.ma-save { margin: 8px 0 0; font-weight: 600; display: flex; gap: 6px; align-items: center; }
+/* G36: på mobil bryts valraderna (spelform, ålder, lärandemål) i stället för att kapas utanför skärmen */
+@media (max-width: 700px) {
+  .chip-scroll:not(.team-pick .chip-scroll) { flex-wrap: wrap; overflow-x: visible; padding-bottom: 4px; }
+  .team-pick .chip-scroll { mask-image: linear-gradient(90deg, #000 85%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); }
+}
+/* G37: läsbar kontrast för små rubriker på ljus bakgrund, och högsta kontrast i Solläge */
+.of-panel-head .of-eyebrow, .of-home-panel .of-eyebrow, .of-week .of-eyebrow, .of-card .of-eyebrow { color: #85652a; }
+html[data-sun] .of-eyebrow, html[data-sun] .small.muted, html[data-sun] .muted, html[data-sun] .tiny.muted, html[data-sun] .of-exercise-source, html[data-sun] small { color: #000 !important; }
+html[data-sun] .pass-way.primary small, html[data-sun] .of-hero .of-eyebrow { color: #fff !important; }
+.of-day.is-past small { color: #59625d; }
+.of-day.is-past { opacity: 1; }
+.of-day.is-past b { color: #59625d; }
+.pill.att { color: #9a3412; }
+/* G37: vit text på läroplanschippen får tillräcklig kontrast */
+.lp-chip.g-a { background: #b4400f !important; }

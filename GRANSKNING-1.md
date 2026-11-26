@@ -43,11 +43,11 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G32 ✅ (PDF: ”Skapar PDF …”, sedan ruta ”✓ PDF:en är klar” med namn, antal sidor, storlek, förhandsvisning på dator och Öppna / Dela / Ladda ner) PDF: förhandsvisning och tydlig status.
 
 ## Etapp 5 – Prestanda, mobil, tillgänglighet
-- G33 ⬜ Mätning av flikbyten, sök, film, pass, PDF, video – före/efter (se Prestanda nedan).
-- G34 ⬜ Video: förlopp vid uppladdning, bild direkt, laddas först vid öppning.
-- G35 ⬜ Sökning och filter kvar när man öppnar en övning och går tillbaka.
-- G36 ⬜ Mobil: klippta horisontella rader (ålder, spelform, lag) – synliga val.
-- G37 ⬜ Tillgänglighet: etiketter, tangentbord, Solläge-kontrast.
+- G33 ✅ (mätt – se Prestanda nedan) Mätning av flikbyten, sök, film, pass, PDF, video – före/efter (se Prestanda nedan).
+- G34 ✅ (Matchanalys: videon visas direkt; ”Sparar videon på enheten …” medan den sparas, sedan ”✓ Videon är sparad på enheten”; videon läses först när analysen öppnas) Video: förlopp vid uppladdning, bild direkt, laddas först vid öppning.
+- G35 ✅ (sökord, filter och scrollposition är kvar när man öppnar en övning och går tillbaka – testat med bakåtknappen) Sökning och filter kvar när man öppnar en övning och går tillbaka.
+- G36 ✅ (valrader för spelform, ålder och lärandemål bryts på mobil i stället för att kapas; automatisk kontroll hittar inget som sticker ut utanför skärmen i Idag, Planering, Bank, Match, Verktyg, Snabbt pass, Säsong eller Pass) Mobil: klippta horisontella rader (ålder, spelform, lag) – synliga val.
+- G37 ✅ (automatisk WCAG 2 AA-kontroll (axe) utan fel i alla huvudvyer, övningsdetalj, pass, ny match, datasida och spelidé – både vanligt läge och Solläge; Solläge fungerar nu i alla vyer; synliga etiketter i Spelidé; hjälpknapp med text) Tillgänglighet: etiketter, tangentbord, Solläge-kontrast.
 
 ## Kräver beslut eller underlag (👤)
 - Rättigheter för JFA:s spelarutbildningsplan och externa källor vid försäljning.
@@ -56,4 +56,31 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - Delning av matchvideo mellan tränare (kräver lagring i molnet och samtycke).
 
 ## Prestanda – mätningar
-(fylls i)
+Uppmätt 2026-11-26 i Chromium, mobil (iPhone 13-emulering) och dator. ”4× CPU” = processorn bromsad fyra gånger för att likna en enklare telefon.
+
+| Vad | Före (tidigare mätning) | Nu | 4× CPU |
+|---|---|---|---|
+| Start, långsamt 4G | 5,9 s | 1,5 s | – |
+| Flikbyte (Planering/Bank/Match/Idag) | – | 2–12 ms | 12–39 ms |
+| Sök i banken (”avslut”) | 0,21 s | 0,03 s | – |
+| Öppna övning med film | – | < 5 ms (filmen laddas när man trycker play) | – |
+| Bygga Snabbt pass | – | 0,08–0,1 s | – |
+| PDF av en övning | – | – | 0,3 s |
+| Matchvideo visas efter val | – | – | 0,2 s |
+| Öppna appen utan uppkoppling | fungerade inte | ca 1 s | – |
+
+## Inför ny granskning – checklista
+Logga in med ett konto i en klubb som **inte** är JFA (och gärna ett JFA-konto) och gå igenom:
+1. **Inloggning:** ”Begär tillgång” finns; klubblistan går att söka i.
+2. **Idag:** appen startar här; tre tydliga vägar (Snabbt pass / Tomt pass / Från övningsbanken).
+3. **Planering:** flikarna på en rad; tomt läge med fyra vägar; Säsong visar rätt antal veckor, årtal och lov; Spelidé har etiketter och ”Sparad”.
+4. **Övningsbank:** sökfältet tomt vid start; sökningen visar bara träffar; filtret ”Källa”; bara egna klubbens lag.
+5. **Övning:** ”Lägg i pass” är huvudknappen; filmen följer med vid scroll (dator); PDF visar förhandsvisning och status.
+6. **Match:** Ny match sparas först med motståndare och datum; Matcher och Matchanalys är separata flikar; matchvideo har ”Om videon” och ”Ta bort”.
+7. **Verktyg:** ”Ladda upp övning” (bild eller PDF) → ”Vad heter övningen?” → hamnar under Sparade → Mina egna; ”Så sparas dina data”; ”Konto och klubb” (Klubbadministration för ansvariga).
+8. **Adresser:** byt vy, tryck bakåt – rätt vy kommer tillbaka; kopiera adressen (t.ex. #planering/sasong) och öppna den igen.
+9. **JFA-material:** syns inte för andra klubbar (läroplan, SUP, logga).
+10. **Inga Claude- eller AI-texter** och inga knappar som säger ”fungerar inte här”.
+11. **Solläge och mobil:** allt läsbart, inga rader som kapas.
+
+Kvar att besluta (👤) står ovan: rättigheter, pilot, presentationssida, delning av matchvideo, och om AI ska slås på (kräver API-nyckel).
