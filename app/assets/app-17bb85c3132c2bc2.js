@@ -8955,7 +8955,7 @@ function welcomeHTML() {
     step(3, 'Kör passet på planen', 'Stor timer, grupper för dagens antal spelare och "Visa för spelarna" i helskärm.') +
     '</ol>' +
     '<p class="wl-match"><b>På matchdagen:</b> startelva, rättvis speltid över hela säsongen och byten med ett tryck.</p>' +
-    '<p class="tiny muted wl-note">Pass och favoriter sparas i den här webbläsaren. Passen byggs från övningsbanken. Använd bara tröjnummer, aldrig spelarnas namn.</p>' +
+    '<p class="tiny muted wl-note">' + (window.OF_MOLN?.state.user ? 'Pass, matcher och övningar sparas på ditt konto och finns på alla dina enheter. Bara du ser dem.' : 'Pass, matcher och övningar sparas i den här webbläsaren.') + ' Använd bara tröjnummer, aldrig spelarnas namn. <button type="button" class="link-b" data-a="dataInfo">Så sparas dina data</button></p>' +
     '<button type="button" class="btn primary big" data-a="wlGo">Kom igång</button></div></div>';
 }
 function showWelcome() { const r = $('#m2-root'); if (r) r.innerHTML = welcomeHTML(); }
@@ -9310,8 +9310,9 @@ function workspaceTools() {
     + tools.map(([view, label, text, icon]) => '<button type="button" class="of-card of-tool" data-a="' + (view === 'plan' ? 'workspaceCurriculum' : 'view')
       + '" data-v="' + view + '"><span class="of-card-icon" aria-hidden="true">' + icon + '</span><strong>' + label + '</strong><span>' + text + '</span></button>').join('')
     + '</div>'
-    + '<button type="button" class="of-card of-tool of-tool-acc" data-a="ofAccount"><span class="of-card-icon" aria-hidden="true">' + workspaceIcon(0) + '</span><strong>Konto och molnsynk</strong>'
-    + '<span data-moln-line-tools>' + (window.OF_MOLN?.state.user ? 'Inloggad som ' + esc(OF_MOLN.state.user.email) : 'Logga in så sparas dina pass på alla enheter.') + '</span></button>';
+    + '<button type="button" class="of-card of-tool of-tool-acc" data-a="ofAccount"><span class="of-card-icon" aria-hidden="true">' + workspaceIcon(0) + '</span><strong>Konto och klubb</strong>'
+    + '<span data-moln-line-tools>' + (window.OF_ACCESS?.clubs?.some(c => c.role === 'owner') ? 'Klubbadministration: bjud in och ta bort tränare, se platser och enheter.' : window.OF_MOLN?.state.user ? 'Inloggad som ' + esc(OF_MOLN.state.user.email) : 'Logga in så sparas dina pass på alla enheter.') + '</span></button>'
+    + '<button type="button" class="of-card of-tool" data-a="dataInfo"><span class="of-card-icon" aria-hidden="true">' + workspaceIcon(0) + '</span><strong>Så sparas dina data</strong><span>Vad som finns på ditt konto, vad som bara finns på enheten och vem som ser vad.</span></button>';
 }
 
 const renderWorkspacePage = render;
@@ -9724,11 +9725,11 @@ const maDb = () => new Promise((resolve, reject) => { const q = indexedDB.open('
 async function maVideoPut(id, file) { const db = await maDb(); return new Promise((resolve, reject) => { const tx = db.transaction('videos', 'readwrite'); tx.objectStore('videos').put(file, id); tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); }); }
 async function maVideoGet(id) { const db = await maDb(); return new Promise((resolve, reject) => { const q = db.transaction('videos').objectStore('videos').get(id); q.onsuccess = () => resolve(q.result); q.onerror = () => reject(q.error); }); }
 const maFmt = n => { n = Math.max(0, Math.floor(Number(n) || 0)); return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); };
-function matchAnalysisEntryHTML() { const rows=maRead(), current=rows[0]; return '<section class="ma-entry"><div class="ma-entry-copy"><span class="ma-eyebrow">NYTT · MATCHVIDEO</span><h2>Matchanalys</h2><p>Samla matchklipp, observationer och nästa träningsidé på ett ställe.</p></div><button class="btn primary" type="button" data-a="openMatchAnalysis">'+(current?'Öppna analys':'Starta analys')+' <span aria-hidden="true">→</span></button>'+(current?'<span class="ma-entry-status">'+esc(current.name)+' · '+current.events.length+' observationer</span>':'<span class="ma-entry-status">Video sparas på den här enheten</span>')+'</section>'; }
+function matchAnalysisEntryHTML() { const rows=maRead(), current=rows[0]; return '<section class="ma-entry"><div class="ma-entry-copy"><span class="ma-eyebrow">NYTT · MATCHVIDEO</span><h2>Matchanalys</h2><p>Samla matchklipp, observationer och nästa träningsidé på ett ställe.</p></div><button class="btn primary" type="button" data-a="openMatchAnalysis">'+(current?'Öppna analys':'Starta analys')+' <span aria-hidden="true">→</span></button>'+(current?'<span class="ma-entry-status">'+esc(current.name)+' · '+current.events.length+' observationer</span>':'<span class="ma-entry-status">Videon stannar på den här enheten – den laddas aldrig upp</span>')+'</section>'; }
 function maRecommendations() { const query=MA_REC_KIND==='press'?/press|kontrapress|förhindra speluppbyggnad/i:MA_REC_KIND==='omställning'?/omställ|kontring/i:MA_REC_KIND==='avslut'?/avslut|mål/i:/uppbyggnad|possession|rondo/i; return BANK.filter(b=>query.test(b.name+' '+(b.stage||''))).slice(0,3); }
 function maRender() { const root=$('#match-analysis-root'); if(!root)return; if(!MA_OPEN){root.innerHTML='';return;} const oldPlayer=$('#ma-player'), restoreTime=oldPlayer?.currentTime||0, oldNote=$('#ma-note')?.value||'', rows=maRead(), item=MA_VIDEO&&rows.find(x=>x.id===MA_VIDEO), eventRows=item?.events||[], clipRows=item?.clips||[];
 root.innerHTML='<div class="ma-backdrop" data-a="closeMatchAnalysis"><section class="ma-panel" role="dialog" aria-modal="true" aria-labelledby="ma-title" data-ma-panel><header class="ma-head"><div><span class="ma-eyebrow">ÖVNINGSFABRIKEN · MATCHANALYS</span><h2 id="ma-title">Från match till nästa träning</h2></div><button type="button" class="ma-close" data-a="closeMatchAnalysis" aria-label="Stäng">×</button></header>'+
-'<div class="ma-grid"><aside class="ma-side"><div class="ma-step"><span>01</span><div><b>Välj matchvideo</b><small>MP4, MOV eller WebM · lagras privat på enheten</small></div></div><label class="ma-upload">'+(item?'<span class="ma-upload-icon">✓</span><b>'+esc(item.name)+'</b><small>Välj en annan video</small>':'<span class="ma-upload-icon">↑</span><b>Ladda upp matchvideo</b><small>Tryck för att välja en fil</small>')+'<input id="ma-file" type="file" accept="video/*"></label>'+(rows.length?'<label class="ma-label">Senaste analyser</label>'+rows.map(x=>'<button class="ma-saved '+(x.id===MA_VIDEO?'on':'')+'" data-a="selectMatchAnalysis" data-id="'+x.id+'"><b>'+esc(x.name)+'</b><small>'+x.events.length+' observationer · '+new Date(x.updated).toLocaleDateString('sv-SE')+'</small></button>').join(''):'')+'<div class="ma-privacy">🔒 Videon lämnar inte den här enheten i den här versionen.</div></aside>'+
+'<div class="ma-grid"><aside class="ma-side"><div class="ma-step"><span>01</span><div><b>Välj matchvideo</b><small>MP4, MOV eller WebM · stannar på den här enheten</small></div></div><label class="ma-upload">'+(item?'<span class="ma-upload-icon">✓</span><b>'+esc(item.name)+'</b><small>Välj en annan video</small>':'<span class="ma-upload-icon">↑</span><b>Ladda upp matchvideo</b><small>Tryck för att välja en fil</small>')+'<input id="ma-file" type="file" accept="video/*"></label>'+(rows.length?'<label class="ma-label">Senaste analyser</label>'+rows.map(x=>'<button class="ma-saved '+(x.id===MA_VIDEO?'on':'')+'" data-a="selectMatchAnalysis" data-id="'+x.id+'"><b>'+esc(x.name)+'</b><small>'+x.events.length+' observationer · '+new Date(x.updated).toLocaleDateString('sv-SE')+'</small></button>').join(''):'')+'<div class="ma-privacy">🔒 Videon lämnar inte den här enheten i den här versionen.</div></aside>'+
 '<div class="ma-main">'+(item?'<div class="ma-player-wrap"><video class="ma-player" id="ma-player" controls playsinline></video><div class="ma-now">Position <b id="ma-time">00:00</b></div></div><div class="ma-toolbar"><div><label class="ma-label" for="ma-kind">Vad såg du?</label><select id="ma-kind"><option value="press" '+(MA_KIND==='press'?'selected':'')+'>Presspel</option><option value="omställning" '+(MA_KIND==='omställning'?'selected':'')+'>Omställning</option><option value="avslut" '+(MA_KIND==='avslut'?'selected':'')+'>Avslut och mål</option><option value="uppbyggnad" '+(MA_KIND==='uppbyggnad'?'selected':'')+'>Speluppbyggnad</option></select></div><textarea id="ma-note" maxlength="240" placeholder="Skriv kort vad som hände och vad du vill följa upp"></textarea><button class="btn primary" data-a="addMatchEvent" type="button">＋ Lägg till vid <span id="ma-add-time">00:00</span></button></div><div class="ma-clipbar"><b>Spara ett klipp</b><span>Markera start och slut i videon.</span><button class="btn" data-a="markClipStart" type="button">Markera start</button><span id="ma-clip-start">Ingen start vald</span><button class="btn" data-a="saveMatchClip" type="button">Spara klipp</button></div><div class="ma-columns"><section><div class="ma-section-head"><div><span class="ma-eyebrow">MATCHLOGG</span><h3>Observationer <span>'+eventRows.length+'</span></h3></div></div>'+(eventRows.length?eventRows.slice().reverse().map(ev=>'<article class="ma-event"><time>'+maFmt(ev.time)+'</time><div><b>'+esc(ev.kind)+'</b><p>'+esc(ev.note)+'</p></div><button class="ma-delete" data-a="deleteMatchEvent" data-id="'+ev.id+'" aria-label="Ta bort observation">×</button></article>').join(''):'<div class="ma-empty">Pausa videon och lägg till din första observation.</div>')+(clipRows.length?'<h3 class="ma-subhead">Sparade klipp</h3>'+clipRows.map(c=>'<div class="ma-clip"><span>▶</span><b>'+maFmt(c.start)+'–'+maFmt(c.end)+'</b><small>'+esc(c.note||'Matchklipp')+'</small><button class="ma-delete" data-a="deleteMatchClip" data-id="'+c.id+'">×</button></div>').join(''):'')+'</section><section><div class="ma-section-head"><div><span class="ma-eyebrow">NÄSTA TRÄNING</span><h3>Övningsförslag</h3></div></div><label class="ma-label" for="ma-rec-kind">Utifrån område</label><select id="ma-rec-kind"><option value="press">Presspel</option><option value="omställning">Omställning</option><option value="avslut">Avslut och mål</option><option value="uppbyggnad">Speluppbyggnad</option></select><p class="ma-rec-hint">Förslag från din övningsbank – inte AI-analys.</p>'+maRecommendations().map(b=>'<button class="ma-rec" data-a="maOpenExercise" data-id="'+b.id+'"><span class="ma-rec-icon">↗</span><span><b>'+esc(b.name)+'</b><small>'+esc(b.stage||'Övning')+' · Visa övningen</small></span></button>').join('')+'</section></div>':'<div class="ma-empty">Ladda upp en matchvideo för att börja analysen.</div>')+'</div></div></section></div>';
 const video=$('#ma-player'); if(video&&MA_URL) { if(video.src!==MA_URL){video.src=MA_URL;video.addEventListener('loadedmetadata',()=>{video.currentTime=Math.min(restoreTime,video.duration||restoreTime);},{once:true});} video.ontimeupdate=()=>{const t=maFmt(video.currentTime);const a=$('#ma-time'),b=$('#ma-add-time');if(a)a.textContent=t;if(b)b.textContent=t;}; const note=$('#ma-note');if(note)note.value=oldNote;}const start=$('#ma-clip-start');if(start&&window.MA_CLIP_START!=null)start.textContent='Start '+maFmt(window.MA_CLIP_START);const recSel=$('#ma-rec-kind'),kindSel=$('#ma-kind');if(recSel)recSel.value=MA_REC_KIND;if(kindSel)kindSel.value=MA_KIND;
 }
@@ -9942,3 +9943,47 @@ detHTML = function (ex) {
   const fig = '<figure class="own-photo-fig"><img src="' + ex.img + '" alt="Bild av övningen ' + esc(ex.name) + '"></figure>';
   return j > 0 ? h.slice(0, j) + fig + h.slice(j) : h;
 };
+
+/* ---------- G8: Så sparas dina data ---------- */
+function dataInfoHTML() {
+  const inl = !!window.OF_MOLN?.state.user; const club = window.OF_PROFILE?.club?.name;
+  const sec = (t, items, note) => '<section class="di-sec"><h3>' + t + '</h3><ul>' + items.map(x => '<li>' + x + '</li>').join('') + '</ul>' + (note ? '<p class="small muted">' + note + '</p>' : '') + '</section>';
+  return '<div class="modal-wrap di-wrap" role="dialog" aria-modal="true" aria-labelledby="di-h"><div class="modal di">'
+    + '<h2 id="di-h">Så sparas dina data</h2>'
+    + (inl ? sec('På ditt konto – finns på alla dina enheter', ['Träningspass, reflektioner och säsongsplan', 'Matcher, motståndare och formationer', 'Sparade övningar och dina egna övningar (även uppladdade bilder och PDF-sidor)', 'Inställningar som valt lag och antal spelare'],
+        'Bara du ser det här. Varken andra tränare eller klubbens ansvariga kommer åt dina pass, matcher eller anteckningar.')
+      : sec('Du är inte inloggad', ['Allt sparas bara i den här webbläsaren', 'Logga in så sparas det på ditt konto och finns på alla dina enheter'], ''))
+    + sec('Bara på den här enheten', ['Matchvideo och matchanalyser – videon laddas aldrig upp', 'Osparade utkast, till exempel en ny match innan du tryckt Spara'],
+        'Det försvinner om du rensar webbläsarens data eller byter enhet.')
+    + sec('Delas med klubben', [(club ? esc(club) + ': ' : '') + 'klubbens ansvariga ser vilka tränare som är med (e-post och roll) och hur många platser som används', 'Ingenting av det du skapar delas automatiskt'], '')
+    + sec('Spelare', ['Skriv aldrig spelarnas namn – använd tröjnummer', 'Ladda inte upp bilder där spelare syns'], '')
+    + sec('Ta bort', ['Ett pass, en match eller en övning tar du bort i appen – den försvinner då från alla dina enheter', 'Matchvideo: Match → Matchanalys → välj videon → Ta bort', 'Vill du ta bort hela kontot? Kontakta klubbens ansvariga eller Övningsfabriken'], '')
+    + '<div class="up-btns"><button type="button" class="btn primary" data-a="dataInfoClose">Stäng</button></div></div></div>';
+}
+window.OF_DATA_INFO = () => { const r = $('#m2-root'); if (r) { r.innerHTML = dataInfoHTML(); r.querySelector('[data-a=dataInfoClose]')?.focus(); } };
+Object.assign(A, { dataInfo: () => window.OF_DATA_INFO(), dataInfoClose: () => closeM2() });
+
+/* ---------- G9: matchvideo – vem ser den, hur länge, hur den tas bort ---------- */
+async function maVideoDel(id) { const db = await maDb(); return new Promise((resolve) => { const tx = db.transaction('videos', 'readwrite'); tx.objectStore('videos').delete(id); tx.oncomplete = resolve; tx.onerror = () => resolve(); }); }
+const __maRender = maRender;
+maRender = function () {
+  __maRender.apply(this, arguments);
+  const root = document.querySelector('#match-analysis-root'); const side = root && root.querySelector('.ma-side'); if (!side || side.querySelector('.ma-priv2')) return;
+  root.querySelectorAll('.ma-privacy:not(.ma-priv2)').forEach(e => e.remove());
+  const item = MA_VIDEO && maRead().find(x => x.id === MA_VIDEO);
+  side.insertAdjacentHTML('beforeend', '<div class="ma-privacy ma-priv2"><b>Om videon</b><ul>'
+    + '<li>Finns bara på den här enheten, i webbläsaren. Den laddas aldrig upp.</li>'
+    + '<li>Ingen annan ser den – inte andra tränare och inte klubben.</li>'
+    + '<li>Ligger kvar tills du tar bort den eller rensar webbläsarens data.</li>'
+    + '<li>Observationerna sparas också bara här.</li></ul>'
+    + (item ? '<button type="button" class="btn sm ma-del" data-a="deleteMatchAnalysis" data-id="' + esc(item.id) + '">Ta bort videon och analysen</button>' : '') + '</div>');
+};
+Object.assign(A, {
+  deleteMatchAnalysis: async el => {
+    const id = el.dataset.id; const item = maRead().find(x => x.id === id); if (!item) return;
+    if (!confirm('Ta bort "' + item.name + '" och alla observationer? Det går inte att ångra.')) return;
+    maWrite(maRead().filter(x => x.id !== id)); await maVideoDel(id).catch(() => { });
+    if (MA_VIDEO === id) { MA_VIDEO = maRead()[0]?.id || null; if (MA_URL) URL.revokeObjectURL(MA_URL); MA_URL = ''; if (MA_VIDEO) { const f = await maVideoGet(MA_VIDEO).catch(() => null); if (f) MA_URL = URL.createObjectURL(f); } }
+    maRender(); render(); toast('Videon och analysen är borttagna från enheten');
+  },
+});

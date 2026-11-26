@@ -752,3 +752,14 @@ img.thumb.own-photo { width: 100%; height: 100%; object-fit: cover; display: blo
 .up-pages span { flex: 1; text-align: center; }
 .up-busy { align-items: center; text-align: center; padding: 32px 16px; }
 .up-own-btn { cursor: pointer; white-space: nowrap; }
+/* G8: Så sparas dina data */
+.di { display: flex; flex-direction: column; gap: 14px; max-height: 92vh; overflow: auto; }
+.di > * { flex-shrink: 0; }
+.di h2 { margin: 0; }
+.di-sec h3 { margin: 0 0 4px; font-size: 16px; }
+.di-sec ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.di-sec p { margin: 6px 0 0; }
+/* G9: matchvideo */
+.ma-privacy { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(0,0,0,.04); font-size: 13px; line-height: 1.45; }
+.ma-privacy ul { margin: 6px 0 10px; padding-left: 18px; display: grid; gap: 3px; }
+.ma-del { color: #a12a1f; }

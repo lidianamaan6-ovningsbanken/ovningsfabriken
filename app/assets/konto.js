@@ -44,6 +44,7 @@
       + (st.lastError && st.status === 'fel' ? '<p class="of-konto-msg">' + esc(st.lastError) + '</p>' : '')
       + '<div class="of-konto-actions"><button type="button" class="btn" data-konto="sync">Synka nu</button>'
       + '<button type="button" class="of-text-action" data-konto="out">Logga ut</button></div>'
+      + '<p class="of-konto-note"><button type="button" class="of-text-action" data-konto="data">Så sparas dina data →</button></p>'
       + '<div id="of-klubb" class="of-klubb">' + (clubCache || '<p class="of-konto-note">Hämtar klubb …</p>') + '</div>'
       + '<details class="of-konto-pass"><summary>Byt lösenord</summary><form data-konto="pass" class="of-konto-form"><label for="of-nytt-pass">Nytt lösenord</label>'
       + '<input id="of-nytt-pass" name="password" type="password" minlength="8" autocomplete="new-password" required><button class="btn" type="submit">Spara lösenord</button></form></details>';
@@ -59,9 +60,12 @@
     if (!clubs.length) { clubCache = '<h3>Klubb</h3><p class="of-konto-note">' + (a?.admin ? 'Du är admin men inte med i någon klubb.' : 'Kontot är inte kopplat till någon klubb.') + '</p>'; box.innerHTML = clubCache; return; }
     let h = '';
     for (const c of clubs) {
-      h += '<section class="of-klubb-c"><div class="of-klubb-top"><div><span class="of-eyebrow">' + (c.role === 'owner' ? 'Du är ansvarig' : 'Tränare') + '</span><h3>' + esc(c.name) + '</h3></div>'
+      h += '<section class="of-klubb-c"><div class="of-klubb-top"><div><span class="of-eyebrow">' + (c.role === 'owner' ? 'Klubbadministration · du är ansvarig' : 'Tränare i klubben') + '</span><h3>' + esc(c.name) + '</h3></div>'
         + '<span class="of-klubb-seats"><b>' + c.used + '</b> / ' + c.seats + ' platser</span></div>'
-        + '<p class="of-konto-note">' + (c.active ? 'Licensen gäller till ' + esc(c.valid_until) : 'Licensen gick ut ' + esc(c.valid_until)) + '</p>';
+        + '<p class="of-konto-note">' + (c.active ? 'Licensen gäller till ' + esc(c.valid_until) : 'Licensen gick ut ' + esc(c.valid_until)) + '</p>'
+        + '<p class="of-konto-note of-roller">' + (c.role === 'owner'
+          ? '<b>Ansvarig</b> bjuder in och tar bort tränare och ser vilka som är med. <b>Tränare</b> använder appen. Ingen av er ser någon annans pass, matcher eller anteckningar.'
+          : 'Klubbens ansvariga bjuder in och tar bort tränare. Dina pass, matcher och anteckningar ser bara du.') + '</p>';
       const { data: members } = await M().sb.from('club_members').select('user_id,email,role,joined_at').eq('club_id', c.id).order('joined_at');
       const me = M().state.user.id;
       h += '<ul class="of-klubb-list">' + (members || []).map(m => '<li><span class="of-acc-ic is-in sm">' + esc((m.email || '?').slice(0, 1).toUpperCase()) + '</span><span class="grow">' + esc(m.email || 'Okänd') + (m.user_id === me ? ' <small>(du)</small>' : '') + '<small>' + (m.role === 'owner' ? 'Ansvarig' : 'Tränare') + '</small></span>'
@@ -100,6 +104,7 @@
         if (e.target === d) { d.close(); return; }
         const a = e.target.closest('[data-konto]')?.dataset.konto;
         if (a === 'close') d.close();
+        if (a === 'data') { d.close(); window.OF_DATA_INFO?.(); }
         if (a === 'sync') { await M().pull(false); await M().push(); d.innerHTML = dialogHTML(); }
         if (a === 'out') { await M().signOut(); clubCache = ''; d.close(); }
         if (a === 'forget') { try { await M().rpc('forget_device', { dev: e.target.closest('[data-dev]').dataset.dev }); } catch (err) { alert(err.message); } loadClub(); }
