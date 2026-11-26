@@ -9809,8 +9809,7 @@ async function upOpen(file) {
   if (/pdf$/i.test(file.type || '') || /\.pdf$/i.test(file.name || '')) { toast('PDF går inte att ladda upp än. Ta en skärmbild av övningen och ladda upp bilden.'); return; }
   if (!/^image\//.test(file.type || '')) { toast('Välj en bild, till exempel ett foto eller en skärmbild'); return; }
   let img; try { img = await upShrink(file); } catch (e) { toast('Bilden gick inte att läsa. Prova en annan bild (JPG eller PNG).'); return; }
-  const base = String(file.name || '').replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ').trim();
-  UPL = { img, name: /^(img|image|photo|dsc|pxl|screenshot|skärmavbild)\b/i.test(base) ? '' : base.slice(0, 80), phase: 'Anfall', players: ST.n || 12, minutes: 15, org: '', points: '', err: '' };
+  UPL = { img, name: '', phase: 'Anfall', players: ST.n || 12, minutes: 15, org: '', points: '', err: '' };
   upRender(); setTimeout(() => $('#up-name')?.focus(), 50);
 }
 function upRead() {
@@ -9823,7 +9822,7 @@ function upHTML() {
   return '<div class="modal-wrap up-wrap" role="dialog" aria-modal="true" aria-labelledby="up-h"><div class="modal up">' +
     '<h2 id="up-h">' + (U.id ? 'Ändra övningen' : 'Ny egen övning') + '</h2>' +
     '<figure class="up-fig"><img src="' + U.img + '" alt="Bilden du laddade upp"></figure>' +
-    '<label class="up-f"><span class="label">Namn på övningen</span><input id="up-name" maxlength="80" value="' + esc(U.name) + '" placeholder="t.ex. Rondo 4 mot 2" autocomplete="off"></label>' +
+    '<label class="up-f"><span class="up-q">Vad heter övningen?</span><input id="up-name" required aria-required="true" maxlength="80" value="' + esc(U.name) + '" placeholder="t.ex. Rondo 4 mot 2" autocomplete="off"></label>' +
     '<div class="up-f"><span class="label" id="up-ph-l">Skede</span><div class="mini-seg" role="group" aria-labelledby="up-ph-l">' + ['Anfall', 'Försvar', 'Omställning'].map(p => '<button type="button" data-a="upPhase" data-v="' + p + '" class="' + (U.phase === p ? 'on' : '') + '" aria-pressed="' + (U.phase === p) + '">' + p + '</button>').join('') + '</div></div>' +
     '<div class="up-row"><label class="up-f"><span class="label">Antal spelare</span><input id="up-players" type="number" inputmode="numeric" min="1" max="40" value="' + U.players + '"></label>' +
     '<label class="up-f"><span class="label">Minuter</span><input id="up-min" type="number" inputmode="numeric" min="1" max="120" value="' + U.minutes + '"></label></div>' +
@@ -9840,12 +9839,12 @@ Object.assign(A, {
   upCancel: () => { UPL = null; closeM2(); },
   upSave: () => {
     upRead(); const U = UPL; if (!U) return;
-    if (!U.name) { U.err = 'Skriv ett namn på övningen.'; upRender(); $('#up-name')?.focus(); return; }
+    if (!U.name) { U.err = 'Skriv vad övningen heter, så sparas den.'; upRender(); $('#up-name')?.focus(); return; }
     const ex = { id: 'own-' + uid(), own: true, name: U.name, phase: U.phase, stage: '', type: 'Egen övning', minutes: U.minutes, area: '', division: '',
       organisation: U.org.trim(), rules: '', coachingPoints: U.points.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 6), questions: [], criteria: [], sketch: [],
       anim: null, players: U.players, created: Date.now(), fromPhoto: true, img: U.img };
     const old = U.id && SAVED[U.id]; if (old) { ex.id = old.id; ex.created = old.created || ex.created; ex.minutesSet = true; }
-    saveFav(ex); UPL = null; closeM2(); ST.view = 'draw'; persist(); render(); window.scrollTo(0, 0); toast(old ? 'Övningen är uppdaterad' : 'Övningen är sparad under Mina egna övningar');
+    saveFav(ex); UPL = null; closeM2(); ST.view = 'draw'; persist(); render(); window.scrollTo(0, 0); toast(old ? 'Övningen är uppdaterad' : '”' + ex.name + '” är sparad i appen under Mina egna övningar');
   },
 });
 document.addEventListener('change', e => { const t = e.target; if (t && (t.id === 'up-file' || t.id === 'up-file2')) { const f = t.files && t.files[0]; t.value = ''; upOpen(f); } });
