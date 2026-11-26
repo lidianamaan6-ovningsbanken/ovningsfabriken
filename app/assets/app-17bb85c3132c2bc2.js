@@ -3965,15 +3965,15 @@ document.addEventListener('change', e => { if (e.target && e.target.id === 'imp-
 /* ---------- Rita-fliken ---------- */
 function drawTabHTML() {
   const own = ownList();
-  let h = '<div class="stack" style="gap:4px"><h2>Rita och importera</h2><p class="muted small">' + (NO_AI ? 'Rita en egen övning steg för steg. Den blir en animation precis som övningarna i banken.' : 'Rita en egen övning steg för steg, eller fota en övning från en bok, en PDF eller en whiteboard. Den blir en animation precis som övningarna i banken.') + '</p></div>';
+  let h = '<div class="stack" style="gap:4px"><h2>Rita och importera</h2><p class="muted small">' + (NO_AI ? 'Rita en egen övning steg för steg, eller ladda upp en bild av en övning du redan har – ett foto, en skärmbild eller en whiteboard.' : 'Rita en egen övning steg för steg, eller fota en övning från en bok, en PDF eller en whiteboard. Den blir en animation precis som övningarna i banken.') + '</p></div>';
   if (ST.draft && ST.draft.frames) h += '<div class="card draft"><div class="grow"><b>Osparat utkast</b><br><span class="small muted">' + esc(ST.draft.name || 'Namnlös övning') + ' · ' + ST.draft.frames.length + (ST.draft.frames.length === 1 ? ' steg' : ' steg') + '</span></div><button type="button" class="btn sm primary" data-a="drResume">Fortsätt</button><button type="button" class="btn sm ghost" data-a="drDiscard">Släng</button></div>';
   h += '<div class="cta-grid"><button type="button" class="cta" data-a="drNew"><span class="cta-ic"><svg viewBox="0 0 48 32" aria-hidden="true"><rect x="1" y="1" width="46" height="30" rx="3" fill="var(--pitch)"/><path d="M24 1v30" stroke="rgba(255,255,255,.6)" stroke-width="1"/><circle cx="24" cy="16" r="5" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/><circle cx="12" cy="11" r="3" fill="var(--bib-a)" stroke="#fff"/><circle cx="34" cy="20" r="3" fill="var(--bib-b)" stroke="#fff"/><path d="M14 13l15 6" stroke="#FFE45C" stroke-width="1.4" stroke-dasharray="2 1.5"/></svg></span><b>Rita ny övning</b><small>Lägg ut spelare, koner och mål. Dra dem steg för steg och se animationen.</small></button>';
-  h += (NO_AI || IMG_OK === false ? '</div>' :
+  h += upCtaHTML() + (NO_AI || IMG_OK === false ? '</div>' :
     '<label class="cta' + (IMP && IMP.busy ? ' busy' : '') + '"><input type="file" id="imp-file" accept="image/*" hidden' + (IMP && IMP.busy ? ' disabled' : '') + '><span class="cta-ic">' + CAM + '</span><b>Fota eller ladda upp</b><small>En skiss, en sida ur en bok eller en whiteboard blir en animation.</small></label></div>');
   if (IMP && IMP.busy) h += '<div class="card phcard">' + BALL + '<div class="grow"><b>AI:n läser bilden …</b><br><span class="small muted">Spelare, pilar och text blir en animation. Det tar en halv minut eller så.</span></div></div>';
   else if (IMP && IMP.err) h += '<div class="err">' + esc(IMP.err) + '</div>';
-  h += '<div class="spread" style="margin-top:6px"><h2>Mina övningar <span class="muted num" style="font-size:20px">' + own.length + '</span></h2></div>';
-  if (!own.length) h += '<div class="card empty"><h3 style="color:var(--ink)">Inga egna övningar än</h3><p>Dina ritade och importerade övningar hamnar här och synkas till dina andra enheter. Du kan också trycka på "Rita egen version" på en övning i banken.</p></div>';
+  h += '<div class="spread" style="margin-top:6px"><h2>Mina egna övningar <span class="muted num" style="font-size:20px">' + own.length + '</span></h2></div>';
+  if (!own.length) h += '<div class="card empty"><h3 style="color:var(--ink)">Inga egna övningar än</h3><p>Övningar du ritar eller laddar upp hamnar här och synkas till dina andra enheter. Du kan också trycka på "Rita egen version" på en övning i banken.</p></div>';
   else h += '<div class="tiles">' + own.map(ex => exTile(ex)).join('') + '</div>';
   return h;
 }
@@ -5308,7 +5308,7 @@ function startHeroHTML() {
     (BUILD && BUILD.err ? '<p class="ai-err">' + esc(BUILD.err) + '</p>' : '') +
     '<p class="ai-note">Uppvärmning, huvudövningar och spel med tider, animationer och materiallista. Du kan ändra allt efteråt.</p></div></section>';
   h += spelformHTML();
-  h += '<div class="promo-grid">' + (NO_AI || IMG_OK === false ? '' : '<label class="promo"><input type="file" id="imp-file2" accept="image/*" hidden><span class="promo-ic">' + CAM + '</span><span><b>Fota whiteboarden</b><small>AI:n gör om en skiss, en boksida eller en whiteboard till en animation.</small></span></label>') +
+  h += '<div class="promo-grid">' + '<label class="promo"><input type="file" id="up-file2" accept="image/*" hidden><span class="promo-ic">' + CAM + '</span><span><b>Ladda upp en övning</b><small>Foto, skärmbild eller whiteboard – sparas under Mina egna övningar.</small></span></label>' +
     '<button type="button" class="promo" data-a="view" data-v="plan"><span class="promo-ic">' + NAV_IC.plan + '</span><span><b>Dina pass och säsong</b><small>' + sessList().length + ' pass · planera teman vecka för vecka</small></span></button></div>';
   h += '<div class="or-line"><span>eller skapa enskilda övningar</span></div>';
   return h;
@@ -6880,7 +6880,6 @@ const __sessHTML12 = sessHTML;
 sessHTML = function (s) {
   const h = __sessHTML12(s);
   const bar = '<div class="m-bar"><button type="button" class="mb-b primary wide" data-a="runSess"' + (s.blocks.length ? '' : ' disabled') + '>' + PLAY_IC + '<span>Kör passet <small>' + sessTotal(s) + ' min</small></span></button><button type="button" class="mb-b" data-a="shareSess"><b>↗</b><span>Dela</span></button><button type="button" class="mb-b" data-a="printSess"><b>⎙</b><span>Skriv ut</span></button></div>';
-  if (m.draft) return h.replace('class="det sess mdet"', 'class="det sess mdet is-draft"');   /* utkast: inga matchdagsknappar förrän matchen är sparad */
   return h.replace(/<\/div><\/div>$/, '</div>' + bar + '</div>');
 };
 const __matchHTML12 = matchHTML;
@@ -6888,6 +6887,7 @@ matchHTML = function (m) {
   let h = __matchHTML12(m);
   h = h.replace('⏱ Matchdag – startelva, speltid och byten', '⏱ Matchdag<small>startelva, speltid och byten</small>');
   const bar = '<div class="m-bar"><button type="button" class="mb-b primary wide" data-a="liveOpen"><b>⏱</b><span>Matchdag</span></button>' + (m.plan ? '<button type="button" class="mb-b" data-a="planBig"><b>⛶</b><span>Matchplan</span></button>' : '<button type="button" class="mb-b" data-a="mkPlan"><b>✦</b><span>Matchplan</span></button>') + '</div>';
+  if (m.draft) return h.replace('class="det sess mdet"', 'class="det sess mdet is-draft"');   /* utkast: inga matchdagsknappar förrän matchen är sparad */
   return h.replace(/<\/div><\/div>$/, '</div>' + bar + '</div>');
 };
 /* Enter skickar */
@@ -7571,7 +7571,7 @@ function notebookHTML() {
     (ownList().length ? '<button type="button" class="btn nb-go" data-a="pdfOwn">PDF av mina egna övningar (' + ownList().length + ')</button>' : '') + '</section>';
 }
 const __drawTab17 = drawTabHTML;
-drawTabHTML = function () { const h = __drawTab17(); const i = h.indexOf('<div class="spread" style="margin-top:6px"><h2>Mina övningar'); return i >= 0 ? h.slice(0, i) + notebookHTML() + h.slice(i) : h + notebookHTML(); };
+drawTabHTML = function () { const h = __drawTab17(); const i = h.indexOf('<div class="spread" style="margin-top:6px"><h2>Mina egna övningar'); return i >= 0 ? h.slice(0, i) + notebookHTML() + h.slice(i) : h + notebookHTML(); };
 /* Knappar i övningsvyn, favoriter och pass */
 const __detHTML17 = detHTML;
 detHTML = function (ex) {
@@ -7587,7 +7587,7 @@ sessHTML = function (s) { return __sessHTML17(s).replace('data-a="printSess">Skr
 Object.assign(A, {
   pdfEx: el => { const ex = findEx(el.dataset.id); if (ex) pdfExs([ex], ex.name); },
   pdfFav: () => { const f = ST.savedFilter || 'all'; const l = savedList().filter(x => f === 'all' || phaseKey(x.phase) === f); if (l.length) pdfExs(l, 'Favoritövningar'); },
-  pdfOwn: () => { const l = ownList(); if (l.length) pdfExs(l, 'Mina övningar'); },
+  pdfOwn: () => { const l = ownList(); if (l.length) pdfExs(l, 'Mina egna övningar'); },
   printSess: () => { const s = curSess(); if (s) pdfSess(s); },
   nbLayout: el => { ST.nbLayout = el.dataset.v; persist(); render(); },
   nbPitch: el => { ST.nbPitch = el.dataset.v; persist(); render(); },
@@ -9780,3 +9780,104 @@ startWorkspace();
   const idle = window.requestIdleCallback || (fn => setTimeout(fn, 6000));
   setTimeout(() => idle(() => { try { const l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; document.head.appendChild(l); } catch (e) { } }, { timeout: 15000 }), 5000);
 })();
+
+/* ---------- Ladda upp egen övning (foto, skärmbild, whiteboard) – fungerar utan AI ---------- */
+let UPL = null;
+function upCtaHTML() {
+  return '<label class="cta"><input type="file" id="up-file" accept="image/*" hidden><span class="cta-ic">' + CAM + '</span><b>Ladda upp övning</b><small>Ett foto, en skärmbild eller en whiteboard. Sparas med bild under Mina egna övningar.</small></label>';
+}
+function upShrink(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let w = img.naturalWidth, h = img.naturalHeight; const sc = Math.min(1, 1200 / Math.max(w, h)); w = Math.round(w * sc); h = Math.round(h * sc);
+      const cv = document.createElement('canvas'); let out = '';
+      for (const [q, f] of [[.78, 1], [.68, 1], [.6, .85], [.55, .7], [.5, .55]]) {
+        cv.width = Math.round(w * f); cv.height = Math.round(h * f); const cx = cv.getContext('2d');
+        cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+        out = cv.toDataURL('image/jpeg', q); if (out.length < 260000) break;
+      }
+      res(out);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('img')); };
+    img.src = url;
+  });
+}
+async function upOpen(file) {
+  if (!file) return;
+  if (/pdf$/i.test(file.type || '') || /\.pdf$/i.test(file.name || '')) { toast('PDF går inte att ladda upp än. Ta en skärmbild av övningen och ladda upp bilden.'); return; }
+  if (!/^image\//.test(file.type || '')) { toast('Välj en bild, till exempel ett foto eller en skärmbild'); return; }
+  let img; try { img = await upShrink(file); } catch (e) { toast('Bilden gick inte att läsa. Prova en annan bild (JPG eller PNG).'); return; }
+  const base = String(file.name || '').replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ').trim();
+  UPL = { img, name: /^(img|image|photo|dsc|pxl|screenshot|skärmavbild)\b/i.test(base) ? '' : base.slice(0, 80), phase: 'Anfall', players: ST.n || 12, minutes: 15, org: '', points: '', err: '' };
+  upRender(); setTimeout(() => $('#up-name')?.focus(), 50);
+}
+function upRead() {
+  if (!UPL) return; const v = id => ($('#' + id) || {}).value;
+  UPL.name = String(v('up-name') ?? UPL.name).trim(); UPL.org = String(v('up-org') ?? UPL.org); UPL.points = String(v('up-points') ?? UPL.points);
+  UPL.players = Math.max(1, Math.min(40, parseInt(v('up-players'), 10) || UPL.players)); UPL.minutes = Math.max(1, Math.min(120, parseInt(v('up-min'), 10) || UPL.minutes));
+}
+function upHTML() {
+  const U = UPL;
+  return '<div class="modal-wrap up-wrap" role="dialog" aria-modal="true" aria-labelledby="up-h"><div class="modal up">' +
+    '<h2 id="up-h">' + (U.id ? 'Ändra övningen' : 'Ny egen övning') + '</h2>' +
+    '<figure class="up-fig"><img src="' + U.img + '" alt="Bilden du laddade upp"></figure>' +
+    '<label class="up-f"><span class="label">Namn på övningen</span><input id="up-name" maxlength="80" value="' + esc(U.name) + '" placeholder="t.ex. Rondo 4 mot 2" autocomplete="off"></label>' +
+    '<div class="up-f"><span class="label" id="up-ph-l">Skede</span><div class="mini-seg" role="group" aria-labelledby="up-ph-l">' + ['Anfall', 'Försvar', 'Omställning'].map(p => '<button type="button" data-a="upPhase" data-v="' + p + '" class="' + (U.phase === p ? 'on' : '') + '" aria-pressed="' + (U.phase === p) + '">' + p + '</button>').join('') + '</div></div>' +
+    '<div class="up-row"><label class="up-f"><span class="label">Antal spelare</span><input id="up-players" type="number" inputmode="numeric" min="1" max="40" value="' + U.players + '"></label>' +
+    '<label class="up-f"><span class="label">Minuter</span><input id="up-min" type="number" inputmode="numeric" min="1" max="120" value="' + U.minutes + '"></label></div>' +
+    '<label class="up-f"><span class="label">Så går övningen till (valfritt)</span><textarea id="up-org" rows="3" maxlength="1200" placeholder="Organisation, regler, poäng …">' + esc(U.org) + '</textarea></label>' +
+    '<label class="up-f"><span class="label">Coachpunkter (valfritt, en per rad)</span><textarea id="up-points" rows="2" maxlength="600">' + esc(U.points) + '</textarea></label>' +
+    (U.err ? '<p class="err" role="alert">' + esc(U.err) + '</p>' : '') +
+    '<p class="tiny muted">Övningen sparas med bilden under Mina egna övningar och synkas till dina andra enheter. Ta inte med spelarnas ansikten eller namn i bilden.</p>' +
+    '<div class="up-btns"><button type="button" class="btn ghost" data-a="upCancel">Avbryt</button><button type="button" class="btn primary" data-a="upSave">Spara övningen</button></div>' +
+    '</div></div>';
+}
+function upRender() { const r = $('#m2-root'); if (r && UPL) r.innerHTML = upHTML(); }
+Object.assign(A, {
+  upPhase: el => { upRead(); UPL.phase = el.dataset.v; upRender(); },
+  upCancel: () => { UPL = null; closeM2(); },
+  upSave: () => {
+    upRead(); const U = UPL; if (!U) return;
+    if (!U.name) { U.err = 'Skriv ett namn på övningen.'; upRender(); $('#up-name')?.focus(); return; }
+    const ex = { id: 'own-' + uid(), own: true, name: U.name, phase: U.phase, stage: '', type: 'Egen övning', minutes: U.minutes, area: '', division: '',
+      organisation: U.org.trim(), rules: '', coachingPoints: U.points.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 6), questions: [], criteria: [], sketch: [],
+      anim: null, players: U.players, created: Date.now(), fromPhoto: true, img: U.img };
+    const old = U.id && SAVED[U.id]; if (old) { ex.id = old.id; ex.created = old.created || ex.created; ex.minutesSet = true; }
+    saveFav(ex); UPL = null; closeM2(); ST.view = 'draw'; persist(); render(); window.scrollTo(0, 0); toast(old ? 'Övningen är uppdaterad' : 'Övningen är sparad under Mina egna övningar');
+  },
+});
+document.addEventListener('change', e => { const t = e.target; if (t && (t.id === 'up-file' || t.id === 'up-file2')) { const f = t.files && t.files[0]; t.value = ''; upOpen(f); } });
+/* Bilden visas i stället för animationen: kort, övningsdetalj och PDF */
+const __thumbUp = thumbSVG;
+thumbSVG = function (ex) { return ex && ex.img ? '<img class="thumb own-photo" src="' + ex.img + '" alt="" loading="lazy" decoding="async">' : __thumbUp.apply(this, arguments); };
+const __exImgUp = exImgData0;
+exImgData0 = async function (ex) {
+  if (!ex || !ex.img) return __exImgUp.apply(this, arguments);
+  const im = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = ex.img; }); if (!im) return null;
+  const c = document.createElement('canvas'); c.width = 1400; c.height = Math.round(1400 * BH / BW); const x = c.getContext('2d');
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height); const sc = Math.min(c.width / im.naturalWidth, c.height / im.naturalHeight);
+  const w = im.naturalWidth * sc, h = im.naturalHeight * sc; x.drawImage(im, (c.width - w) / 2, (c.height - h) / 2, w, h);
+  return c.toDataURL('image/jpeg', 0.88);
+};
+
+const __drEditUp = A.drEdit, __showUp = A.show;
+A.drEdit = el => {
+  const ex = findEx(el.dataset.id);
+  if (ex && ex.img) { UPL = { id: ex.id, img: ex.img, name: ex.name || '', phase: ex.phase || 'Anfall', players: ex.players || ST.n || 12, minutes: ex.minutes || 15, org: ex.organisation || '', points: (ex.coachingPoints || []).join('\n'), err: '' }; if (DET) closeDet(); upRender(); return; }
+  return __drEditUp(el);
+};
+A.show = el => {
+  const ex = findEx(el.dataset.id);
+  if (ex && ex.img) { const r = $('#m2-root'); if (r) r.innerHTML = '<div class="up-show" role="dialog" aria-modal="true" aria-label="' + esc(ex.name) + '"><img src="' + ex.img + '" alt="' + esc(ex.name) + '"><button type="button" class="btn up-show-x" data-a="upCancel">Stäng</button></div>'; return; }
+  return __showUp(el);
+};
+const __detUp = detHTML;
+detHTML = function (ex) {
+  let h = __detUp.apply(this, arguments); if (!ex || !ex.img) return h;
+  h = h.split('>Redigera ritningen<').join('>Ändra övningen<');
+  const i = h.indexOf('<div class="det-side">'); const j = i > 0 ? h.lastIndexOf('</div>', i) : -1;
+  const fig = '<figure class="own-photo-fig"><img src="' + ex.img + '" alt="Bild av övningen ' + esc(ex.name) + '"></figure>';
+  return j > 0 ? h.slice(0, j) + fig + h.slice(j) : h;
+};
