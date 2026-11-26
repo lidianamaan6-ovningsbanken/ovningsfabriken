@@ -6208,7 +6208,8 @@ const LS_M = workspaceStorageKey('ovningsfabriken.match');
 let MX = { teams: {}, matches: {}, forms: {} };
 try { const o = JSON.parse(localStorage.getItem(LS_M) || 'null'); if (o) MX = Object.assign(MX, o); } catch (e) { }
 function persistMx() { try { localStorage.setItem(LS_M, JSON.stringify(MX)); } catch (e) { } queueCoachSync('matches', MX); window.OF_MOLN?.changedLocally(); }
-function saveMx(kind, o, quiet) { o.updatedAt = Date.now(); MX[kind][o.id] = o; persistMx(); if (db) { clearTimeout(saveMx['t' + o.id]); saveMx['t' + o.id] = setTimeout(() => db.doc('mx' + kind + '/' + o.id).set(clone(o)).catch(() => { }), quiet ? 4000 : 300); } }
+const MX_DRAFT = {};   /* Ny match är ett utkast tills tränaren sparar den (sparas inte på enheten eller i molnet) */
+function saveMx(kind, o, quiet) { if (o && o.draft) { o.updatedAt = Date.now(); MX_DRAFT[o.id] = o; return; } o.updatedAt = Date.now(); MX[kind][o.id] = o; persistMx(); if (db) { clearTimeout(saveMx['t' + o.id]); saveMx['t' + o.id] = setTimeout(() => db.doc('mx' + kind + '/' + o.id).set(clone(o)).catch(() => { }), quiet ? 4000 : 300); } }
 async function syncMx() {
   if (!db) return; let changed = false;
   try {
@@ -6301,7 +6302,8 @@ const SP_FOR = { horn: { weak: ['fs1', 'fs3', 'fs2'], str: ['fs4'] }, fris: { we
 let MOPEN = null, MSUB = {};
 function newMatch() {
   const sf = ST.spelform || '7v7'; const fs = formsOf(sf); const f = fs[0];
-  return { id: 'match-' + uid(), teamId: '', oppName: '', date: addDays(todayStr(), 7), time: '', home: 'hemma', surface: 'gräs', sf, fd: mkFormObj(f, sf, 'def'), fa: mkFormObj(f, sf, 'att'), same: true, style: {}, items: {}, danger: [], plan: null, planOk: false, week: [], live: null, after: null, createdAt: Date.now() };
+  const fd = mkFormObj(f, sf, 'def'), fa = mkFormObj(f, sf, 'att'); fd.example = fa.example = true;
+  return { id: 'match-' + uid(), teamId: '', oppName: '', date: addDays(todayStr(), 7), time: '', home: 'hemma', surface: 'gräs', sf, fd, fa, same: true, style: {}, items: {}, danger: [], plan: null, planOk: false, week: [], live: null, after: null, createdAt: Date.now() };
 }
 function prefillFromTeam(m, tid) {
   const prev = teamMatches(tid).filter(x => x.id !== m.id).pop(); if (!prev) return;
@@ -6337,6 +6339,7 @@ function oppField(m, which) {
 function matchHTML(m) {
   const t = MX.teams[m.teamId]; const teams = teamList(); const prev = m.teamId ? teamMatches(m.teamId).filter(x => x.id !== m.id && x.date < (m.date || '9')) : [];
   let h = '<div class="det sess mdet" role="dialog" aria-modal="true" aria-label="Match"><div class="det-bar"><button type="button" class="btn sm ghost back" data-a="closeMatch">‹ Match</button><span class="det-bar-t">' + esc(m.oppName || 'Ny match') + '</span><button type="button" class="btn sm ghost danger" data-a="delMatch" data-id="' + m.id + '">Ta bort</button></div><div class="sess-in">';
+  if (m.draft) h += '<div class="card m-draft" role="status"><b>Ny match – inte sparad än</b><p class="small">Fyll i motståndare och datum och tryck på Spara match. Inget sparas förrän du gör det.</p><div class="row" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" data-a="matchSave">Spara match</button><button type="button" class="btn ghost" data-a="matchCancel">Avbryt</button></div></div>';
   h += '<button type="button" class="btn primary big live-go" data-a="liveOpen">⏱ Matchdag – startelva, speltid och byten</button>';
   /* 1 matchinfo */
   let b = '<label class="meta-i"><span class="label">Motståndare</span><input type="text" list="team-dl" data-mf="oppName" value="' + esc(m.oppName) + '" placeholder="Lagets namn" autocomplete="off"></label><datalist id="team-dl">' + teams.map(t => '<option value="' + esc(t.name) + '">').join('') + '</datalist>';
@@ -6348,14 +6351,15 @@ function matchHTML(m) {
   /* 2–3 formation */
   b = '<label class="check"><input type="checkbox" data-mcheck="same"' + (m.same ? ' checked' : '') + '> Samma i anfall och försvar</label>';
   const ws = m.same ? [['fd', 'Formation']] : [['fd', 'Formation i försvar'], ['fa', 'Formation i anfall']];
-  b += '<div class="fgrid' + (m.same ? '' : ' two') + '">' + ws.map(([w, l]) => '<div class="fcol"><h4>' + l + ': <span class="accent-t">' + esc(m[w].label) + '</span></h4>' + oppField(m, w) + '<details class="fpick"' + (MSUB.pick === w ? ' open' : '') + '><summary>Byt formation</summary>' + formPicker(m, w) + '</details></div>').join('') + '</div>';
+  b += '<div class="fgrid' + (m.same ? '' : ' two') + '">' + ws.map(([w, l]) => '<div class="fcol"><h4>' + l + ': <span class="accent-t">' + (m[w].example ? 'exempel ' : '') + esc(m[w].label) + '</span></h4>' + oppField(m, w) + '<details class="fpick"' + (MSUB.pick === w ? ' open' : '') + '><summary>Byt formation</summary>' + formPicker(m, w) + '</details></div>').join('') + '</div>';
   const CF = MSUB.cf;
   b += '<div class="cf">' + (CF ? '<div class="card cf-in"><h4>Egen formation (' + esc(sfOf(m.sf)[1]) + ')</h4><div class="mini-seg wide"><button type="button" data-a="cfMode" data-v="text" class="' + (CF.mode === 'text' ? 'on' : '') + '">Skriv in</button><button type="button" data-a="cfMode" data-v="draw" class="' + (CF.mode === 'draw' ? 'on' : '') + '">Rita den</button></div>' +
     (CF.mode === 'text' ? '<input type="text" id="cf-code" value="' + esc(CF.code || '') + '" placeholder="' + (m.sf === '11v11' ? 't.ex. 3-3-1-3' : 't.ex. 1-2-2-1-1') + '" inputmode="numeric">' + (CF.err ? '<p class="err-t">' + esc(CF.err) + '</p>' : '') + (CF.rows ? fieldSVG({ pos: rowsToPos(CF.rows, hasGk(m.sf), 'def'), gk: hasGk(m.sf), aria: 'Förhandsvisning' }) : '') + '<button type="button" class="btn" data-a="cfCheck">Kontrollera</button>'
       : '<p class="tiny muted">Dra ut ' + (SFN[m.sf] + (hasGk(m.sf) ? 1 : 0)) + ' spelare till rätt positioner.</p><div class="ffield">' + fieldSVG({ pos: CF.pos, key: 'cf', drag: true, gk: hasGk(m.sf), aria: 'Rita formation' }) + '</div>') +
     '<input type="text" id="cf-name" maxlength="50" value="' + esc(CF.name || '') + '" placeholder="Namn, t.ex. IFK:s 3-3-1 med låg sexa"><div class="row" style="gap:8px"><button type="button" class="btn primary" data-a="cfSave">Spara i Mina formationer</button><button type="button" class="btn ghost" data-a="cfClose">Avbryt</button></div></div>'
     : '<button type="button" class="btn" data-a="cfOpen">+ Egen formation</button>') + '</div>';
-  h += msec('form', ['2', 'Motståndarens formation', esc(m.fd.label) + (m.same ? '' : ' / ' + esc(m.fa.label))], b, true);
+  if (m.fd.example) b = '<p class="small muted">Ingen formation vald än. Bilden visar ett exempel – välj motståndarens formation när du vet den.</p>' + b;
+  h += msec('form', ['2', 'Motståndarens formation', m.fd.example ? 'Inte vald' : esc(m.fd.label) + (m.same ? '' : ' / ' + esc(m.fa.label))], b, true);
   /* 4 spelstil */
   b = STYLE_Q.map(([k, l, opts]) => '<div class="sq"><span class="label">' + l + '</span><div class="chips">' + opts.map(([v, t]) => { const on = k === 'ext' ? !!(m.style.ext || []).includes(v) : m.style[k] === v; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="mStyle" data-k="' + k + '" data-v="' + v + '" aria-pressed="' + on + '">' + t + '</button>'; }).join('') + '</div></div>').join('');
   const nSt = Object.keys(m.style).filter(k => k !== 'ext' ? m.style[k] : (m.style.ext || []).length).length;
@@ -6378,7 +6382,7 @@ function matchHTML(m) {
   return h;
 }
 function openMatch(id, keep) {
-  const m = MX.matches[id]; if (!m) return; const was = !!MOPEN; MOPEN = id;
+  const m = MX.matches[id] || MX_DRAFT[id]; if (!m) return; const was = !!MOPEN; MOPEN = id;
   const root = $('#match-root'); const sc = keep && root.firstChild ? root.firstChild.scrollTop : 0;
   const open = keep ? [...root.querySelectorAll('details.msec[open]')].map(d => d.dataset.sec) : null;
   root.innerHTML = matchHTML(m); document.body.style.overflow = 'hidden';
@@ -6386,9 +6390,9 @@ function openMatch(id, keep) {
   if (sc) root.firstChild.scrollTop = sc;
   if (!was) { try { history.pushState({ match: id }, ''); } catch (e) { } }
 }
-function closeMatch(fromPop) { if (!MOPEN) return; MOPEN = null; MSUB = {}; $('#match-root').innerHTML = ''; if (!DET && !SOPEN) document.body.style.overflow = ''; if (!fromPop) { try { if (history.state && history.state.match) history.back(); } catch (e) { } } render(); }
+function closeMatch(fromPop) { if (!MOPEN) return; if (MX_DRAFT[MOPEN]) { delete MX_DRAFT[MOPEN]; toast('Matchen sparades inte'); } MOPEN = null; MSUB = {}; $('#match-root').innerHTML = ''; if (!DET && !SOPEN) document.body.style.overflow = ''; if (!fromPop) { try { if (history.state && history.state.match) history.back(); } catch (e) { } } render(); }
 window.addEventListener('popstate', e => { if (MOPEN && !SOPEN && !DET && !LIVE && !(e.state && e.state.match === MOPEN)) closeMatch(true); });
-const curM = () => MOPEN && MX.matches[MOPEN];
+const curM = () => MOPEN && (MX.matches[MOPEN] || MX_DRAFT[MOPEN]);
 const reM = () => { const m = curM(); if (m) { saveMx('matches', m); openMatch(m.id, true); } };
 FIELD_H.fd = { move: (i, x, y) => { const m = curM(); m.fd.pos[i] = { x, y }; if (m.same) m.fa.pos = clone(m.fd.pos); saveMx('matches', m); }, tap: i => { const m = curM(); if (MSUB.mark && MSUB.mark.w === 'fd') { m.danger[MSUB.mark.i].dot = i; m.danger[MSUB.mark.i].w = 'fd'; MSUB.mark = null; reM(); } } };
 FIELD_H.fa = { move: (i, x, y) => { const m = curM(); m.fa.pos[i] = { x, y }; saveMx('matches', m); }, tap: i => { const m = curM(); if (MSUB.mark && MSUB.mark.w === 'fa') { m.danger[MSUB.mark.i].dot = i; m.danger[MSUB.mark.i].w = 'fa'; MSUB.mark = null; reM(); } } };
@@ -6719,13 +6723,21 @@ Object.assign(A, {
     buildSession((R.summary || s.focus || s.name), { context: ctx + pt, name: 'Nästa pass: ' + (s.focus || s.name).slice(0, 50), onBusy: () => openSess(s.id, true) });
   },
   /* match */
-  newMatch: () => { const m = newMatch(); saveMx('matches', m); openMatch(m.id); setTimeout(() => { const i = $('[data-mf="oppName"]'); if (i) i.focus(); }, 50); },
+  newMatch: () => { const m = newMatch(); m.draft = true; MX_DRAFT[m.id] = m; openMatch(m.id); setTimeout(() => { const i = $('[data-mf="oppName"]'); if (i) i.focus(); }, 50); },
   openMatch: el => openMatch(el.dataset.id),
   openMatchV: el => { ST.view = 'match'; persist(); render(); openMatch(el.dataset.id); },
   closeMatch: () => closeMatch(),
+  matchCancel: () => closeMatch(),
+  matchSave: () => {
+    const m = curM(); if (!m || !m.draft) return;
+    const nm = (m.oppName || '').trim();
+    if (!nm) { toast('Skriv motståndarens namn först'); const i = $('[data-mf="oppName"]'); if (i) i.focus(); return; }
+    if (!m.date) { toast('Välj datum för matchen'); return; }
+    delete m.draft; delete MX_DRAFT[m.id]; m.createdAt = Date.now(); saveMx('matches', m); ensureTeam(m); openMatch(m.id, true); toast('Matchen är sparad');
+  },
   delMatch: el => { const id = el.dataset.id; if (A.delMatch.armed === id) { const m = MX.matches[id]; m.removed = true; saveMx('matches', m); A.delMatch.armed = null; closeMatch(); toast('Matchen är borttagen'); } else { A.delMatch.armed = id; toast('Tryck på Ta bort igen för att radera matchen'); setTimeout(() => { if (A.delMatch.armed === id) A.delMatch.armed = null; }, 3000); } },
   mSet: el => { const m = curM(); m[el.dataset.k] = el.dataset.v; reM(); },
-  mSf: el => { const m = curM(); if (m.sf === el.dataset.k) return; m.sf = el.dataset.k; const f = formsOf(m.sf)[0]; m.fd = mkFormObj(f, m.sf, 'def'); m.fa = mkFormObj(f, m.sf, 'att'); m.danger.forEach(d => d.dot = null); m.live = null; reM(); },
+  mSf: el => { const m = curM(); if (m.sf === el.dataset.k) return; m.sf = el.dataset.k; const f = formsOf(m.sf)[0]; const ex = m.fd && m.fd.example; m.fd = mkFormObj(f, m.sf, 'def'); m.fa = mkFormObj(f, m.sf, 'att'); if (ex) m.fd.example = m.fa.example = true; m.danger.forEach(d => d.dot = null); m.live = null; reM(); },
   mForm: el => { const m = curM(); const w = el.dataset.w; const f = formsOf(m.sf).find(x => x.code === el.dataset.k); m[w] = mkFormObj(f, m.sf, w === 'fd' ? 'def' : 'att'); if (m.same) m.fa = mkFormObj(f, m.sf, 'att'); m.danger.forEach(d => { if (d.w === w) d.dot = null; }); MSUB.pick = null; reM(); },
   mFormMine: el => { const m = curM(); const w = el.dataset.w; const f = MX.forms[el.dataset.k]; m[w] = Object.assign(mkFormObj({ code: f.code, label: f.name + ' (' + f.code + ')', rows: f.rows, pos: f.pos }, m.sf, 'def'), { custom: f.id }); if (m.same) m.fa = clone(m[w]); reM(); },
   mFormReset: el => { const m = curM(); const w = el.dataset.w; const F = m[w]; const c = F.custom && MX.forms[F.custom]; F.pos = c && c.pos ? clone(c.pos) : rowsToPos(F.rows, hasGk(m.sf), w === 'fd' ? 'def' : 'att'); if (m.same && w === 'fd') m.fa.pos = clone(F.pos); reM(); },
@@ -6756,7 +6768,7 @@ Object.assign(A, {
   afForm: el => { const m = curM(); m.after = m.after || {}; m.after.formOk = el.dataset.v; reM(); },
   afDone: () => { const m = curM(); ensureTeam(m); m.after = m.after || {}; m.after.done = true; m.after.at = Date.now(); reM(); toast('Sparat på lagprofilen för ' + (m.oppName || 'motståndaren')); },
   /* live */
-  liveOpen: () => { const m = curM(); ensureTeam(m); liveOpen(m); },
+  liveOpen: () => { const m = curM(); if (m && m.draft) { toast('Spara matchen först'); return; } ensureTeam(m); liveOpen(m); },
   liveClose: () => liveClose(),
   liveToggle: () => { const m = MX.matches[LIVE.id]; const L = m.live; if (L.clock >= L.period * L.perMin * 60) { if (L.period < L.periods) { L.period++; } else { toast('Full tid – avsluta matchen'); return; } } L.running = !L.running; if (L.running) { LIVE.last = performance.now(); clearInterval(LIVET); LIVET = setInterval(liveTick, 500); try { if (!ACTX) ACTX = new (window.AudioContext || window.webkitAudioContext)(); ACTX.resume(); } catch (e) { } } else { clearInterval(LIVET); } saveMx('matches', m); renderLive(); },
   livePeriod: () => { const m = MX.matches[LIVE.id]; const L = m.live; if (L.period >= L.periods) return; L.running = false; clearInterval(LIVET); L.clock = L.period * L.perMin * 60; L.period++; saveMx('matches', m); renderLive(); },
@@ -6864,6 +6876,7 @@ const __sessHTML12 = sessHTML;
 sessHTML = function (s) {
   const h = __sessHTML12(s);
   const bar = '<div class="m-bar"><button type="button" class="mb-b primary wide" data-a="runSess"' + (s.blocks.length ? '' : ' disabled') + '>' + PLAY_IC + '<span>Kör passet <small>' + sessTotal(s) + ' min</small></span></button><button type="button" class="mb-b" data-a="shareSess"><b>↗</b><span>Dela</span></button><button type="button" class="mb-b" data-a="printSess"><b>⎙</b><span>Skriv ut</span></button></div>';
+  if (m.draft) return h.replace('class="det sess mdet"', 'class="det sess mdet is-draft"');   /* utkast: inga matchdagsknappar förrän matchen är sparad */
   return h.replace(/<\/div><\/div>$/, '</div>' + bar + '</div>');
 };
 const __matchHTML12 = matchHTML;
@@ -8818,7 +8831,7 @@ const __openMatch32 = openMatch;
 openMatch = function (id, keep) {
   const r = __openMatch32.apply(this, arguments);
   try {
-    const m = MX.matches[id]; const root = $('#match-root'); if (!m || !root || !youthMatch(m) || m.deep) return r;
+    const m = MX.matches[id] || MX_DRAFT[id]; const root = $('#match-root'); if (!m || !root || !youthMatch(m) || m.deep) return r;
     const first = root.querySelector('details.msec'); const box = first && first.parentNode; if (!box) return r;
     const sec = k => box.querySelector('details.msec[data-sec="' + k + '"]');
     const setT = (d, n, t) => { if (!d) return; const s = d.querySelector('summary'); const nn = s.querySelector('.msec-n'); if (nn) nn.textContent = n; const b = s.querySelector('b'); if (b) b.textContent = t; };

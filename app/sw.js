@@ -5,7 +5,7 @@
  *  - Appens stora kod hanteras av skydd.js (egen cache), filmer och inloggning (Supabase) går alltid direkt till nätet.
  */
 const SKAL = 'of-skal-v1';
-const START = ['./app.html', './workspace.css?v=37', './grind.css?v=7', './assets/vendor/supabase.js?v=2', './lagkatalog.js', './stockholm-p2009.js'];
+const START = ['./app.html', './workspace.css?v=38', './grind.css?v=7', './assets/vendor/supabase.js?v=2', './lagkatalog.js', './stockholm-p2009.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(SKAL).then(c => c.addAll(START).catch(() => { })).then(() => self.skipWaiting()));

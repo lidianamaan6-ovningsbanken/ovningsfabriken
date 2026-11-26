@@ -714,3 +714,8 @@ i.pass { background:#3f8a5f; } i.done { background:#a9b9ad; } i.match { backgrou
 /* Prestanda: kort utanför skärmen ritas inte förrän man scrollar dit */
 .of-bank-grid > .of-exercise { content-visibility:auto; contain-intrinsic-size:auto 230px; }
 @media (max-width:719px) { .of-bank-grid > .of-exercise { contain-intrinsic-size:auto 170px; } }
+
+/* Ny match – utkast */
+.m-draft { border:2px solid var(--of-green, #1f6143); background:color-mix(in srgb, var(--of-green, #1f6143) 7%, var(--surface)); display:grid; gap:6px; margin-bottom:12px; }
+.m-draft p { margin:0; }
+.mdet.is-draft .live-go, .mdet.is-draft [data-a="delMatch"], .mdet.is-draft .m-day { display:none !important; }
