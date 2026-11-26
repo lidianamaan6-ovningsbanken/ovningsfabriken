@@ -3727,10 +3727,12 @@ function drSVG() {
   const D = DR, f = D.frames[D.k], prev = D.k > 0 ? D.frames[D.k - 1] : null;
   let s = '<svg id="dr-svg" class="pitch dr-svg" viewBox="0 0 ' + BW + ' ' + BH + '" role="img" aria-label="Ritplan">';
   s += '<defs><marker id="dr-ar-run" viewBox="0 0 6 6" refX="1" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6z" fill="#fff"/></marker><marker id="dr-ar-pass" viewBox="0 0 6 6" refX="1" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6z" fill="#FFE45C"/></marker></defs>';
-  s += staticSVG([], 'dr');
+  s += staticSVG(D.s.filter(e => e.t === 'pm'), 'dr');
   D.s.forEach((e, i) => {
     if (e.t === 'zone') s += '<rect data-si="' + i + '" x="' + e.x + '" y="' + e.y + '" width="' + e.w + '" height="' + e.h + '" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.65)" stroke-width=".4" stroke-dasharray="1 1"/>';
     else if (e.t === 'line') s += '<line data-si="' + i + '" x1="' + e.x + '" y1="' + e.y + '" x2="' + e.x2 + '" y2="' + e.y2 + '" stroke="rgba(255,255,255,.7)" stroke-width=".6"/>';
+    else if (e.t === 'arrow') s += '<g data-si="' + i + '"><line x1="' + e.x + '" y1="' + e.y + '" x2="' + e.x2 + '" y2="' + e.y2 + '" stroke="transparent" stroke-width="4"/>' + arrowSVG(e) + '</g>';
+    if (DR.sel && DR.sel.si === i && e.t !== 'pm' && e.t !== 'sty') { const bb = e.t === 'zone' ? [e.x, e.y, e.w, e.h] : e.t === 'arrow' || e.t === 'line' ? [Math.min(e.x, e.x2), Math.min(e.y, e.y2), Math.abs(e.x2 - e.x), Math.abs(e.y2 - e.y)] : [e.x - 3, e.y - 3, 6, 6]; s += '<rect x="' + (bb[0] - 1) + '" y="' + (bb[1] - 1) + '" width="' + (bb[2] + 2) + '" height="' + (bb[3] + 2) + '" fill="none" stroke="#FFE45C" stroke-width=".4" stroke-dasharray="1 .6" pointer-events="none"/>'; }
   });
   D.s.forEach((e, i) => {
     if (e.t === 'cone') s += '<g data-si="' + i + '" transform="translate(' + e.x + ' ' + e.y + ')"><circle r="3.6" fill="transparent"/><path d="M0 -1.9L1.7 1.3L-1.7 1.3z" fill="var(--cone)"/></g>';
@@ -3747,7 +3749,7 @@ function drSVG() {
   }
   Object.keys(D.labels).forEach(id => {
     const p = f.p[id]; if (!p) return; const t = teamOf(id);
-    s += '<g class="dr-pl" data-pid="' + id + '" transform="translate(' + p[0] + ' ' + p[1] + ')"><circle r="5.2" fill="transparent"/><circle r="2.9" fill="' + plFill(t) + '" stroke="#fff" stroke-width=".5"/><text y="1" text-anchor="middle" font-size="2.7" font-weight="700" fill="' + plText(t) + '" font-family="Barlow Condensed, Arial Narrow, sans-serif" pointer-events="none">' + esc(D.labels[id] || '') + '</text></g>';
+    s += '<g class="dr-pl" data-pid="' + id + '" transform="translate(' + p[0] + ' ' + p[1] + ')"><circle r="5.2" fill="transparent"/>' + (DR.sel && DR.sel.pid === id ? '<circle r="4.3" fill="none" stroke="#FFE45C" stroke-width=".6" stroke-dasharray="1 .6"/>' : '') + plMark(t, D.labels[id] || '', drSty(D.s), 2.9) + '</g>';
   });
   const bp = drBallPt(f);
   if (bp) s += '<g data-ball="1" transform="translate(' + bp[0] + ' ' + bp[1] + ')"><circle r="3.4" fill="transparent"/><circle r="1.45" fill="#fff" stroke="rgba(0,0,0,.6)" stroke-width=".35"/></g>';
@@ -3891,7 +3893,7 @@ function saveDraw() {
     created: old ? old.created : Date.now(), fromPhoto: D.fromPhoto || (old && old.fromPhoto) || false
   });
   delete ex.removed; saveFav(ex); delete ST.draft; persist();
-  closeDraw(); ST.view = 'draw'; render(); window.scrollTo(0, 0); toast(old ? 'Övningen är uppdaterad' : 'Övningen är sparad under Mina övningar');
+  closeDraw(); ST.view = 'draw'; render(); window.scrollTo(0, 0); toast(old ? 'Övningen är uppdaterad' : 'Övningen är sparad under Mina egna övningar');
 }
 async function drDescribe() {
   drReadInputs(); const D = DR;
@@ -4068,7 +4070,7 @@ animSVG = function (ex, u) {
   if (!an) return sketchSVG(ex.sketch || [], 'sk-' + u);
   const F = resolveAnim(an); const f0 = F[0];
   const hl = HL[u] && (HL[u] in an.labels) ? HL[u] : null;
-  let s = '<svg class="pitch anim-svg' + (hl ? ' hl' : '') + '" id="AS-' + u + '" viewBox="0 0 ' + BW + ' ' + BH + '" role="img" aria-label="Animation av övningen. Tryck på en spelare för att följa hen.">' + markerDefs(u) + staticSVG(animStatics(ex, an), u);
+  let s = '<svg class="pitch anim-svg' + (hl ? ' hl' : '') + (drSty(an.s).v3d ? ' p3d' : '') + '" id="AS-' + u + '" viewBox="0 0 ' + BW + ' ' + BH + '" role="img" aria-label="Animation av övningen. Tryck på en spelare för att följa hen.">' + markerDefs(u) + staticSVG(animStatics(ex, an), u);
   s += '<polyline id="T-' + u + '" points="" fill="none" stroke="rgba(255,228,92,.45)" stroke-width=".45" stroke-dasharray="1.2 1" stroke-linecap="round"/>';
   s += '<g class="arw" id="AR-' + u + '" data-seg="0" opacity=".5">' + segArrows(F, 0, u) + '</g>';
   if (hl) s += hlPathSVG(F, hl);
@@ -4076,7 +4078,7 @@ animSVG = function (ex, u) {
     const p = f0.pos[id]; const t = teamOf(id); const sel = id === hl;
     s += '<g id="P-' + u + '-' + id + '" class="pl' + (sel ? ' sel' : '') + '" data-a="hl" data-u="' + u + '" data-pid="' + id + '" data-id="' + esc(ex.id) + '" transform="translate(' + p[0] + ' ' + p[1] + ')">' +
       '<circle r="5" fill="transparent"/><ellipse cy="2.5" rx="2.5" ry=".8" fill="rgba(0,0,0,.28)"/>' + (sel ? '<circle r="4.2" fill="none" stroke="#FFE45C" stroke-width=".9"/>' : '') +
-      '<circle r="2.75" fill="' + plFill(t) + '" stroke="#fff" stroke-width=".5"/><text y=".95" text-anchor="middle" font-size="2.55" font-weight="700" fill="' + plText(t) + '" font-family="Barlow Condensed, Arial Narrow, sans-serif">' + esc(an.labels[id] || '') + '</text></g>';
+      plMark(t, an.labels[id] || '', drSty(an.s), 2.75) + '</g>';
   });
   const bp = ballXY(F, 0);
   s += '<circle id="R-' + u + '" r="3.8" fill="none" stroke="#FFE45C" stroke-width=".45" opacity=".9" cx="-10" cy="-10" pointer-events="none"/>';
@@ -4159,10 +4161,10 @@ animBlock = function (ex, u, opts) {
 const THUMB = new Map(); let thumbN = 0;
 function thumbSVG(ex) {
   const an = getAnim(ex);
-  const key = ex.id + '|' + (an ? an.frames.length + ':' + Object.keys(an.labels).length : 'a');
+  const key = ex.id + '|' + (an ? an.frames.length + ':' + Object.keys(an.labels).length + ':' + JSON.stringify(an.s || []).length + ':' + JSON.stringify(an.frames[0]?.p || {}).length : 'a');
   if (THUMB.has(key)) return THUMB.get(key);
   const k = 'th' + (++thumbN);
-  let s = '<svg class="thumb" viewBox="0 0 ' + BW + ' ' + BH + '" aria-hidden="true">' + markerDefs(k);
+  let s = '<svg class="thumb" viewBox="0 0 ' + BW + ' ' + BH + '" aria-hidden="true"' + (an && drSty(an.s).v3d ? ' data-v3d="1"' : '') + '>' + markerDefs(k);
   if (!an) {
     s += '<rect width="' + BW + '" height="' + BH + '" fill="#19382c"/>'
       + '<g fill="none" stroke="#d7ebd8" stroke-width="1.5"><rect x="42" y="18" width="16" height="28" rx="2"/>'
@@ -4179,7 +4181,7 @@ function thumbSVG(ex) {
   });
   const BP = ded(F.map((f, i) => ballXY(F, i)));
   if (BP.length > 1) s += '<polyline points="' + BP.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ') + '" fill="none" stroke="#FFE45C" stroke-width=".6" stroke-linejoin="round" marker-end="url(#my-' + k + ')"/>';
-  Object.keys(an.labels).forEach(id => { const p = F[0].pos[id]; const t = teamOf(id); s += '<g transform="translate(' + p[0] + ' ' + p[1] + ')"><circle r="2.7" fill="' + plFill(t) + '" stroke="#fff" stroke-width=".5"/><text y=".95" text-anchor="middle" font-size="2.5" font-weight="700" fill="' + plText(t) + '" font-family="Barlow Condensed, Arial Narrow, sans-serif">' + esc(an.labels[id] || '') + '</text></g>'; });
+  Object.keys(an.labels).forEach(id => { const p = F[0].pos[id]; const t = teamOf(id); s += '<g transform="translate(' + p[0] + ' ' + p[1] + ')">' + plMark(t, an.labels[id] || '', drSty(an.s), 2.7) + '</g>'; });
   const b0 = ballXY(F, 0); s += '<circle cx="' + b0[0] + '" cy="' + b0[1] + '" r="1.3" fill="#fff" stroke="#1a1a1a" stroke-width=".3"/>';
   s += '</svg>'; THUMB.set(key, s); return s;
 }
@@ -10172,3 +10174,286 @@ maVideoPut = function (id, file) {
 const __renderSun = render;
 render = function () { applySun(); return __renderSun.apply(this, arguments); };
 applySun();
+
+/* =====================================================================
+   Nytt ritverktyg: verktygspanel, symboler (×/○/MV), numrering, pilar,
+   planval, markera/duplicera/lager, ångra/gör om, zoom och 3D-vy.
+   Stil och plan sparas som osynliga ”statics” (t: 'sty' / 'pm') i
+   animationen, så att detaljvy, miniatyrer och PDF ritar likadant.
+   ===================================================================== */
+function drSty(sArr) { const o = (sArr || []).find(e => e && e.t === 'sty'); return o || { sym: 0, num: 1, v3d: 0 }; }
+function drPm(sArr) { const o = (sArr || []).find(e => e && e.t === 'pm'); return o ? o.k : 'box'; }
+function drSetSty(patch) { const D = DR; let o = D.s.find(e => e.t === 'sty'); if (!o) { o = { t: 'sty', x: 0, y: 0, sym: 0, num: 1, v3d: 0 }; D.s.push(o); } Object.assign(o, patch); }
+/* Spelare: färgad bricka (som förut) eller symbol – anfallare ×, försvarare ○, målvakt MV, tredje lag ✱ */
+function plMark(t, label, sty, r) {
+  const num = sty.num !== 0 && label && t !== 'gk';
+  const font = 'font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" pointer-events="none"';
+  if (!sty.sym) return '<circle r="' + r + '" fill="' + plFill(t) + '" stroke="#fff" stroke-width=".5"/>' + (sty.num === 0 && t !== 'gk' ? '' : '<text y="' + (r * .34).toFixed(2) + '" text-anchor="middle" font-size="' + (r * .92).toFixed(2) + '" fill="' + plText(t) + '" ' + font + '>' + esc(label) + '</text>');
+  const col = t === 'a' ? 'var(--bib-a)' : t === 'b' ? 'var(--bib-b)' : t === 'gk' ? '#1f2a24' : '#7a2fb8';
+  let g = '<circle r="' + r + '" fill="#fff" stroke="' + col + '" stroke-width=".45"/>';
+  const k = r * .5;
+  if (t === 'a') g += '<path d="M' + (-k) + ' ' + (-k) + 'L' + k + ' ' + k + 'M' + k + ' ' + (-k) + 'L' + (-k) + ' ' + k + '" stroke="' + col + '" stroke-width=".75" stroke-linecap="round"/>';
+  else if (t === 'b') g += '<circle r="' + (r * .52).toFixed(2) + '" fill="none" stroke="' + col + '" stroke-width=".7"/>';
+  else if (t === 'gk') g += '<text y="' + (r * .32).toFixed(2) + '" text-anchor="middle" font-size="' + (r * .78).toFixed(2) + '" fill="' + col + '" ' + font + '>MV</text>';
+  else g += '<text y="' + (r * .45).toFixed(2) + '" text-anchor="middle" font-size="' + (r * 1.3).toFixed(2) + '" fill="' + col + '" ' + font + '>✱</text>';
+  if (num) g += '<g transform="translate(' + (r * .82).toFixed(2) + ' ' + (-r * .82).toFixed(2) + ')"><circle r="' + (r * .5).toFixed(2) + '" fill="' + col + '"/><text y="' + (r * .19).toFixed(2) + '" text-anchor="middle" font-size="' + (r * .58).toFixed(2) + '" fill="#fff" ' + font + '>' + esc(label) + '</text></g>';
+  return g;
+}
+/* Pilar: passning (gul hel), löpning (vit streckad), dribbling (vit vågig) */
+function arrowSVG(e) {
+  const dx = e.x2 - e.x, dy = e.y2 - e.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+  const col = e.k === 'pass' ? '#FFE45C' : '#fff'; const hx = e.x2 - ux * 2.2, hy = e.y2 - uy * 2.2;
+  let line;
+  if (e.k === 'drib') { const n = Math.max(2, Math.round((d - 2.2) / 2.4)); let pth = 'M' + e.x + ' ' + e.y; for (let i = 1; i <= n; i++) { const t = i / n, px = e.x + (hx - e.x) * t, py = e.y + (hy - e.y) * t, o = (i % 2 ? 1 : -1) * .9; pth += ' Q' + (px - ux * 1.2 - uy * o).toFixed(2) + ' ' + (py - uy * 1.2 + ux * o).toFixed(2) + ' ' + px.toFixed(2) + ' ' + py.toFixed(2); } line = '<path d="' + pth + '" fill="none" stroke="' + col + '" stroke-width=".55" stroke-linecap="round"/>'; }
+  else line = '<line x1="' + e.x + '" y1="' + e.y + '" x2="' + hx.toFixed(2) + '" y2="' + hy.toFixed(2) + '" stroke="' + col + '" stroke-width="' + (e.k === 'pass' ? .6 : .5) + '"' + (e.k === 'run' ? ' stroke-dasharray="1.3 .9"' : '') + ' stroke-linecap="round"/>';
+  const px = -uy, py = ux;
+  return line + '<path d="M' + e.x2.toFixed(2) + ' ' + e.y2.toFixed(2) + 'L' + (hx + px * 1.1).toFixed(2) + ' ' + (hy + py * 1.1).toFixed(2) + 'L' + (hx - px * 1.1).toFixed(2) + ' ' + (hy - py * 1.1).toFixed(2) + 'z" fill="' + col + '"/>';
+}
+/* Planens linjer: helplan, halvplan, grön yta eller ram (som förut) */
+function pitchMarks(k) {
+  const L = 'fill="none" stroke="rgba(255,255,255,.62)" stroke-width=".35"';
+  if (k === 'green') return '';
+  if (k === 'full') return '<rect x="1.6" y="1.6" width="' + (BW - 3.2) + '" height="' + (BH - 3.2) + '" ' + L + '/><line x1="50" y1="1.6" x2="50" y2="' + (BH - 1.6) + '" ' + L.replace('fill="none" ', '') + '/><circle cx="50" cy="32" r="7.2" ' + L + '/><circle cx="50" cy="32" r=".45" fill="rgba(255,255,255,.7)"/>'
+    + '<rect x="1.6" y="15.5" width="13.5" height="33" ' + L + '/><rect x="1.6" y="24.5" width="4.6" height="15" ' + L + '/><circle cx="10.6" cy="32" r=".4" fill="rgba(255,255,255,.7)"/><path d="M15.1 26.6A7.2 7.2 0 0 1 15.1 37.4" ' + L + '/>'
+    + '<rect x="' + (BW - 15.1) + '" y="15.5" width="13.5" height="33" ' + L + '/><rect x="' + (BW - 6.2) + '" y="24.5" width="4.6" height="15" ' + L + '/><circle cx="' + (BW - 10.6) + '" cy="32" r=".4" fill="rgba(255,255,255,.7)"/><path d="M' + (BW - 15.1) + ' 26.6A7.2 7.2 0 0 0 ' + (BW - 15.1) + ' 37.4" ' + L + '/>';
+  if (k === 'half') return '<rect x="1.6" y="1.6" width="' + (BW - 3.2) + '" height="' + (BH - 3.2) + '" ' + L + '/><rect x="27" y="1.6" width="46" height="19" ' + L + '/><rect x="39" y="1.6" width="22" height="7" ' + L + '/><circle cx="50" cy="14" r=".45" fill="rgba(255,255,255,.7)"/><path d="M42 20.6A9 9 0 0 0 58 20.6" ' + L + '/><path d="M38 ' + (BH - 1.6) + 'A12 12 0 0 1 62 ' + (BH - 1.6) + '" ' + L + '/>';
+  return '<rect x="1.6" y="1.6" width="' + (BW - 3.2) + '" height="' + (BH - 3.2) + '" ' + L + '/>';
+}
+const __cleanStaticDr = cleanStatic;
+cleanStatic = function (arr) {
+  if (!Array.isArray(arr)) return [];
+  const base = __cleanStaticDr(arr.filter(e => e && ['cone', 'goal', 'zone', 'line'].includes(e.t)));
+  const extra = arr.filter(e => e && ['arrow', 'pm', 'sty'].includes(e.t)).slice(0, 30).map(e => {
+    if (e.t === 'pm') return { t: 'pm', x: 0, y: 0, k: ['full', 'half', 'green', 'box'].includes(e.k) ? e.k : 'box' };
+    if (e.t === 'sty') return { t: 'sty', x: 0, y: 0, sym: e.sym ? 1 : 0, num: e.num === 0 ? 0 : 1, v3d: e.v3d ? 1 : 0 };
+    if (![e.x, e.y, e.x2, e.y2].every(v => isFinite(+v))) return null;
+    return { t: 'arrow', x: clampX(e.x), y: clampY(e.y), x2: clampX(e.x2), y2: clampY(e.y2), k: ['pass', 'run', 'drib'].includes(e.k) ? e.k : 'run' };
+  }).filter(Boolean);
+  return base.concat(extra);
+};
+const __staticSVGDr = staticSVG;
+staticSVG = function (els, u) {
+  els = els || []; const pm = drPm(els);
+  let s = __staticSVGDr(els.filter(e => !['arrow', 'pm', 'sty'].includes(e.t)), u);
+  if (pm !== 'box') { const border = s.indexOf('<rect x="1.6"'); const end = border >= 0 ? s.indexOf('/>', border) + 2 : -1; if (end > 0) s = s.slice(0, border) + pitchMarks(pm) + s.slice(end); }
+  if (u !== 'dr') els.filter(e => e.t === 'arrow').forEach(e => { s += arrowSVG(e); });
+  return s;
+};
+
+/* ---------- Ritverktygets panel och verktygsrad ---------- */
+const DR_SIDE = [
+  ['move', 'Markera', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 8-6 1.5L10 19z"/></svg>'],
+];
+const DR_PL = [['a', 'Anfallare'], ['b', 'Försvarare'], ['gk', 'Målvakt'], ['joker', 'Tredje lag']];
+const DR_OBJ = [['cone', 'Kon'], ['ball', 'Boll'], ['zone', 'Zon'], ['goal', 'Mål'], ['arrow', 'Pil']];
+const DR_ARROWS = [['pass', 'Passning'], ['run', 'Löpning'], ['drib', 'Dribbling']];
+function drIcon(k, sty) {
+  if (k === 'a' || k === 'b' || k === 'gk' || k === 'joker') return '<svg viewBox="-4 -4 8 8" aria-hidden="true">' + (sty.sym ? '' : '<circle r="3.9" fill="#1f5a43"/>') + plMark(k, k === 'a' ? '1' : k === 'b' ? '2' : '', Object.assign({}, sty, { num: 0 }), 3.2) + '</svg>';
+  if (k === 'arrow') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 18L19 6M19 6h-7M19 6v7"/></svg>';
+  const t = DR_TOOLS.find(x => x[0] === k); return t ? t[2] : '';
+}
+drRender = function () {
+  const D = DR; const root = $('#draw-root'); if (!D) { root.innerHTML = ''; return; }
+  const sty = drSty(D.s), pm = drPm(D.s); const n = D.frames.length; const f = D.frames[D.k]; const P = PHASES[phaseKey(D.phase)];
+  D.tab = D.tab || 'plan'; if (D.anim === undefined) D.anim = n > 1;
+  const tb = (k, l, ic, extra) => '<button type="button" class="dside-b' + (D.tool === k ? ' on' : '') + '" data-a="drTool" data-k="' + k + '" aria-pressed="' + (D.tool === k) + '"' + (extra || '') + '>' + ic + '<span>' + l + '</span></button>';
+  const ico = (path) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
+  const selOk = !!D.sel;
+  let h = '<div class="draw draw2' + (sty.v3d ? ' is-3d' : '') + '" role="dialog" aria-modal="true" aria-label="Rita övning"><div class="draw2-in">';
+  h += '<header class="d2-head"><h2>Rita övning</h2><input type="text" id="dr-name" maxlength="80" placeholder="Vad heter övningen?" value="' + esc(D.name) + '" aria-label="Vad heter övningen?">'
+    + '<div class="seg d2-tabs" role="tablist"><button type="button" role="tab" data-a="drTab" data-v="info" class="' + (D.tab === 'info' ? 'on' : '') + '" aria-selected="' + (D.tab === 'info') + '">Info</button><button type="button" role="tab" data-a="drTab" data-v="plan" class="' + (D.tab === 'plan' ? 'on' : '') + '" aria-selected="' + (D.tab === 'plan') + '">Plan</button></div>'
+    + '<button type="button" class="d2-x" data-a="drClose" aria-label="Stäng">×</button></header>';
+  if (D.banner) h += '<div class="draw-banner">' + esc(D.banner) + '</div>';
+  if (D.tab === 'info') {
+    h += '<div class="d2-info stack" style="gap:12px">'
+      + '<div class="seg">' + ['Anfall', 'Försvar', 'Omställning'].map(p => '<button type="button" data-a="drPhase" data-v="' + p + '" class="' + (D.phase === p ? 'on' : '') + '">' + p + '</button>').join('') + '</div>'
+      + '<div class="chips">' + P.stages.map(st => '<button type="button" class="chip' + (D.stage === st ? ' on' : '') + '" data-a="drStage" data-v="' + esc(st) + '">' + esc(st) + '</button>').join('') + '</div>'
+      + '<label class="stack" style="gap:6px"><span class="label">Organisation</span><textarea id="dr-org" rows="3" maxlength="1200" placeholder="Yta, uppdelning och hur övningen startar">' + esc(D.organisation) + '</textarea></label>'
+      + '<label class="stack" style="gap:6px"><span class="label">Regler och poäng</span><textarea id="dr-rules" rows="3" maxlength="800" placeholder="t.ex. Mål efter 5 passningar ger 2 poäng">' + esc(D.rules) + '</textarea></label>'
+      + '<label class="stack" style="gap:6px"><span class="label">Coachpunkter (en per rad)</span><textarea id="dr-pts" rows="3" maxlength="600">' + esc(D.points) + '</textarea></label></div>';
+  } else {
+    h += '<div class="d2-body"><aside class="d2-side" aria-label="Verktyg">'
+      + tb('move', 'Markera', DR_SIDE[0][2])
+      + '<div class="d2-grp"><span class="d2-h">Spelare</span><div class="seg d2-sty"><button type="button" data-a="drSym" data-v="0" class="' + (sty.sym ? '' : 'on') + '" aria-pressed="' + !sty.sym + '">Färg</button><button type="button" data-a="drSym" data-v="1" class="' + (sty.sym ? 'on' : '') + '" aria-pressed="' + !!sty.sym + '">× / ○</button></div>'
+      + DR_PL.map(([k, l]) => tb(k, l, drIcon(k, sty))).join('')
+      + '<label class="d2-switch"><span>Numrering</span><input type="checkbox" data-dr="num"' + (sty.num !== 0 ? ' checked' : '') + '></label></div>'
+      + '<div class="d2-grp"><span class="d2-h">Objekt</span>' + DR_OBJ.map(([k, l]) => tb(k, l, drIcon(k, sty))).join('')
+      + (D.tool === 'arrow' ? '<div class="seg d2-arrows">' + DR_ARROWS.map(([k, l]) => '<button type="button" data-a="drArrowKind" data-v="' + k + '" class="' + ((D.arrowK || 'pass') === k ? 'on' : '') + '">' + l + '</button>').join('') + '</div>' : '') + '</div>'
+      + '<button type="button" class="d2-del" data-a="drDelSel"' + (selOk ? '' : ' disabled') + '>' + ico('<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>') + 'Ta bort markerad</button>'
+      + '<div class="d2-grp"><span class="d2-h">Plan</span>' + [['full', 'Helplan'], ['half', 'Halvplan'], ['box', 'Ram'], ['green', 'Grön yta']].map(([k, l]) => '<button type="button" class="d2-pm' + (pm === k ? ' on' : '') + '" data-a="drPitch" data-v="' + k + '" aria-pressed="' + (pm === k) + '">' + l + '</button>').join('') + '</div>'
+      + '</aside><section class="d2-main">'
+      + '<div class="d2-bar"><label class="d2-switch d2-anim"><input type="checkbox" data-dr="anim"' + (D.anim ? ' checked' : '') + '><span>Animering' + (n > 1 ? ' (' + n + ' steg)' : '') + '</span></label>'
+      + '<div class="d2-ic">'
+      + '<button type="button" data-a="drUndo" aria-label="Ångra"' + (D.hist.length ? '' : ' disabled') + '>' + ico('<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 010 10h-3"/>') + '</button>'
+      + '<button type="button" data-a="drRedo" aria-label="Gör om"' + ((D.fut || []).length ? '' : ' disabled') + '>' + ico('<path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 000 10h3"/>') + '</button>'
+      + '<button type="button" data-a="drDup" aria-label="Duplicera markerad"' + (selOk ? '' : ' disabled') + '>' + ico('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 012-2h10"/>') + '</button>'
+      + '<button type="button" data-a="drLayer" data-v="1" aria-label="Lägg överst"' + (selOk ? '' : ' disabled') + '>' + ico('<path d="M12 19V5M5 12l7-7 7 7"/>') + '</button>'
+      + '<button type="button" data-a="drLayer" data-v="-1" aria-label="Lägg underst"' + (selOk ? '' : ' disabled') + '>' + ico('<path d="M12 5v14M19 12l-7 7-7-7"/>') + '</button>'
+      + '<button type="button" class="d2-red" data-a="drDelSel" aria-label="Ta bort markerad"' + (selOk ? '' : ' disabled') + '>' + ico('<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>') + '</button></div>'
+      + '<div class="seg d2-view"><button type="button" data-a="drView" data-v="0" class="' + (sty.v3d ? '' : 'on') + '" aria-pressed="' + !sty.v3d + '">Liggande</button><button type="button" data-a="drView" data-v="1" class="' + (sty.v3d ? 'on' : '') + '" aria-pressed="' + !!sty.v3d + '">3D-vy</button></div></div>'
+      + '<div class="d2-zoom"><span class="num">' + Math.round((D.zoom || 1) * 100) + '%</span><button type="button" data-a="drZoom" data-v="-" aria-label="Zooma ut">−</button><button type="button" data-a="drZoom" data-v="+" aria-label="Zooma in">+</button><button type="button" data-a="drZoom" data-v="1">Anpassa</button><button type="button" data-a="drZoom" data-v="w">Fyll bredden</button></div>'
+      + '<div class="d2-stage" id="dr-stage"><div class="d2-board" style="--z:' + (D.zoom || 1) + '"><div class="pitch-wrap draw-pitch" id="dr-pitch">' + drSVG() + '</div></div></div>'
+      + '<p class="draw-hint" id="dr-hint" aria-live="polite">' + esc(drHint()) + '</p>';
+    if (D.anim) {
+      h += '<div class="draw-steps"><span class="label">Steg</span><div class="steps-row">' + D.frames.map((fr, i) => '<button type="button" class="dstep' + (i === D.k ? ' on' : '') + '" data-a="drStep" data-i="' + i + '" aria-pressed="' + (i === D.k) + '">' + (i + 1) + (i === 0 ? '<small>Start</small>' : '') + '</button>').join('') + (n < 26 ? '<button type="button" class="dstep add" data-a="drAddStep" aria-label="Nytt steg">+ Nytt steg</button>' : '') + '</div></div>'
+        + '<div class="draw-cap"><input type="text" id="dr-cap" maxlength="90" placeholder="' + (D.k === 0 ? 'Bildtext, t.ex. Utgångsläge: 4 mot 2 i rutan' : 'Vad händer i steg ' + (D.k + 1) + '?') + '" value="' + esc(f.c) + '" aria-label="Bildtext för steget"></div>'
+        + '<div class="row draw-act">' + (D.k > 0 ? '<button type="button" class="btn sm" data-a="drDelStep">Ta bort steg ' + (D.k + 1) + '</button>' : '') + '<button type="button" class="btn sm' + (D.preview ? ' on' : '') + '" data-a="drPreview"' + (n < 2 ? ' disabled' : '') + '>' + (D.preview ? 'Dölj förhandsvisning' : '▶ Förhandsvisa') + '</button></div>';
+      if (D.preview && n >= 2) h += '<div class="draw-prev">' + animBlock(drawEx(), 'dr', { noStatus: true }) + '</div>';
+    }
+    h += '</section></div>';
+  }
+  h += '<footer class="d2-foot"><span class="small muted">' + (D.tab === 'plan' ? 'Tips: markera ett objekt och tryck Delete för att ta bort det.' : '') + '</span><button type="button" class="btn primary" data-a="drSave">Spara</button></footer>';
+  h += '</div></div>';
+  root.innerHTML = h;
+  if (D.preview && ACT && ACT.u === 'dr') setTimeout(animDraw, 0);
+};
+const __drHintOld = drHint;
+drHint = function () {
+  const D = DR; if (D.note) return D.note;
+  if (D.tool === 'move') return D.sel ? 'Markerad. Dra för att flytta, eller använd knapparna ovanför planen.' : (Object.keys(D.labels).length ? 'Tryck på ett objekt för att markera det, och dra för att flytta.' : 'Välj Anfallare eller Försvarare till vänster och tryck på planen för att lägga ut spelare.');
+  if (D.tool === 'arrow') return 'Dra från start till mål för att rita en pil (' + ({ pass: 'passning', run: 'löpning', drib: 'dribbling' })[D.arrowK || 'pass'] + ').';
+  if (!D.anim && (D.tool === 'ball')) return 'Tryck på spelaren som har bollen, eller på en tom yta.';
+  return __drHintOld();
+};
+/* Markera, pilar och 3D-koordinater */
+const __drPtFlat = drPt;
+let DR_H = null;
+function drHomography() {
+  const svg = $('#dr-svg'); if (!svg) return null;
+  const cs = [...svg.querySelectorAll('.dr-corner')]; if (cs.length !== 4) return null;
+  const src = cs.map(c => { const r = c.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+  const dst = [[0, 0], [BW, 0], [BW, BH], [0, BH]];
+  const A = [], b = [];
+  for (let i = 0; i < 4; i++) { const [x, y] = src[i], [u, v] = dst[i]; A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u); A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v); }
+  for (let c = 0; c < 8; c++) { let m = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[m][c])) m = r; [A[c], A[m]] = [A[m], A[c]]; [b[c], b[m]] = [b[m], b[c]]; for (let r = 0; r < 8; r++) { if (r === c) continue; const k = A[r][c] / A[c][c]; for (let j = c; j < 8; j++) A[r][j] -= k * A[c][j]; b[r] -= k * b[c]; } }
+  return b.map((v, i) => v / A[i][i]);
+}
+drPt = function (e) {
+  if (!DR || !drSty(DR.s).v3d) return __drPtFlat(e);
+  const H = DR_H || (DR_H = drHomography()); if (!H) return __drPtFlat(e);
+  const x = e.clientX, y = e.clientY, w = H[6] * x + H[7] * y + 1;
+  return [clampX((H[0] * x + H[1] * y + H[2]) / w), clampY((H[3] * x + H[4] * y + H[5]) / w)];
+};
+const __drSVGCorners = drSVG;
+drSVG = function () { DR_H = null; return __drSVGCorners().replace('</svg>', '<circle class="dr-corner" cx="0" cy="0" r=".05" fill="none"/><circle class="dr-corner" cx="' + BW + '" cy="0" r=".05" fill="none"/><circle class="dr-corner" cx="' + BW + '" cy="' + BH + '" r=".05" fill="none"/><circle class="dr-corner" cx="0" cy="' + BH + '" r=".05" fill="none"/></svg>'); };
+const __drDownNew = drDown;
+drDown = function (e) {
+  const D = DR; if (!D || !e.target.closest('#dr-svg')) return;
+  if (e.button != null && e.button !== 0) return;
+  const tgt = e.target.closest('[data-pid],[data-si],[data-ball]');
+  if (D.tool === 'move') { D.sel = tgt ? (tgt.dataset.pid ? { pid: tgt.dataset.pid } : tgt.dataset.si != null ? { si: Number(tgt.dataset.si) } : { ball: 1 }) : null; drBarState(); }
+  if (D.tool === 'arrow') {
+    e.preventDefault(); D.note = ''; const [x, y] = drPt(e);
+    if (tgt && tgt.dataset.si != null && D.s[+tgt.dataset.si]?.t === 'arrow') { drSnap(); const el = D.s[+tgt.dataset.si]; D.sel = { si: +tgt.dataset.si }; DRAG = { arrowMove: +tgt.dataset.si, dx: x - el.x, dy: y - el.y, w: el.x2 - el.x, hgt: el.y2 - el.y }; return; }
+    drSnap(); D.s.push({ t: 'arrow', x, y, x2: x, y2: y, k: D.arrowK || 'pass' }); DRAG = { arrowNew: D.s.length - 1 }; D.sel = { si: D.s.length - 1 }; drRenderPitch(); return;
+  }
+  if (D.tool === 'move' && tgt && tgt.dataset.si != null && D.s[+tgt.dataset.si]?.t === 'arrow') {
+    e.preventDefault(); const [x, y] = drPt(e); const el = D.s[+tgt.dataset.si]; drSnap(); DRAG = { arrowMove: +tgt.dataset.si, dx: x - el.x, dy: y - el.y, w: el.x2 - el.x, hgt: el.y2 - el.y }; drRenderPitch(); return;
+  }
+  return __drDownNew(e);
+};
+const __drMoveNew = drMove;
+drMove = function (e) {
+  if (DRAG && DR && (DRAG.arrowNew != null || DRAG.arrowMove != null)) {
+    e.preventDefault(); const [x, y] = drPt(e);
+    if (DRAG.arrowNew != null) { const a = DR.s[DRAG.arrowNew]; a.x2 = x; a.y2 = y; }
+    else { const a = DR.s[DRAG.arrowMove]; a.x = clampX(x - DRAG.dx); a.y = clampY(y - DRAG.dy); a.x2 = clampX(a.x + DRAG.w); a.y2 = clampY(a.y + DRAG.hgt); DRAG.moved = true; }
+    drRenderPitch(); return;
+  }
+  return __drMoveNew(e);
+};
+const __drUpNew = drUp;
+drUp = function () {
+  if (DRAG && DR && DRAG.arrowNew != null) { const a = DR.s[DRAG.arrowNew]; if (Math.hypot(a.x2 - a.x, a.y2 - a.y) < 3) { DR.s.splice(DRAG.arrowNew, 1); DR.sel = null; DR.note = 'Dra lite längre för att rita en pil.'; DR.hist.pop(); } DRAG = null; drAfter(); drBarState(); return; }
+  if (DRAG && DR && DRAG.arrowMove != null) { if (!DRAG.moved) DR.hist.pop(); DRAG = null; drAfter(); return; }
+  return __drUpNew();
+};
+/* Ångra / gör om */
+const __drSnapNew = drSnap;
+drSnap = function () { __drSnapNew(); if (DR) DR.fut = []; };
+function drState() { const D = DR; return JSON.stringify({ labels: D.labels, s: D.s, frames: D.frames, k: D.k }); }
+function drLoad(js) { const o = JSON.parse(js); const D = DR; D.labels = o.labels; D.s = o.s; D.frames = o.frames; D.k = Math.min(o.k, o.frames.length - 1); D.sel = null; }
+function drBarState() { const on = !!(DR && DR.sel); document.querySelectorAll('[data-a=drDup],[data-a=drLayer],[data-a=drDelSel]').forEach(b => { b.disabled = !on; }); }
+function drDeleteSel() {
+  const D = DR, sel = D.sel; if (!sel) return;
+  if (sel.pid) { drSnap(); const pid = sel.pid; delete D.labels[pid]; D.frames.forEach(fr => { const p = fr.p[pid]; if (fr.b === pid) fr.b = p ? [p[0] + 1.5, p[1] + 1.3] : null; delete fr.p[pid]; }); }
+  else if (sel.si != null) { if (D.k > 0 && D.s[sel.si]?.t !== 'arrow') { D.note = 'Koner, mål och zoner tar du bort i steg 1.'; drRenderPitch(); return; } drSnap(); D.s.splice(sel.si, 1); }
+  else if (sel.ball) { drSnap(); D.frames[D.k].b = null; }
+  D.sel = null; drRender();
+}
+Object.assign(A, {
+  drTab: el => { drReadInputs(); DR.tab = el.dataset.v; drRender(); },
+  drSym: el => { drSnap(); drSetSty({ sym: el.dataset.v === '1' ? 1 : 0 }); drRender(); },
+  drPitch: el => { drSnap(); const D = DR; let o = D.s.find(e => e.t === 'pm'); if (!o) { o = { t: 'pm', x: 0, y: 0, k: 'box' }; D.s.unshift(o); } o.k = el.dataset.v; drRender(); },
+  drView: el => { drSetSty({ v3d: el.dataset.v === '1' ? 1 : 0 }); DR_H = null; drRender(); },
+  drArrowKind: el => { DR.arrowK = el.dataset.v; if (DR.sel && DR.sel.si != null && DR.s[DR.sel.si]?.t === 'arrow') { drSnap(); DR.s[DR.sel.si].k = el.dataset.v; } drRender(); },
+  drZoom: el => { const v = el.dataset.v; const z = DR.zoom || 1; DR.zoom = v === '+' ? Math.min(2.5, z + .25) : v === '-' ? Math.max(.5, z - .25) : 1; DR.fill = v === 'w'; drReadInputs(); drRender(); },
+  drRedo: () => { const D = DR; if (!D.fut || !D.fut.length) return; D.hist.push(drState()); drLoad(D.fut.pop()); drRender(); },
+  drDup: () => {
+    const D = DR, sel = D.sel; if (!sel) return; drSnap();
+    if (sel.pid) { const t = teamOf(sel.pid); const id = drNewId(t); D.labels[id] = drLabel(t, id); D.frames.forEach(fr => { const p = fr.p[sel.pid] || [50, 32]; fr.p[id] = [clampX(p[0] + 4), clampY(p[1] + 3)]; }); D.sel = { pid: id }; }
+    else if (sel.si != null) { const c = clone(D.s[sel.si]); c.x = clampX(c.x + 4); c.y = clampY(c.y + 3); if (c.x2 != null) { c.x2 = clampX(c.x2 + 4); c.y2 = clampY(c.y2 + 3); } D.s.push(c); D.sel = { si: D.s.length - 1 }; }
+    drRender();
+  },
+  drLayer: el => {
+    const D = DR, sel = D.sel, up = el.dataset.v === '1'; if (!sel) return; drSnap();
+    if (sel.pid) { const keys = Object.keys(D.labels).filter(k => k !== sel.pid); const o = {}; (up ? keys.concat(sel.pid) : [sel.pid].concat(keys)).forEach(k => o[k] = D.labels[k]); D.labels = o; }
+    else if (sel.si != null) { const [el2] = D.s.splice(sel.si, 1); if (up) { D.s.push(el2); D.sel = { si: D.s.length - 1 }; } else { const at = D.s.findIndex(e => e.t !== 'pm' && e.t !== 'sty'); D.s.splice(at < 0 ? D.s.length : at, 0, el2); D.sel = { si: at < 0 ? D.s.length - 1 : at }; } }
+    drRender();
+  },
+  drDelSel: () => drDeleteSel(),
+});
+const __drUndoNew = A.drUndo;
+A.drUndo = () => { const D = DR; if (!D || !D.hist.length) return; (D.fut = D.fut || []).push(drState()); __drUndoNew(); D.sel = null; drRender(); };
+const __drToolNew = A.drTool;
+A.drTool = el => { __drToolNew(el); if (el.dataset.k !== 'move') DR.sel = null; drRender(); };
+document.addEventListener('change', e => {
+  if (!DR || !e.target.dataset || !e.target.dataset.dr) return;
+  const k = e.target.dataset.dr;
+  if (k === 'num') { drSnap(); drSetSty({ num: e.target.checked ? 1 : 0 }); drRender(); }
+  if (k === 'anim') { drReadInputs(); DR.anim = e.target.checked; if (!DR.anim) { DR.k = 0; DR.preview = false; } drRender(); }
+});
+document.addEventListener('keydown', e => {
+  if (!DR || !DR.sel || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); drDeleteSel(); }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') { e.preventDefault(); A.drDup(); }
+});
+/* Spara: en ritning utan animering räcker (ett steg) */
+const __saveDrawNew = saveDraw;
+saveDraw = function () {
+  drReadInputs(); const D = DR; if (!D) return;
+  if (!(D.name || '').trim()) { D.tab = 'plan'; D.note = 'Skriv vad övningen heter överst innan du sparar.'; drRender(); $('#dr-name')?.focus(); return; }
+  const single = D.frames.length < 2; if (single) D.frames.push(clone(D.frames[0]));
+  const before = Object.keys(SAVED).length; __saveDrawNew();
+  if (single && DR) D.frames.splice(1);
+};
+/* En ritning utan animering (alla steg lika) visas som en bild utan uppspelningsknappar */
+function drIsStatic(an) { if (!an || !an.frames || an.frames.length < 2) return true; const k = f => JSON.stringify([f.p, f.b]); const a = k(an.frames[0]); return an.frames.every(f => k(f) === a); }
+const __animBlockStatic = animBlock;
+animBlock = function (ex, u, opts) {
+  const an = getAnim(ex);
+  if (ex && ex.own && an && drIsStatic(an)) return '<div class="anim static-draw" data-u="' + u + '"><div class="pitch-wrap" id="PW-' + u + '">' + animSVG(ex, u) + '</div></div>';
+  return __animBlockStatic.apply(this, arguments);
+};
+/* PDF och delningsbild: 3D-vyn ritas som en lutad plan (perspektiv rad för rad) */
+function drTilt(src, W, H) {
+  const r = .74, tilt = .72, Ho = Math.round(H * tilt), base = Math.round(W * .012), pad = Math.round(W * .04);
+  const c = document.createElement('canvas'); c.width = W; c.height = Ho + base + pad * 2; const x = c.getContext('2d');
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+  const yOf = v => (r * v + (1 - r) * v * v / 2) / ((1 + r) / 2);
+  const vOf = t => { const a = (1 - r) / 2, b = r, cc = -t * (1 + r) / 2; return a ? (-b + Math.sqrt(b * b - 4 * a * cc)) / (2 * a) : t; };
+  for (let j = 0; j < Ho; j++) { const v = vOf((j + .5) / Ho); const sy = Math.min(H - 1, Math.max(0, v * H)); const sc = r + (1 - r) * v; const w = W * sc * .92; x.drawImage(src, 0, sy, W, 1, (W - w) / 2, pad + j, w, 1.6); }
+  const wb = W * .92; x.fillStyle = '#123d2c'; x.fillRect((W - wb) / 2, pad + Ho, wb, base);
+  return c;
+}
+const __exImgData0Tilt = exImgData0;
+exImgData0 = async function (ex) {
+  const an = ex && !ex.img ? getAnim(ex) : null;
+  if (!an || !drSty(an.s).v3d) return __exImgData0Tilt.apply(this, arguments);
+  const svg = svgForImg(ex, 1400); const im = await loadSvgImg(svg); if (!im) return null;
+  const W = 1400, H = Math.round(1400 * BH / BW); const flat = document.createElement('canvas'); flat.width = W; flat.height = H; flat.getContext('2d').drawImage(im, 0, 0, W, H);
+  const t = drTilt(flat, W, H);
+  const out = document.createElement('canvas'); out.width = W; out.height = H; const o = out.getContext('2d'); o.fillStyle = '#fff'; o.fillRect(0, 0, W, H);
+  const sc = Math.min(W / t.width, H / t.height); o.drawImage(t, (W - t.width * sc) / 2, (H - t.height * sc) / 2, t.width * sc, t.height * sc);
+  return out.toDataURL('image/jpeg', 0.9);
+};
