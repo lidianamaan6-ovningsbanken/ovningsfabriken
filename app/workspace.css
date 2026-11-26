@@ -763,3 +763,21 @@ img.thumb.own-photo { width: 100%; height: 100%; object-fit: cover; display: blo
 .ma-privacy { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(0,0,0,.04); font-size: 13px; line-height: 1.45; }
 .ma-privacy ul { margin: 6px 0 10px; padding-left: 18px; display: grid; gap: 3px; }
 .ma-del { color: #a12a1f; }
+/* G14: vägar till ett pass */
+.pass-ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 6px 0 14px; }
+.pass-way { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line, #d6d6cf); background: var(--surface, #fff); color: inherit; font: inherit; cursor: pointer; }
+.pass-way b { font-size: 16px; }
+.pass-way small { color: var(--muted, #5b6660); line-height: 1.35; }
+.pass-way.primary { background: var(--pitch, #1f5a43); border-color: transparent; color: #fff; }
+.pass-way.primary small { color: rgba(255,255,255,.85); }
+.pass-way:focus-visible { outline: 3px solid var(--focus, #b8924a); outline-offset: 2px; }
+.pass-empty { margin-bottom: 8px; }
+/* G16: Utveckling tomläge */
+.dev-steps { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.dev-steps li { display: flex; align-items: center; gap: 10px; }
+.dev-steps small { display: block; color: var(--muted, #5b6660); }
+.dev-st { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line, #c9cfc6); display: grid; place-items: center; flex: none; font-weight: 700; }
+.dev-steps li.ok .dev-st { background: var(--pitch, #1f5a43); border-color: transparent; color: #fff; }
+/* G17: Matchanalys som egen flik */
+.m-seg { margin: 4px 0 14px; }
+.ma-how { margin: 14px 0 0; padding-left: 22px; display: grid; gap: 8px; line-height: 1.45; }

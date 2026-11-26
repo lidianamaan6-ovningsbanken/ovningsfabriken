@@ -17,14 +17,14 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G10 ✅ (Konto: ”Klubbadministration · du är ansvarig” med förklaring av rollerna, roll per tränare, bjud in/ta bort; Verktyg-kortet heter ”Konto och klubb” och visar Klubbadministration för ansvariga) Klubbadministration: roller (ansvarig/tränare), bjuda in/ta bort tränare – finns, ska synas tydligt.
 
 ## Etapp 3 – Arbetsflöde och navigation
-- G11 ⬜ Första vyn: ny tränare hamnar på Idag med tydlig start (inte på Matcher).
-- G12 ⬜ Adress per vy + bakåtknappen fungerar (dela länk till pass/säsongsplan).
-- G13 🔧 (alla flikar i Planering på en rad, lika breda – Utveckling hamnar inte längre ensam) Planering: flikarna jämnt fördelade, inte två navigationsnivåer som förvirrar.
-- G14 ⬜ Skapa pass: tre vägar → tydliga syften (Snabbt pass / Avancerad planering / Tomt pass / Från övningsbanken).
-- G15 🔧 (”Träningspass på en minut” → ”Snabbt pass”) ”Träningspass på en minut” – bara om löftet håller; AI-väntestatus, avbryt.
-- G16 ⬜ Tomma lägen med tydligt nästa steg: Planering, Pass, Match, Utveckling.
-- G17 ⬜ Match och Matchanalys separeras.
-- G18 ⬜ Matchflödet: grundflöde + fördjupningar, unika namn (två ”Efter matchen”).
+- G11 ✅ (Appen startar alltid på Idag när den öppnas utan länk; Idag visar Snabbt pass / Tomt pass / Från övningsbanken) Första vyn: ny tränare hamnar på Idag med tydlig start (inte på Matcher).
+- G12 ✅ (Egen adress per vy: #idag, #planering/sasong, #ovningsbank, #match/analys, #verktyg … Bakåt stänger först öppen övning/pass/match och går sedan till förra vyn; länk öppnar rätt vy efter omladdning. Pass delas fortfarande via Dela/PDF eftersom passen är privata) Adress per vy + bakåtknappen fungerar (dela länk till pass/säsongsplan).
+- G13 ✅ (alla flikar i Planering på en rad, lika breda; Läroplan bara för JFA) Planering: flikarna jämnt fördelade, inte två navigationsnivåer som förvirrar.
+- G14 ✅ (Planering → Pass: fyra vägar med syfte – Snabbt pass, Tomt pass, Från övningsbanken, Planera säsongen; samma namn på Idag; dubbletten ”Övningar och progressioner” borta från Verktyg) Skapa pass: tre vägar → tydliga syften (Snabbt pass / Avancerad planering / Tomt pass / Från övningsbanken).
+- G15 ✅ (”Snabbt pass” i stället för ”på en minut”; passet byggs direkt ur banken utan väntan. AI-väntestatus blir aktuell först om AI slås på – se 👤) ”Träningspass på en minut” – bara om löftet håller; AI-väntestatus, avbryt.
+- G16 ✅ (Tomlägen med nästa steg: Pass (fyra vägar), Säsong (”+ Lägg till en period”), Utveckling (checklista med knappar), Match (Ny match)) Tomma lägen med tydligt nästa steg: Planering, Pass, Match, Utveckling.
+- G17 ✅ (Match har två flikar: Matcher och Matchanalys (video), egen rubrik, förklaring i tre steg och egen adress #match/analys) Match och Matchanalys separeras.
+- G18 🔧 (unika namn: ”Utvärdera motståndaren” (7), ”Vårt eget spel” (8), för yngre ”Efter matchen: vårt eget spel”; yngre lag har grundflöde + Fördjupning – samma upplägg för äldre lag återstår) Matchflödet: grundflöde + fördjupningar, unika namn (två ”Efter matchen”).
 
 ## Etapp 4 – Förval och innehåll
 - G19 ⬜ Övningsbanken: sökfältet visade ”6 mot 4 till 6 mot 6” – bara platshållare, resultat följer alltid sökfältet.
@@ -34,7 +34,7 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G23 ⬜ Läroplan: 14 år förvalt utan lag; 6–7 år saknas; åldersraden kapas på mobil.
 - G24 ⬜ Säsong: 16 valda veckor men 20 i kalendern; årtal; lov/uppehåll.
 - G25 ⬜ Spelidé: synliga etiketter, lag eller klubb, ”sparat”-besked, AI-förslag granskas.
-- G26 ⬜ Utveckling: hänvisningen ”Match → steg 8” stämmer inte; riktigt tomläge.
+- G26 ✅ (Utveckling hänvisar till ”Vårt eget spel” i matchen; tomläge visar vad som behövs med knappar) Utveckling: hänvisningen ”Match → steg 8” stämmer inte; riktigt tomläge.
 - G27 🔧 (formation märkt exempel klar, lagnamn kräver ifyllt namn)  Motståndarens formation förvald 1-2-3-1; ”Motståndare” sparas som lagnamn.
 - G28 ⬜ Övningsdetalj: ”Lägg i pass” huvudknapp, övriga sekundära; tom videokolumn vid scroll.
 - G29 ⬜ Samma ord för samma handling (”Lägg i pass”), ikoner med synlig text.

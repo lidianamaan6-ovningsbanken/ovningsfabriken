@@ -5314,6 +5314,17 @@ function startHeroHTML() {
   return h;
 }
 
+/* ---------- G14/G16: tre tydliga vägar till ett pass ---------- */
+function passWaysHTML(empty) {
+  const way = (a, v, t, d, primary) => '<button type="button" class="pass-way' + (primary ? ' primary' : '') + '" data-a="' + a + '"' + (v ? ' data-v="' + v + '"' : '') + '><b>' + t + '</b><small>' + d + '</small></button>';
+  return (empty ? '<div class="card empty pass-empty"><h3 style="color:var(--ink)">Inga pass än</h3><p>Välj hur du vill börja. Allt går att ändra efteråt.</p></div>' : '')
+    + '<div class="pass-ways" role="group" aria-label="Skapa ett pass">'
+    + way('workspaceCompose', '', 'Snabbt pass', 'Skriv vad ni ska träna – appen väljer övningar ur banken.', true)
+    + way('newPass', '', 'Tomt pass', 'Bygg själv, block för block.')
+    + way('view', 'bank', 'Från övningsbanken', 'Leta upp övningar och lägg dem i ett pass.')
+    + way('planSub', 'season', 'Planera säsongen', 'Teman vecka för vecka – passen föreslås per vecka.')
+    + '</div>';
+}
 /* ---------- Pass-fliken ---------- */
 function planTabHTML() {
   const sub = ST.planSub || 'pass';
@@ -5327,8 +5338,8 @@ function sessBar(s) {
 }
 function passListHTML() {
   const list = sessList();
-  let h = '<div class="row" style="gap:8px"><button type="button" class="btn primary" data-a="newPass">+ Nytt tomt pass</button><button type="button" class="btn" data-a="workspaceCompose">' + IC_SPARK + 'Skapa från övningsbanken</button></div>';
-  if (!list.length) return h + '<div class="card empty"><h3 style="color:var(--ink)">Inga pass än</h3><p>Skapa ett pass från startsidan genom att beskriva vad ni behöver träna, eller bygg ett eget block för block.</p></div>';
+  let h = passWaysHTML(!list.length);
+  if (!list.length) return h;
   h += '<div class="sess-list">' + list.map(s => {
     const d = new Date(s.date + 'T12:00'); const ds = isNaN(d) ? s.date : d.toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' });
     return '<button type="button" class="sess-card" data-a="openSess" data-id="' + s.id + '"><span class="sess-date">' + esc(ds) + (s.week ? ' · v.' + s.week : '') + '</span><b>' + esc(s.name) + '</b><span class="small muted">' + s.blocks.length + ' block · ' + sessTotal(s) + ' min · ' + (s.players || '?') + ' spelare' + (s.completedAt ? ' · Genomfört' : '') + (s.reflection ? ' · reflektion ✓' : '') + '</span>' + sessBar(s) + '</button>';
@@ -6380,7 +6391,7 @@ function matchHTML(m) {
   h += msec('week', ['6', 'Träningsveckan', (m.week || []).length ? m.week.length + ' pass' : ''], b);
   /* 8 efter matchen */
   b = afterHTML(m);
-  h += msec('after', ['7', 'Efter matchen', m.after && m.after.done ? 'Klar' : ''], b, m.live && m.live.ended && !(m.after && m.after.done));
+  h += msec('after', ['7', 'Utvärdera motståndaren', m.after && m.after.done ? 'Klar' : ''], b, m.live && m.live.ended && !(m.after && m.after.done));
   h += '</div></div>';
   return h;
 }
@@ -7815,7 +7826,8 @@ seasonHTML = function () {
   let h = ofIsJfa() ? lpSeasonCard() : '';
   h += '<div class="weeks" role="list">' + weeks.map(w => { const p = perOf(w); const k = p ? phaseKey(stagePhase(p.stage)) : ''; return '<span role="listitem" class="wk' + (p ? ' on ' + k : '') + (w === w0 ? ' now' : '') + '" title="Vecka ' + w + (p ? ': ' + esc(p.lp ? lpThemeName(p.lp) : p.stage) : '') + '"><b class="num">' + w + '</b></span>'; }).join('') + '</div>';
   const F = Object.assign({ from: w0, to: ((w0 + 1) % 52) + 1, stage: 'Speluppbyggnad' }, ST.perForm || {});
-  h += '<details class="card per-form"><summary><b>+ Egen period (bara skede)</b></summary><div class="stack" style="gap:10px;padding-top:10px">' +
+  if (!se.periods.length) h += '<div class="card empty"><h3 style="color:var(--ink)">Ingen säsongsplan än</h3><p>Lägg till en period, till exempel <i>Speluppbyggnad v. ' + w0 + '–' + (((w0 + 2) % 52) + 1) + '</i>. Då får du förslag på pass vecka för vecka.</p><button type="button" class="btn primary" data-a="perFormOpen">+ Lägg till en period</button></div>';
+  h += '<details class="card per-form"' + (ST.perFormOpen ? ' open' : '') + '><summary><b>+ Egen period (bara skede)</b></summary><div class="stack" style="gap:10px;padding-top:10px">' +
     '<div class="row"><label class="meta-i"><span class="label">Från vecka</span><select data-pf="from">' + weeks.map(w => '<option' + (w === F.from ? ' selected' : '') + '>' + w + '</option>').join('') + '</select></label><label class="meta-i"><span class="label">Till vecka</span><select data-pf="to">' + weeks.map(w => '<option' + (w === F.to ? ' selected' : '') + '>' + w + '</option>').join('') + '</select></label></div>' +
     '<span class="label">Tema</span>' + ['att', 'def', 'tra'].map(k => '<div class="chips">' + PHASES[k].stages.map(st => '<button type="button" class="chip' + (F.stage === st ? ' on' : '') + '" data-a="pfStage" data-v="' + esc(st) + '"><span class="dot" style="background:var(--' + PHASES[k].cls + ')"></span>' + esc(st) + '</button>').join('') + '</div>').join('') +
     '<button type="button" class="btn primary" data-a="addPeriod">Lägg till perioden</button></div></details>';
@@ -8401,7 +8413,7 @@ function devHTML() {
   const tot = Object.values(m).reduce((a, b) => a + b, 0); const max = Math.max(1, ...Object.values(m));
   const lpf = lpStageFocus();
   const om = ownMatches(); const lastM = om[om.length - 1];
-  let h = '<div class="dev"><p class="small muted">Hur ni har tränat jämfört med hur ni har spelat. Bygger på passen under Pass och betygen i steg 8 efter varje match.</p>';
+  let h = '<div class="dev"><p class="small muted">Hur ni har tränat jämfört med hur ni har spelat. Bygger på passen under Pass och betygen du sätter under <b>Vårt eget spel</b> i varje match.</p>';
   /* insikter */
   const ins = [];
   if (lastM) devFocus(lastM).forEach(st => { if (lastM.own[st] !== 'down') return; const since = devMinutes(lastM.date || from, to).m[st]; if (since < 20) ins.push(['bad', '<b>' + esc(st) + '</b> fick 👎 mot ' + esc(lastM.oppName || 'senaste motståndaren') + ' men har tränats ' + since + ' min sedan dess.', '<button type="button" class="btn sm primary" data-a="devMakeL" data-id="' + lastM.id + '" data-k="' + esc(st) + '">Skapa pass</button>']); });
@@ -8413,7 +8425,7 @@ function devHTML() {
     const better = rateNum(b.own[st]) > rateNum(a.own[st]), worse = rateNum(b.own[st]) < rateNum(a.own[st]);
     ins.push([better ? 'good' : worse ? 'bad' : 'info', '<b>' + esc(st) + '</b>: ' + RATE_IC[a.own[st]] + ' mot ' + esc(a.oppName || '–') + ' → ' + ds.length + ' utvecklingspass → ' + RATE_IC[b.own[st]] + ' mot ' + esc(b.oppName || '–') + (better ? '. Det gav effekt.' : worse ? '. Prova en annan typ av övning.' : '. Oförändrat – fortsätt eller byt vinkel.'), '']);
   }));
-  h += '<section class="card dev-ins"><h3>Att tänka på</h3>' + (ins.length ? ins.slice(0, 8).map(([k, t, b]) => '<div class="ins ' + k + '"><i></i><p class="grow">' + t + '</p>' + b + '</div>').join('') : '<p class="small muted">' + (om.length ? 'Inget som sticker ut just nu. Fortsätt betygsätta efter matcherna.' : 'När du har betygsatt vårt eget spel efter en match (Match → steg 8) visas här vad ni behöver träna och om det gav effekt.') + '</p>') + '</section>';
+  h += '<section class="card dev-ins"><h3>Att tänka på</h3>' + (ins.length ? ins.slice(0, 8).map(([k, t, b]) => '<div class="ins ' + k + '"><i></i><p class="grow">' + t + '</p>' + b + '</div>').join('') : '<p class="small muted">' + (om.length ? 'Inget som sticker ut just nu. Fortsätt betygsätta efter matcherna.' : 'När du har betygsatt vårt eget spel efter en match (Match → öppna matchen → Vårt eget spel) visas här vad ni behöver träna och om det gav effekt.') + '</p>') + '</section>';
   /* minuter per skede */
   h += '<section class="card"><div class="spread"><h3>Tränat per skede</h3><div class="mini-seg">' + [['4', '4 v'], ['8', '8 v'], ['all', 'Allt']].map(([v, l]) => '<button type="button" data-a="devRange" data-v="' + v + '" class="' + (R === v ? 'on' : '') + '">' + l + '</button>').join('') + '</div></div>';
   h += '<p class="small muted num">' + tot + ' minuter i huvudövningar och spel' + (lpf.length ? '. ★ = läroplanens tyngdpunkt för ' + lpAge() + ' år' : '') + '.</p>';
@@ -8850,7 +8862,7 @@ openMatch = function (id, keep) {
     const sec = k => box.querySelector('details.msec[data-sec="' + k + '"]');
     const setT = (d, n, t) => { if (!d) return; const s = d.querySelector('summary'); const nn = s.querySelector('.msec-n'); if (nn) nn.textContent = n; const b = s.querySelector('b'); if (b) b.textContent = t; };
     const info = sec('info'), own = sec('own');
-    setT(info, '1', 'Före matchen'); setT(own, '3', 'Efter matchen');
+    setT(info, '1', 'Före matchen'); setT(own, '3', 'Efter matchen: vårt eget spel');
     const go = root.querySelector('.live-go'); if (go) go.remove();
     const played = m.live && Object.keys(m.live.played || {}).length;
     const day = document.createElement('div'); day.className = 'card m-day';
@@ -9184,9 +9196,9 @@ function workspaceToday() {
     + (finishedPass.refl?.done ? 'Öppna passet' : 'Reflektera över passet') + '</button></section>' : '';
   const empty = showComposer ? '<section class="of-home-panel of-home-empty"><div class="of-panel-head"><div><span class="of-eyebrow">Idag</span><h2>Inget planerat idag</h2></div><p>Välj hur du vill komma igång.</p></div>'
     + '<div class="of-quick">'
-    + '<button type="button" class="of-quick-item of-quick-main" data-a="workspaceOpenComposer"><span class="of-quick-ic">' + workspaceIcon(1) + '</span><span><b>Bygg ett pass</b><small>Ange fokus och antal spelare</small></span></button>'
-    + '<button type="button" class="of-quick-item" data-a="newPass"><span class="of-quick-ic">+</span><span><b>Tomt pass</b><small>Välj övningar själv</small></span></button>'
-    + '<button type="button" class="of-quick-item" data-a="view" data-v="bank"><span class="of-quick-ic">' + workspaceIcon(2) + '</span><span><b>Övningsbanken</b><small>' + BANK.length.toLocaleString('sv-SE') + ' övningar</small></span></button>'
+    + '<button type="button" class="of-quick-item of-quick-main" data-a="workspaceOpenComposer"><span class="of-quick-ic">' + workspaceIcon(1) + '</span><span><b>Snabbt pass</b><small>Skriv fokus – appen väljer övningar ur banken</small></span></button>'
+    + '<button type="button" class="of-quick-item" data-a="newPass"><span class="of-quick-ic">+</span><span><b>Tomt pass</b><small>Bygg själv, block för block</small></span></button>'
+    + '<button type="button" class="of-quick-item" data-a="view" data-v="bank"><span class="of-quick-ic">' + workspaceIcon(2) + '</span><span><b>Från övningsbanken</b><small>' + BANK.length.toLocaleString('sv-SE') + ' övningar att välja bland</small></span></button>'
     + '</div>' + workspaceComposer(false) + '</section>' : '';
   const matchFirst = todayMatch?.time && todaysPasses[0] && todayMatch.time < (todaysPasses[0].time || '99:99');
   const later = [
@@ -9303,7 +9315,7 @@ function workspaceTools() {
   const tools = [
     ['draw', 'Rita egen övning', 'Placera spelare, mål och koner. Visa hur övningen går till.', NAV_IC.draw],
     ['saved', 'Sparade övningar', 'Hitta dina favoriter och dina egna övningar.', NAV_IC.saved],
-    ['make', 'Övningar och progressioner', 'Ta fram övningar i flera steg utifrån spelskede och ålder.', NAV_IC.make],
+    ...(NO_AI ? [] : [['make', 'Övningar och progressioner', 'Ta fram övningar i flera steg utifrån spelskede och ålder.', NAV_IC.make]]),
     ['plan', ofIsJfa() ? 'Läroplan och säsong' : 'Säsongsplan', ofIsJfa() ? 'Se ålderskort och planera träningsperioder.' : 'Planera träningsperioder vecka för vecka.', workspaceIcon(1)],
   ];
   return workspaceTop('Verktyg', 'Övningsfabriken') + '<div class="of-tools-grid">'
@@ -9987,3 +9999,74 @@ Object.assign(A, {
     maRender(); render(); toast('Videon och analysen är borttagna från enheten');
   },
 });
+
+/* ---------- G11/G12: start på Idag, egen adress per vy och fungerande bakåtknapp ---------- */
+const NAV_SLUG = { today: 'idag', plan: 'planering', bank: 'ovningsbank', match: 'match', tools: 'verktyg', draw: 'rita', saved: 'sparade', make: 'snabbt-pass', dev: 'utvecklare' };
+const NAV_SUB = { pass: '', lp: 'laroplan', season: 'sasong', idea: 'spelide', dev: 'utveckling' };
+const navHash = () => { const v = ST.view || 'today'; const base = NAV_SLUG[v] || v; const sub = v === 'plan' ? NAV_SUB[ST.planSub || 'pass'] : v === 'match' && ST.matchSub === 'analys' ? 'analys' : ''; return '#' + base + (sub ? '/' + sub : ''); };
+function navParse(h) {
+  const [a, b] = String(h || '').replace(/^#\/?/, '').split('/');
+  if (!a) return null;
+  const view = Object.keys(NAV_SLUG).find(k => NAV_SLUG[k] === a) || null; if (!view) return null;
+  const sub = view === 'plan' ? (Object.keys(NAV_SUB).find(k => NAV_SUB[k] === (b || '')) || 'pass') : null;
+  return { view, sub, msub: view === 'match' ? (b === 'analys' ? 'analys' : 'matcher') : null };
+}
+let NAV_POP = false;
+const __renderNav = render;
+render = function () {
+  __renderNav.apply(this, arguments);
+  if (NAV_POP) return;
+  const h = navHash();
+  if (location.hash !== h) { try { history.pushState({ v: ST.view, sub: ST.planSub || 'pass' }, '', h); } catch (e) { } }
+};
+window.addEventListener('popstate', () => {
+  if (DET || SOPEN || MOPEN || (typeof LIVE !== 'undefined' && LIVE)) return;   /* öppen detalj/pass/match stängs av sina egna hanterare */
+  const p = navParse(location.hash) || { view: 'today', sub: 'pass' };
+  if (p.view === ST.view && (p.view !== 'plan' || p.sub === (ST.planSub || 'pass')) && (p.view !== 'match' || p.msub === (ST.matchSub === 'analys' ? 'analys' : 'matcher'))) return;
+  if (p.view === 'dev' && typeof OF_DEV_ON !== 'undefined' && !OF_DEV_ON) return;
+  ST.view = p.view; if (p.sub) ST.planSub = p.sub; if (p.msub) ST.matchSub = p.msub;
+  NAV_POP = true; try { persist(); render(); } finally { NAV_POP = false; }
+  window.scrollTo(0, 0);
+});
+(function navStart() {
+  const p = navParse(location.hash);
+  const allowed = p && !(p.view === 'dev' && typeof OF_DEV_ON !== 'undefined' && !OF_DEV_ON) && !(p.view === 'plan' && p.sub === 'lp' && !ofIsJfa());
+  ST.view = allowed ? p.view : 'today'; if (allowed && p.sub) ST.planSub = p.sub; if (allowed && p.msub) ST.matchSub = p.msub;
+  try { history.replaceState({ v: ST.view, sub: ST.planSub || 'pass' }, '', navHash()); } catch (e) { }
+  persist(); try { render(); } catch (e) { }
+})();
+
+Object.assign(A, { perFormOpen: () => { ST.perFormOpen = true; persist(); render(); setTimeout(() => { const d = $('details.per-form'); if (d) { d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 30); } });
+/* G16/G26: Utveckling – riktigt tomläge med nästa steg */
+const __devHTMLEmpty = devHTML;
+devHTML = function () {
+  const h = __devHTMLEmpty.apply(this, arguments);
+  const done = sessList().length, rated = ownMatches().length;
+  if (done && rated) return h;
+  const step = (ok, t, d, btn) => '<li class="' + (ok ? 'ok' : '') + '"><span class="dev-st">' + (ok ? '✓' : '') + '</span><div class="grow"><b>' + t + '</b><small>' + d + '</small></div>' + (ok ? '' : btn) + '</li>';
+  const card = '<section class="card dev-empty"><h3>Så fylls Utveckling på</h3><p class="small muted">Här jämförs vad ni har tränat med hur ni har spelat. Det behövs två saker:</p><ol class="dev-steps">'
+    + step(done, 'Pass i planeringen', done ? done + ' pass finns' : 'Skapa och genomför pass – minuterna räknas per skede.', '<button type="button" class="btn sm primary" data-a="planSub" data-v="pass">Skapa pass</button>')
+    + step(rated, 'Betyg efter matcher', rated ? rated + ' matcher betygsatta' : 'Öppna en spelad match och betygsätt Vårt eget spel.', '<button type="button" class="btn sm" data-a="view" data-v="match">Gå till Match</button>')
+    + '</ol></section>';
+  const i = h.indexOf('<section class="card dev-ins">');
+  return i >= 0 ? h.slice(0, i) + card + h.slice(i) : card + h;
+};
+
+/* ---------- G17: Match och Matchanalys som två egna flikar ---------- */
+const __matchTabSplit = matchTabHTML;
+matchTabHTML = function () {
+  const h = __matchTabSplit.apply(this, arguments);
+  const sub = ST.matchSub === 'analys' ? 'analys' : 'matcher';
+  const i = h.indexOf('<section class="ma-entry">'); const j = i >= 0 ? h.indexOf('</section>', i) + 10 : -1;
+  const entry = i >= 0 ? h.slice(i, j) : ''; const rest = i >= 0 ? h.slice(0, i) + h.slice(j) : h;
+  const hd = rest.indexOf('<div class="of-page-heading">'); const hdEnd = hd >= 0 ? rest.indexOf('</button></div>', hd) + 15 : -1;
+  const btn = (v, t) => '<button type="button" data-a="matchSub" data-v="' + v + '" class="' + (sub === v ? 'on' : '') + '" aria-pressed="' + (sub === v) + '">' + t + '</button>';
+  const seg = '<div class="seg lp-seg m-seg">' + btn('matcher', 'Matcher') + btn('analys', 'Matchanalys (video)') + '</div>';
+  if (hdEnd < 15) return seg + (sub === 'analys' ? entry : rest);
+  const head = rest.slice(0, hdEnd), body = rest.slice(hdEnd);
+  if (sub === 'matcher') return head + seg + body;
+  const head2 = '<div class="of-page-heading"><div><h1>Matchanalys</h1><p>Titta på matchvideo, märk ut situationer och få förslag på vad ni ska träna.</p></div></div>';
+  const how = '<ol class="ma-how"><li><b>Välj en matchvideo</b> från telefonen eller datorn. Den stannar på enheten.</li><li><b>Märk ut situationer</b> – press, omställning, avslut eller uppbyggnad – med en kort anteckning.</li><li><b>Få övningsförslag</b> utifrån det ni såg, och lägg dem i nästa pass.</li></ol>';
+  return head2 + seg + entry.replace('NYTT · MATCHVIDEO', 'MATCHVIDEO') + how;
+};
+Object.assign(A, { matchSub: el => { ST.matchSub = el.dataset.v; persist(); render(); } });
