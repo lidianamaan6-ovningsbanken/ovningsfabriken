@@ -965,3 +965,18 @@ html[data-sun] .pass-way.primary small, html[data-sun] .of-hero .of-eyebrow { co
 .coach-list .pill.owner { background: var(--pitch, #1f5a43); color: #fff; }
 .coach-inv { width: 100%; }
 .coach-leave { margin-top: 10px; color: #a12a1f; }
+/* Klubbens översikt */
+.us { max-width: 1080px; width: 100%; max-height: 92vh; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.us > * { flex-shrink: 0; }
+.us h2 { margin: 0; }
+.us-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.us-k { background: var(--surface-2, #f3f3ee); border-radius: 12px; padding: 10px 12px; display: grid; gap: 2px; }
+.us-k b { font-size: 22px; }
+.us-k span { font-size: 12.5px; color: var(--muted, #5b6660); }
+.us-tbl-w { overflow-x: auto; border: 1px solid var(--line, #dcdcd4); border-radius: 12px; }
+.us-tbl { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 860px; }
+.us-tbl th, .us-tbl td { padding: 8px 10px; border-bottom: 1px solid var(--line, #e6e6df); text-align: left; vertical-align: top; }
+.us-tbl th { background: var(--surface-2, #f3f3ee); font-size: 12px; }
+.us-tbl td small, .us-tbl th small { display: block; font-weight: 400; color: var(--muted, #5b6660); }
+.us-tbl tr.idle td { color: #8a918c; }
+.coach-usage { width: 100%; margin-top: 8px; }

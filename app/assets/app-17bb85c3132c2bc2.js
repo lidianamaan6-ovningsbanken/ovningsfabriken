@@ -7152,14 +7152,16 @@ const workspaceVisibleTeams = () => {
   const signedIn = CLUB_TEAMS.find(t => t.id === SIGNED_IN_TEAM);
   /* G7: inloggad klubb ser bara sina egna lag */
   const pc = window.OF_PROFILE?.club; const myClub = pc && (pc.catalog || pc.name);
-  if (!signedIn) return SIGNED_IN_TEAM ? [] : myClub ? CLUB_TEAMS.filter(t => t.club === myClub) : CLUB_TEAMS;
+  /* Tränare ser bara sina egna lag; ansvariga och admin ser klubbens alla lag */
+  const acc = (window.OF_ACCESS?.clubs || []).find(c => c.id === pc?.id); const mine = acc && acc.role !== 'owner' && !window.OF_ACCESS?.admin && Array.isArray(acc.teams) && acc.teams.length ? acc.teams : null;
+  if (!signedIn) return SIGNED_IN_TEAM ? [] : myClub ? CLUB_TEAMS.filter(t => t.club === myClub && (!mine || mine.includes(t.id))) : CLUB_TEAMS;
   return HAS_CLUB_LICENSE ? CLUB_TEAMS.filter(t => t.club === signedIn.club) : [signedIn];
 };
 const CLUB_NAMES = [...new Set(CLUB_TEAMS.map(t => t.club))].sort((a, b) => a.localeCompare(b, 'sv'));
 const clubTeam = () => CLUB_TEAMS.find(t => t.id === ST.team) || null;
 /* G4: inloggad klubb (eller valt lags klubb). JFA:s läroplan, SUP och logga visas bara för JFA. */
 const ofClubName = () => { const c = window.OF_PROFILE?.club; return (c && (c.catalog || c.name)) || clubTeam()?.club || ''; };
-const ofIsJfa = () => { const c = ofClubName(); return c === 'Järfälla FA' || c === 'Järfälla Football Academy'; };
+const ofIsJfa = () => { const c = ofClubName(); return ['Järfälla FA', 'Järfälla Football Academy', 'Järfälla FF Akademi', 'Järfälla FF Academy', 'Järfälla FF'].includes(c); };
 const YOUNG_TEAM_DEFAULTS = {
   '3v3': { level: 'UEFA C', n: 8, gk: 0, durDef: 45, days: [2], prefer: ['Lek', 'Smålagsspel'] },
   '5v5': { level: 'UEFA C', n: 10, gk: 1, durDef: 60, days: [2, 4], prefer: ['Teknik och samarbete', 'Smålagsspel'] },
@@ -9989,7 +9991,7 @@ function dataInfoHTML() {
       : sec('Du är inte inloggad', ['Allt sparas bara i den här webbläsaren', 'Logga in så sparas det på ditt konto och finns på alla dina enheter'], ''))
     + sec('Bara på den här enheten', ['Matchvideo och matchanalyser – videon laddas aldrig upp', 'Osparade utkast, till exempel en ny match innan du tryckt Spara'],
         'Det försvinner om du rensar webbläsarens data eller byter enhet.')
-    + sec('Delas med klubben', [(club ? esc(club) + ': ' : '') + 'klubbens ansvariga ser vilka tränare som är med (e-post och roll) och hur många platser som används', 'Ingenting av det du skapar delas automatiskt'], '')
+    + sec('Delas med klubben', [(club ? esc(club) + ': ' : '') + 'klubbens ansvariga ser vilka tränare som är med (e-post och roll) och hur aktiva de är: aktiva dagar och antal pass, matcher, säsongsperioder och egna övningar – aldrig vad som står i dem', 'Ingenting av det du skapar delas automatiskt'], '')
     + sec('Spelare', ['Skriv aldrig spelarnas namn – använd tröjnummer', 'Ladda inte upp bilder där spelare syns'], '')
     + sec('Ta bort', ['Ett pass, en match eller en övning tar du bort i appen – den försvinner då från alla dina enheter', 'Matchvideo: Match → Matchanalys → välj videon → Ta bort', 'Vill du ta bort hela kontot? Kontakta klubbens ansvariga eller Övningsfabriken'], '')
     + '<div class="up-btns"><button type="button" class="btn primary" data-a="dataInfoClose">Stäng</button></div></div></div>';
@@ -10571,3 +10573,38 @@ Object.assign(A, {
     catch (e) { toast(/function|does not exist|schema cache/i.test(e?.message || '') ? 'Funktionen är inte påslagen än – kontakta klubbens ansvariga.' : (e?.message || 'Kunde inte lämna laget')); }
   },
 });
+
+/* ---------- Klubbens översikt för ansvariga: aktivitet och om spelarutbildningsplanen följs ---------- */
+(function logOpenDaily() {
+  const go = () => { const M = window.OF_MOLN; if (!M?.state?.user || !M.rpc) return; const k = 'of-open-' + M.state.user.id; const d = new Date().toISOString().slice(0, 10); let last = ''; try { last = localStorage.getItem(k) || ''; } catch (e) { } if (last === d) return; M.rpc('log_open').then(() => { try { localStorage.setItem(k, d); } catch (e) { } }).catch(() => { }); };
+  setTimeout(go, 3000); document.addEventListener('visibilitychange', () => { if (!document.hidden) go(); });
+})();
+let USAGE = null;
+const agoTxt = t => { if (!t) return 'aldrig'; const d = Math.floor((Date.now() - new Date(t)) / 86400000); return d <= 0 ? 'idag' : d === 1 ? 'igår' : d + ' dagar sedan'; };
+function usageHTML() {
+  const c = coachClub(); const U = USAGE;
+  let h = '<div class="modal-wrap us-wrap" role="dialog" aria-modal="true" aria-labelledby="us-h"><div class="modal us"><div class="spread"><h2 id="us-h">Klubbens översikt</h2><button type="button" class="btn sm ghost" data-a="usageClose">Stäng</button></div>'
+    + '<p class="small muted">' + esc(c?.name || '') + ' · Hur aktiva tränarna är och om de planerar enligt spelarutbildningsplanen. Bara siffror – innehållet i pass, matcher och anteckningar ser du aldrig.</p>';
+  if (!U) return h + '<p>Hämtar …</p></div></div>';
+  if (U.err) return h + '<p class="err">' + esc(U.err) + '</p></div></div>';
+  const L = U.list; const n = L.length, act = L.filter(x => x.active_30 > 0).length, p30 = L.reduce((a, x) => a + x.pass_30, 0), season = L.filter(x => x.season_periods > 0).length, lp = L.filter(x => x.lp_periods > 0).length;
+  const card = (v, t) => '<div class="us-k"><b class="num">' + v + '</b><span>' + t + '</span></div>';
+  h += '<div class="us-kpi">' + card(act + ' / ' + n, 'aktiva senaste 30 dagarna') + card(p30, 'pass senaste 30 dagarna') + card(season + ' / ' + n, 'har en säsongsplan') + card(lp + ' / ' + n, 'följer läroplanen i säsongen') + '</div>';
+  h += '<div class="us-tbl-w"><table class="us-tbl"><thead><tr><th>Tränare</th><th>Aktiva dagar<br><small>30 d / totalt</small></th><th>Senast aktiv</th><th>Pass<br><small>30 d / totalt</small></th><th>Genomförda</th><th>Från säsongsplan</th><th>Säsongsperioder<br><small>varav läroplan</small></th><th>Matcher</th><th>Egna övningar</th><th>Spelidé<br><small>principer</small></th></tr></thead><tbody>'
+    + L.map(x => '<tr class="' + (x.active_30 ? '' : 'idle') + '"><td><b>' + esc(x.email || 'Tränare') + '</b><small>' + (x.role === 'owner' ? 'Ansvarig' : 'Tränare') + '</small></td><td class="num">' + x.active_30 + ' / ' + x.active_total + '</td><td>' + agoTxt(x.last_seen) + '</td><td class="num">' + x.pass_30 + ' / ' + x.pass_total + '</td><td class="num">' + x.pass_done + '</td><td class="num">' + x.pass_season + '</td><td class="num">' + x.season_periods + ' / ' + x.lp_periods + '</td><td class="num">' + x.matches + '</td><td class="num">' + x.own_exercises + '</td><td class="num">' + x.idea_principles + '</td></tr>').join('')
+    + '</tbody></table></div><p class="tiny muted">Aktiva dagar räknas från och med att översikten slogs på. ”Följer läroplanen” = säsongsperioder skapade från läroplanens ålderskort. Grå rad = inte aktiv senaste 30 dagarna.</p></div></div>';
+  return h;
+}
+async function openUsage() {
+  const c = coachClub(); const r = $('#m2-root'); if (!c || !r) return; USAGE = null; r.innerHTML = usageHTML();
+  try { const d = await window.OF_MOLN.rpc('club_usage', { cid: c.id }); USAGE = { list: Array.isArray(d) ? d : [] }; }
+  catch (e) { USAGE = { err: /function|schema cache|does not exist/i.test(e?.message || '') ? 'Översikten är inte påslagen i databasen än. Kör SQL-filen 0011_klubbens_oversikt.sql i Supabase.' : (e?.message || 'Kunde inte hämta översikten') }; }
+  if ($('.us')) r.innerHTML = usageHTML();
+}
+Object.assign(A, { usageOpen: () => openUsage(), usageClose: () => closeM2() });
+const __coachesHTMLUsage = coachesHTML;
+coachesHTML = function () {
+  const h = __coachesHTMLUsage.apply(this, arguments); const c = coachClub();
+  if (!h || !c || !(c.role === 'owner' || window.OF_ACCESS?.admin)) return h;
+  return h.replace('<button type="button" class="of-text-action coach-leave"', '<button type="button" class="btn coach-usage" data-a="usageOpen">Klubbens översikt – aktivitet och läroplan</button><button type="button" class="of-text-action coach-leave"');
+};
