@@ -8,7 +8,7 @@
 (function () {
   'use strict';
   /* Versionsnummer för ordlistorna – skrivs av verktyg/sprak/bygg_sprak.py */
-  const V = {"en":"866fc46f","bank-en":"a5f2f0a9","de":"94407f2e","bank-de":"b75e1277","es":"01ef2738","bank-es":"fb53a736","fi":"90194ced","bank-fi":"4a06f66f","fr":"059af840","bank-fr":"578a7a94"};
+  const V = {"en":"866fc46f","bank-en":"a5f2f0a9","ar":"568566e2","bank-ar":"3f62950a","de":"e5ed8d81","bank-de":"b75e1277","es":"29366827","bank-es":"fb53a736","fi":"d496d187","bank-fi":"4a06f66f","fr":"842557c7","bank-fr":"578a7a94"};
   const LANGS = [
     ['sv', 'Svenska'], ['en', 'English'], ['ar', 'العربية', 1], ['fa', 'فارسی', 1], ['fi', 'Suomi'], ['es', 'Español'],
     ['de', 'Deutsch'], ['fr', 'Français'], ['pl', 'Polski'], ['tr', 'Türkçe'], ['uk', 'Українська'], ['ru', 'Русский'], ['pt', 'Português'], ['it', 'Italiano']

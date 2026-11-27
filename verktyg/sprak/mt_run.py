@@ -20,7 +20,7 @@ def split(t):
     return out
 todo=[t for t in items if t not in cache]
 print('att översätta', len(todo), 'av', len(items), flush=True)
-m = load(model)
+m = load(model, lang, os.path.basename(dst).replace('.json','')[-2:])
 segs=set()
 plan={}
 for t in todo:
@@ -29,10 +29,12 @@ for t in todo:
         if k=='t': segs.add(s)
 segs=sorted(segs); 
 def pre(s):
+    s = s.replace('Övningsfabriken', '4799')   # namnet ska aldrig översättas
     if lang!='sv': return s
     for a,b in PRE_SV: s=re.sub(a,b,s)
     return s
 def post(s):
+    s = s.replace('4799', 'Övningsfabriken')
     if not dst.endswith('_en.json'): return s
     for a,b in POST_EN: s=re.sub(a,b,s)
     return s
