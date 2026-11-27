@@ -89,7 +89,8 @@
   /* ---------- Filmer och bilder ---------- */
   /* Tillfälliga länkar och vilka filer som saknas i lagringen sparas på enheten,
      så att bilder och filmer visas direkt utan en fråga till servern vid varje sidbyte och start. */
-  const MKEY = 'of-skydd-media';
+  const MKEY = 'of-skydd-media.v2';   // v2: lagringen fylldes 27 nov – gamla ”saknas”-minnen gäller inte längre
+  try { localStorage.removeItem('of-skydd-media'); } catch (e) { }
   const urls = new Map(); // namn -> { url, exp }
   const missing = new Set();
   let storeEmpty = false;   // lagringen har inga mediafiler än (reservläge): använd reserven direkt
