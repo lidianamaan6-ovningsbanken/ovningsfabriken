@@ -1,0 +1,4 @@
+OFSans och OFArab är delmängder av Noto Sans och Noto Sans Arabic (Google, Noto-projektet),
+sammanfogade för att PDF:er ska kunna visa alla språk i Övningsfabriken.
+Licens: SIL Open Font License 1.1 – https://openfontlicense.org
+Copyright 2012 Google Inc. All Rights Reserved. Noto is a trademark of Google Inc.

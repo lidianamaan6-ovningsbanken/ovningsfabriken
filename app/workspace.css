@@ -1008,3 +1008,5 @@ html[data-sun] .pass-way.primary small, html[data-sun] .of-hero .of-eyebrow { co
 /* Långa menyord på andra språk: korta av i stället för att flyta över grannen */
 .of-links button { min-width:0; }
 .of-links button span { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.of-film-sprak { margin:8px 2px 0; font-size:13px; color:var(--muted,#5b6b62); }
+.of-film-sprak .link-b { font-size:13px; }

@@ -8,7 +8,7 @@
 (function () {
   'use strict';
   /* Versionsnummer för ordlistorna – skrivs av verktyg/sprak/bygg_sprak.py */
-  const V = {"en":"2b112abe","bank-en":"a5f2f0a9","ar":"13c643e7","bank-ar":"3f62950a","de":"fd17d218","bank-de":"634a541f","es":"47decd97","bank-es":"f983b5c5","fa":"e555840b","bank-fa":"d03f2c74","fi":"3b0a9830","bank-fi":"53398202","fr":"27d3d124","bank-fr":"a15cc351","it":"e9eccb73","bank-it":"e1ad1982","pl":"38c2ca08","bank-pl":"515192e6","pt":"994edd16","bank-pt":"d5023ec6","ru":"90bc73b5","bank-ru":"9134ad22","tr":"5f1642b8","bank-tr":"e5152072","uk":"5733ee2f","bank-uk":"b718ad78"};
+  const V = {"en":"79a73b75","bank-en":"c06e079b","ar":"7f6e2c96","bank-ar":"4d51e40d","de":"ced5a50e","bank-de":"bd0b2abd","es":"05c74ccd","bank-es":"958d0e98","fa":"9b501175","bank-fa":"c3e5458f","fi":"63f98a86","bank-fi":"ddaed772","fr":"090fc91b","bank-fr":"6330ab34","it":"1ac8d43d","bank-it":"4374cac4","pl":"7c147216","bank-pl":"76b93a4b","pt":"90c3f3cc","bank-pt":"8208f42f","ru":"11647f23","bank-ru":"fa076ec0","tr":"94db9a33","bank-tr":"d01738aa","uk":"3fc8befc","bank-uk":"92cbcc05"};
   const LANGS = [
     ['sv', 'Svenska'], ['en', 'English'], ['ar', 'العربية', 1], ['fa', 'فارسی', 1], ['fi', 'Suomi'], ['es', 'Español'],
     ['de', 'Deutsch'], ['fr', 'Français'], ['pl', 'Polski'], ['tr', 'Türkçe'], ['uk', 'Українська'], ['ru', 'Русский'], ['pt', 'Português'], ['it', 'Italiano']
@@ -79,6 +79,8 @@
     }
     // Etikett med kolon (”Speldjup:”)
     if (depth < 2 && /:$/.test(core) && core.length > 2) { const r = lookup(core.slice(0, -1), depth + 1); if (r != null) return r + ':'; }
+    // ”Etikett: text” (”Material: koner, västar”) – etikett och text var för sig
+    if (depth < 2) { const m = core.match(/^([^:]{2,30}): (.+)$/); if (m) { const a = lookup(m[1], depth + 1); if (a != null) return a + ': ' + (lookup(m[2], depth + 1) ?? m[2]); } }
     // Sammansatta rader (”Alla typer · 16–19 år · Halv plan”): del för del
     if (depth < 2 && core.includes(' · ')) {
       let any = false; const o = core.split(' · ').map(x => { const r = lookup(x, depth + 1); if (r != null) any = true; return r ?? x; });

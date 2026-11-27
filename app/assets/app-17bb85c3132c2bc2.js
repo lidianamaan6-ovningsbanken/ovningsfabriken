@@ -10692,3 +10692,70 @@ Object.assign(A, {
   window.addEventListener('unhandledrejection', e => send(e.reason && (e.reason.message || e.reason), 'promise'));
   window.OF_REPORT = send;
 })();
+
+/* ===== Språk i PDF och sparade bilder =====
+ * När ett annat språk än svenska är valt översätts texterna i PDF:er och bilder med samma ordlista som skärmen
+ * (sprak.js), och PDF:en får ett inbäddat typsnitt med alla tecken: Noto Sans för latinska och kyrilliska språk,
+ * Noto Sans + Noto Sans Arabic för arabiska och persiska. Typsnitten hämtas bara när någon skapar en PDF. */
+(function () {
+  const L = () => (window.OF_SPRAK && OF_SPRAK.lang !== 'sv') ? OF_SPRAK.lang : null;
+  const T = s => (L() && typeof s === 'string') ? OF_SPRAK.t(s) : s;
+  const RTL = l => l === 'ar' || l === 'fa';
+  const __pT = pT;
+  pT = function (s) {
+    if (!L()) return __pT(s);
+    return String(s == null ? '' : s).split('\n').map(x => T(x)).join('\n').replace(/[→⇒]/g, '->').replace(/[←]/g, '<-').replace(/…/g, '...').replace(/ /g, ' ');
+  };
+  const __wrap = wrapLines;
+  wrapLines = function (ctx, text, maxW) { return __wrap(ctx, T(text), maxW); };
+  const FONTS = {};
+  const b64 = buf => { let s = ''; const u = new Uint8Array(buf); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+  const getFont = f => FONTS[f] || (FONTS[f] = fetch('fonts/pdf/' + f + '?v=1').then(r => { if (!r.ok) throw new Error('typsnitt'); return r.arrayBuffer(); }).then(b64).catch(e => { delete FONTS[f]; throw e; }));
+  let patched = false;
+  const __load = loadJsPDF;
+  loadJsPDF = function () {
+    return __load().then(async J => {
+      const l = L(); if (!l) return J;
+      const fam = RTL(l) ? 'OFArab' : 'OFSans';
+      try { const [r, b] = await Promise.all([getFont(fam + '-Regular.ttf'), getFont(fam + '-Bold.ttf')]); J.__ofFonts = { fam, r, b }; }
+      catch (e) { J.__ofFonts = null; return J; }   // utan typsnitt: PDF:en skapas ändå, med de tecken standardtypsnittet har
+      if (!patched) {
+        patched = true;
+        J.API.events.push(['addFonts', function () {
+          const f = J.__ofFonts; if (!f || !L()) return;
+          this.addFileToVFS(f.fam + '-R.ttf', f.r); this.addFont(f.fam + '-R.ttf', f.fam, 'normal');
+          this.addFileToVFS(f.fam + '-B.ttf', f.b); this.addFont(f.fam + '-B.ttf', f.fam, 'bold');
+        }]);
+        J.API.events.push(['initialized', function () {   // jsPDF lägger setFont och text på varje dokument
+          const f = J.__ofFonts; if (!f || !L()) return;
+          const sf = this.setFont, tx = this.text;
+          this.setFont = function (name, style, weight) { if (/helvetica/i.test(name || '')) name = f.fam; return sf.call(this, name, style, weight); };
+          this.text = function (text, x, y, opt, ...rest) { text = Array.isArray(text) ? text.map(T) : T(text); return tx.call(this, text, x, y, opt, ...rest); };
+          this.setFont(f.fam, 'normal');
+        }]);
+      }
+      return J;
+    });
+  };
+})();
+
+/* ===== Filmernas text på andra språk =====
+ * Texten i filmerna är inbränd på svenska. På andra språk visas en rad under filmen med en knapp till
+ * animationen (”Visa för spelarna”), där samma steg och instruktioner visas på det valda språket. */
+(function () {
+  if (!window.OF_SPRAK || OF_SPRAK.lang === 'sv') return;
+  const note = v => {
+    if (v.nextElementSibling && v.nextElementSibling.classList.contains('of-film-sprak')) return;
+    const scope = v.closest('#detail-root, .modal, .det, section, article') || document;
+    if (!scope.querySelector('[data-a="show"]')) return;
+    v.insertAdjacentHTML('afterend', '<p class="of-film-sprak">Texten i filmen är på svenska. <button type="button" class="link-b" data-film-anim>Visa animationen med texter på ditt språk</button></p>');
+  };
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-film-anim]'); if (!b) return;
+    const scope = b.closest('#detail-root, .modal, .det, section, article') || document;
+    const s = scope.querySelector('[data-a="show"]'); if (s) s.click();
+  });
+  const scan = () => document.querySelectorAll('video.of-exercise-film').forEach(note);
+  new MutationObserver(() => { clearTimeout(scan.t); scan.t = setTimeout(scan, 50); }).observe(document.body, { childList: true, subtree: true });
+  scan();
+})();

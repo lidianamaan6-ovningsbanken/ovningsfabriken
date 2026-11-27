@@ -29,12 +29,12 @@ for t in todo:
         if k=='t': segs.add(s)
 segs=sorted(segs); 
 def pre(s):
-    s = s.replace('Övningsfabriken', '4799')   # namnet ska aldrig översättas
+    s = s.replace('Övningsfabriken', '4799').replace('Sam Nouman', '4798')   # namn ska aldrig översättas
     if lang!='sv': return s
     for a,b in PRE_SV: s=re.sub(a,b,s)
     return s
 def post(s):
-    s = s.replace('4799', 'Övningsfabriken')
+    s = s.replace('4799', 'Övningsfabriken').replace('4798', 'Sam Nouman')
     if not dst.endswith('_en.json'): return s
     for a,b in POST_EN: s=re.sub(a,b,s)
     return s

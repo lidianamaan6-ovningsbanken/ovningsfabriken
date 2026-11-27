@@ -68,7 +68,12 @@ def words(lang):
 
 def english():
     mt = J(C + '/sv-en.json'); ht, hn, hp = hand('en')
-    fix = lambda v: re.sub(r'\b([Aa]) (exercise)', r'\1n \2', re.sub(r'(?i)\b(the )?(exercise|practice) factory\b', 'Övningsfabriken', v))
+    GLOS = [(r'(?i)\b(the )?(exercise|practice) factory\b', 'Övningsfabriken'), (r'\b(half|semi)-?plane\b', 'half pitch'), (r'\b(Half|Semi)-?[Pp]lane\b', 'Half pitch'),
+            (r'\b(whole|full)-?plane\b', 'full pitch'), (r'\b(Whole|Full)-?[Pp]lane\b', 'Full pitch'), (r'\bexercise film\b', 'exercise video'), (r'\bExercise film\b', 'Exercise video'),
+            (r'\bTrainer-led\b', 'Coach-led'), (r'\btrainer-led\b', 'coach-led'), (r'\b(Orange|Blue|Red|White|Yellow|Green) Law\b', r'\1 team'), (r'\b([Aa]) (exercise)', r'\1n \2')]
+    def fix(v):
+        for a_, b_ in GLOS: v = re.sub(a_, b_, v)
+        return v
     d = {k: fix(v) for k, v in mt.items() if ok_key(k, hn) and ok_val(k, v)}; d.update(kort('en')); d.update(ht)
     sv_tok = J(C + '/tpl-sv.json'); tpl_en = J(C + '/tpl-sv-en.json')
     p = {}
@@ -107,6 +112,9 @@ def build(lang):
     d = {k: v for k, v in d.items() if not k.startswith('@')}
     if lang != 'en':
         extra = {k: mt.get(v, v) if v not in ('v',) else v for k, v in EN_W.items()}
+    k_ = kort(lang)
+    if 'Skapad av Sam Nouman' in k_: d['Övningsfabriken · Skapad av Sam Nouman'] = 'Övningsfabriken · ' + k_['Skapad av Sam Nouman']
+    if 'Sida' in k_: n['Sida #'] = k_['Sida'] + ' #'
     ui = {k: v for k, v in d.items() if k not in BANK and v and v != k}
     bank = {k: v for k, v in d.items() if k in BANK and v and v != k}
     files = {}
