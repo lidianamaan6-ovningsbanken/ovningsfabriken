@@ -10,5 +10,5 @@
    och bygg översiktsark med `python3 ark.py <ut> <ut> <id> ...` – titta på dem.
 5. Kopiera mp4 till `nya-filmer/`, kör `python3 verktyg/film/koppla_in_filmer.py verktyg/film/data/bank.json id=slug ...`.
 6. Committa, pusha till `ny-design` och `main`, testa live med
-   `node verktyg/film/filmtest.js https://lidianamaan6-ovningsbanken.github.io/ovningsfabriken/app/ "id=namn" ...`.
+   `node verktyg/film/filmtest.js https://ovningsfabriken.se/app/ "id=namn" ...`.
 Kräver `fonts-noto-core` och ffmpeg.
