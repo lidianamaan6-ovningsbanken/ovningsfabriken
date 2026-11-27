@@ -1,0 +1,923 @@
+# Handöversatta texter (svenska<TAB>engelska). Går före maskinöversättningen.
+# Rader med {} är mallar: {} fångar ett namn, en siffra eller en annan text, {1} {2} … sätter in dem.
+11 mot 11	11 v 11
+Vecka 48	Week 48
+God eftermiddag, {}	Good afternoon, {1}
+God morgon, {}	Good morning, {1}
+God kväll, {}	Good evening, {1}
+God natt, {}	Good night, {1}
+God eftermiddag	Good afternoon
+God morgon	Good morning
+God kväll	Good evening
+God natt	Good night
+Inget planerat idag. Bygg ett pass på några minuter.	Nothing planned today. Build a session in a few minutes.
+Bygg dagens pass	Build today's session
+Planera veckan	Plan the week
+Byt lag	Change team
+Du tränar i	You coach in
+. Du ser bara klubbens egna lag och material.	. You only see the club's own teams and material.
+Skapa ett pass	Create a session
+Välj hur du vill börja	Choose how to start
+Snabbt pass	Quick session
+Skriv fokus – appen väljer övningar ur banken	Type a focus – the app picks exercises from the library
+Tomt pass	Blank session
+Bygg själv, block för block	Build it yourself, block by block
+Från övningsbanken	From the exercise library
+# övningar att välja bland	# exercises to choose from
+Skapa träningspass	Create training session
+Träningsfokus	Training focus
+Spela ut från målvakten	Play out from the goalkeeper
+Göra fler mål	Score more goals
+Försvara 1 mot 1	Defend 1 v 1
+Förval från	Defaults from
+: # spelare, # min. Ändra nedan om det är annorlunda i dag.	: # players, # min. Change below if it's different today.
+Spelare totalt	Total players
+Målvakter	Goalkeepers
+Längd	Duration
+Bygg passet	Build the session
+Börja med ett tomt pass	Start with a blank session
+Veckan	The week
+mån	Mon
+tis	Tue
+ons	Wed
+tors	Thu
+fre	Fri
+lör	Sat
+sön	Sun
+Träning	Training
+Genomförd	Completed
+Match	Match
+Planerat	Planned
+Kommande	Upcoming
+Planering	Planning
+Inga kommande träningar eller matcher. Planera veckan så ser du dem här.	No upcoming sessions or matches. Plan the week and you'll see them here.
+Tips	Tip
+Dagens övning	Exercise of the day
+Visa en annan	Show another
+Se filmen	Watch the video
+Lägg i pass	Add to session
+Tränarlaget	Coaching staff
+# / # platser	# / # seats
+Vill du ha med en kollega? Be klubbens ansvariga bjuda in hen.	Want to add a colleague? Ask the club administrator to invite them.
+Klubbens översikt – aktivitet och läroplan	Club overview – activity and curriculum
+Lämna laget	Leave the team
+Idag	Today
+Övningsbank	Exercise library
+Verktyg	Tools
+Utvecklare	Developer
+Mer	More
+Sparat i molnet	Saved in the cloud
+Tränarverktyg	Coaching tools
+Byt lag, nu {}	Change team, currently {1}
+Till exempel: spela ut från målvakten.	For example: play out from the goalkeeper.
+Förslag på träningsfokus	Suggested training focus
+Visa övningen {}	Show exercise {1}
+Huvudmeny	Main menu
+Mer: verktyg och konto	More: tools and account
+Skapad av Sam Nouman	Created by Sam Nouman
+Hjälp	Help
+Solläge	Sun mode
+Dina träningspass, säsongen och lagets utveckling.	Your sessions, the season and the team's development.
+Pass	Sessions
+Läroplan	Curriculum
+Säsong	Season
+Spelidé	Game model
+Utveckling	Development
+Inga pass än	No sessions yet
+Välj hur du vill börja. Allt går att ändra efteråt.	Choose how to start. Everything can be changed afterwards.
+Skriv vad ni ska träna – appen väljer övningar ur banken.	Type what you'll train – the app picks exercises from the library.
+Bygg själv, block för block.	Build it yourself, block by block.
+Leta upp övningar och lägg dem i ett pass.	Find exercises and add them to a session.
+Planera säsongen	Plan the season
+Teman vecka för vecka – passen föreslås per vecka.	Themes week by week – sessions are suggested for each week.
+Lista	List
+Kalender	Calendar
+Hjälp – så funkar appen	Help – how the app works
+Solläge: hög kontrast för utomhus	Sun mode: high contrast for outdoors
+Skapa	Create
+Bank	Library
+Rita	Draw
+Favoriter (#)	Favorites (#)
+Hitta en övning och lägg den direkt i ett pass.	Find a exercise and add it straight to a session.
+Sök övning	Search exercises
+Fler filter · Aktiva	More filters · Active
+Fler filter	More filters
+Skede	Phase
+Alla skeden	All phases
+Speluppbyggnad	Build-up play
+Kontring	Counter-attack
+Återerövring	Regaining possession
+Förhindra speluppbyggnad	Prevent build-up play
+Förhindra och rädda avslut	Prevent and save shots
+Omställning till anfall	Transition to attack
+Omställning till försvar	Transition to defense
+Kategori	Category
+Alla kategorier	All categories
+Lekar och reaktion	Games and reaction
+Passningar	Passing
+Possession och rondos	Possession and rondos
+Dueller och dribbling	Duels and dribbling
+Avslut	Finishing
+Spelövningar och smålagsspel	Game exercises and small-sided games
+Press och omställning	Pressing and transition
+Försvara mål	Defending the goal
+Fasta situationer	Set pieces
+Skadeförebyggande	Injury prevention
+Fotbollsfys och förberedelse	Football fitness and preparation
+Lag eller spelform	Team or format
+Alla lag och spelformer	All teams and formats
+# mot #	# v #
+Alla lärandemål	All learning objectives
+Driva	Dribbling with the ball
+Vända	Turning
+Skjuta	Shooting
+Utmana, finta, dribbla	Take on, feint, dribble
+Mottagning/Medtagning	Receiving/First touch
+Kort passning	Short pass
+Längre passning	Longer pass
+Press/Tackling	Pressure/Tackling
+Huvudspel	Heading
+Spelavstånd	Distances between players
+Spelbarhet	Being available
+Speldjup	Depth
+Spelbredd	Width
+Spelvändning	Switching play
+Press	Pressing
+Markering	Marking
+Täckning	Cover
+Uppflyttning	Pushing up
+Överflyttning	Shifting across
+Nedflyttning	Dropping back
+Direkt återerövring	Immediate counter-press
+Källa (land eller förbund)	Source (country or association)
+Alla källor	All sources
+Sverige	Sweden
+SvFF Övningsbanken	SvFF exercise library
+360Player-biblioteket	360Player library
+England och Wales	England and Wales
+Irland	Ireland
+Danmark	Denmark
+Norge	Norway
+Tyskland	Germany
+Spanien	Spain
+Italien	Italy
+USA och Kanada	USA and Canada
+Brasilien	Brazil
+Australien	Australia
+Afrika och arabvärlden	Africa and the Arab world
+Japan	Japan
+FIFA och UEFA	FIFA and UEFA
+Internationellt	International
+Mina övningar	My exercises
+Passar # spelare	Suits # players
+Filtren gäller samtidigt: en övning visas bara om den passar alla val. Sökordet söker inom de valda filtren.	Filters apply together: a exercise is shown only if it matches every choice. The search term searches within the selected filters.
+Rensa sökning och filter	Clear search and filters
+Anpassat för {}	Adapted for {1}
+· # mot # · bäst lämpade först	· # v # · best suited first
+Visa alla åldrar	Show all ages
+# övningar av #	# exercises of #
+MV	GK
+#–# spelare · #+	#–# players · #+
+#–# spelare · #+ · passar P#	#–# players · #+ · suits P#
+#–# spelare · #+ · passar F#	#–# players · #+ · suits F#
+#–# spelare	#–# players
+Övningsfilm	Exercise video
+Visa fler övningar	Show more exercises
+Till exempel: speluppbyggnad, rondo eller avslut	For example: build-up play, rondo or finishing
+Öppna {}	Open {1}
+Favorit: {}	Favorite: {1}
+Lägg till {} i pass	Add {1} to a session
+Matcher	Matches
+Förbered truppen, följ matchen och samla dina observationer.	Prepare the squad, follow the match and collect your observations.
+Ny match	New match
+Matchanalys (video)	Match analysis (video)
+Ingen match än	No matches yet
+Lägg in nästa match. Motståndaren sparas som lagprofil, så att analysen finns kvar nästa gång ni möts.	Add your next match. The opponent is saved as a team profile, so the analysis is still there next time you meet.
+Rita egen övning	Draw your own exercise
+Placera spelare, mål och koner. Visa hur övningen går till.	Place players, goals and cones. Show how the exercise works.
+Sparade övningar	Saved exercises
+Hitta dina favoriter och dina egna övningar.	Find your favorites and your own exercises.
+Läroplan och säsong	Curriculum and season
+Se ålderskort och planera träningsperioder.	See age cards and plan training periods.
+Konto och klubb	Account and club
+Inloggad som {}	Signed in as {1}
+Så sparas dina data	How your data is stored
+Vad som finns på ditt konto, vad som bara finns på enheten och vem som ser vad.	What is on your account, what is only on this device and who sees what.
+Rita och importera	Draw and import
+Rita en egen övning steg för steg, eller ladda upp en bild av en övning du redan har – ett foto, en skärmbild eller en whiteboard.	Draw your own exercise step by step, or upload a picture of a exercise you already have – a photo, a screenshot or a whiteboard.
+Rita ny övning	Draw a new exercise
+Lägg ut spelare, koner och mål. Dra dem steg för steg och se animationen.	Place players, cones and goals. Move them step by step and watch the animation.
+Ladda upp övning	Upload a exercise
+Ett foto, en skärmbild, en whiteboard eller en PDF. Sparas under Mina egna övningar.	A photo, a screenshot, a whiteboard or a PDF. Saved under My own exercises.
+Anteckningsblock	Notepad
+Skriv ut tomma planer med rutor för egna övningar. Rita och fyll i för hand på planen eller i bilen.	Print blank pitches with boxes for your own exercises. Draw and fill in by hand at the pitch or in the car.
+Upplägg	Layout
+En övning/sida	One exercise/page
+Två/sida	Two/page
+Träningspass	Training session
+Plan	Pitch
+Helplan	Full pitch
+Halvplan	Half pitch
+Rutnät	Grid
+Sidor	Pages
+Ladda ner som PDF	Download as PDF
+Mina egna övningar	My own exercises
++ Ladda upp bild eller PDF	+ Upload image or PDF
+Inga egna övningar än	No exercises of your own yet
+Övningar du ritar eller laddar upp hamnar här och synkas till dina andra enheter. Du kan också trycka på "Rita egen version" på en övning i banken.	Exercises you draw or upload end up here and sync to your other devices. You can also tap "Draw your own version" on a exercise in the library.
+Övningar du har stjärnmärkt. Bara du ser dem.	Exercises you have starred. Only you can see them.
+Mina egna (#)	My own (#)
+Klubbens delade	Shared by the club
+Inga favoriter än	No favorites yet
+Tryck på ☆ på en övning i övningsbanken så hamnar den här, även på dina andra enheter.	Tap ☆ on a exercise in the library and it appears here, on your other devices too.
+Gå till övningsbanken	Go to the exercise library
+Ditt lag	Your team
+# mot # · # min · # spelare	# v # · # min · # players
+Vad behöver ni träna idag?	What do you need to train today?
+Eller tryck på ett exempel:	Or tap an example:
+Vinna tillbaka bollen	Win the ball back
+Rolig träning	Fun session
+Spelare	Players
+Uppvärmning, huvudövningar och spel med tider, animationer och materiallista. Du kan ändra allt efteråt.	Warm-up, main exercises and games with times, animations and an equipment list. You can change everything afterwards.
+Passet byggs ur klubbens övningsbank.	The session is built from the club's exercise library.
+Spelform (SvFF)	Format (SvFF)
+#–# år	#–# years
+# år och äldre	# years and older
+· plan ca # × # m · Fullstort mål · boll storlek #	· pitch approx. # × # m · Full-size goal · ball size #
+Ladda upp en övning	Upload a exercise
+Foto, skärmbild, whiteboard eller PDF – sparas under Mina egna övningar.	Photo, screenshot, whiteboard or PDF – saved under My own exercises.
+Dina pass och säsong	Your sessions and season
+# pass · planera teman vecka för vecka	# sessions · plan themes week by week
+eller skapa enskilda övningar	or create individual exercises
+Steg #	Step #
+Hur många spelare har du?	How many players do you have?
+Varav målvakter	Of which goalkeepers
+Vilket skede vill du träna?	Which phase do you want to train?
+Anfall	Attack
+# skeden	# phases
+Försvar	Defense
+Omställning	Transition
+Blanda	Mix
+alla faser	all phases
+Inspiration från	Inspiration from
+Svensk (SvFF)	Swedish (SvFF)
+Spansk	Spanish
+Tysk	German
+Italiensk	Italian
+Inspiration från andra länder	Inspiration from other countries
+Övningar från UEFA-, FA- och FIFA-material, sorterade efter SvFF:s skeden.	Exercises from UEFA, FA and FIFA material, sorted by SvFF phases.
+Hur vill du ha dem?	How do you want them?
+Fristående övningar	Stand-alone exercises
+Progression i # steg	Progression in # steps
+Tre olika övningar åt gången, och så många fler du vill.	Three different exercises at a time, and as many more as you like.
+Typ, ålder, nivå och tid	Type, age, level and time
+Övningstyp	Exercise type
+Blanda typer	Mix types
+Rondo	Rondo
+Positionsspel	Positional play
+Spelövning med riktning	Directional game
+Smålagsspel	Small-sided game
+Överlägsenhet (t.ex. # mot #)	Overload (e.g. # v #)
+Duell (# mot #, # mot #)	Duel (# v #, # v #)
+Avslutsövning	Finishing exercise
+Matchlikt spel	Match-like game
+Ålder	Age
+Senior	Senior
+Nivå	Level
+Fördjupning: roller, grupper och skeden	Advanced: roles, units and phases
+Tid per övning	Time per exercise
+# min	# min
+Yta	Area
+Liten yta	Small area
+Kvarts plan	Quarter pitch
+Halv plan	Half pitch
+Hel plan	Full pitch
+Eget önskemål (valfritt)	Your own request (optional)
+Skapa övningar för # spelare	Create exercises for # players
+Så fungerar det	How it works
+Beskriv vad ni behöver träna	Describe what you need to train
+Exempel	Example
+En spelare färre	One player fewer
+En spelare till	One more player
+Färre målvakter	Fewer goalkeepers
+Fler målvakter	More goalkeepers
+Bara för dig · syns inte för tränare	Only for you · not visible to coaches
+Admin	Admin
+Licenser	Licenses
+Klubbens namn	Club name
+Platser	Seats
+Gäller till	Valid until
+Klubb i lagkatalogen (ger lag och märke)	Club in the team directory (gives teams and crest)
+Kortnamn (adress ?klubb=)	Short name (address ?klubb=)
+Klubbfärg	Club color
+Skapa klubb och ägarlänk	Create club and owner link
+Inga klubbar än.	No clubs yet.
+Övningar och filmer	Exercises and videos
+Skyddad lagring	Protected storage
+Appens kod hämtades från	The app's code was loaded from
+öppen reserv	open fallback
+Filmlänkar från lagringen	Video links from storage
+Filmlänkar från öppen reserv	Video links from open fallback
+Reserv på GitHub	Fallback on GitHub
+Molnet	The cloud
+Databasen	The database
+Svarar på # ms	Responds in # ms
+Inloggad	Signed in
+Synkstatus	Sync status
+synkad	synced
+Senast synkad	Last synced
+Data	Data
+På enheten	On the device
+I molnet	In the cloud
+Matchlag	Match squads
+Uppställningar	Line-ups
+Favoriter	Favorites
+Inställningar	Settings
+Synka nu	Sync now
+Full omsynk	Full resync
+Konto	Account
+Bygget	The build
+Versioner	Versions
+Appens JS	App JS
+Övningar i banken	Exercises in the library
+Med film	With video
+Med förhandsbild	With preview image
+Skärm	Screen
+Nätverk	Network
+Online	Online
+Installerad app	Installed app
+Nej	No
+Ja	Yes
+Den här enheten	This device
+Lokal data	Local data
+Lagringsutrymme	Storage space
+Exportera som JSON	Export as JSON
+Skapa testvecka	Create test week
+Ta bort testdata	Remove test data
+Rensa all lokal data	Clear all local data
+Utseende	Appearance
+Tema	Theme
+System	System
+Ljust	Light
+Mörkt	Dark
+Gäller bara den här fliken tills sidan laddas om.	Applies only to this tab until the page is reloaded.
+Visa välkomsten	Show the welcome
+Visa som ny tränare	View as a new coach
+Övningsbanken	The exercise library
+Söktest	Search test
+Filmtäckning	Video coverage
+Spelmoment	Game moments
+Filmer	Videos
+Förberedelse	Preparation
+Sedan sidan laddades	Since the page loaded
+Felogg	Error log
+Inga fel sedan sidan laddades.	No errors since the page loaded.
+Synklogg	Sync log
+#:#:# Sparade # ändring	#:#:# Saved # change
+#:#:# Sparade # ändringar	#:#:# Saved # changes
+Sparade # ändring	Saved # change
+Sparade # ändringar	Saved # changes
+#:#:# Inloggad som {}	{1} Signed in as {2}
+t.ex. {}	e.g. {1}
+Testa sökningen, t.ex. # mot #	Test the search, e.g. # v #
+Någon i ditt lag kommer att minnas dagens träning i många år. Kanske inte övningen, men känslan du gav.	Someone in your team will remember today's session for many years. Maybe not the exercise, but the feeling you gave them.
+Tänk på varför du blev tränare. Det är samma anledning som får dig att stå på planen i regn och mörker.	Think about why you became a coach. It's the same reason you stand on the pitch in rain and darkness.
+Du tränar inte bara fotbollsspelare. Du formar människor som tar med sig det här hela livet.	You don't just coach football players. You shape people who carry this with them all their lives.
+Varför vill du fortfarande utvecklas? För att dina spelare förtjänar en tränare som också lär sig nytt.	Why do you still want to improve? Because your players deserve a coach who keeps learning too.
+Ett leende på planen är också ett resultat.	A smile on the pitch is a result too.
+Små framsteg varje vecka blir stora skillnader över en säsong.	Small steps every week become big differences over a season.
+Säg spelarnas namn i dag och beröm något konkret. Det tar fem sekunder och betyder mer än du tror.	Say your players' names today and praise something specific. It takes five seconds and means more than you think.
+Du ger din tid till andras barn. Det är en av de finaste sakerna man kan göra.	You give your time to other people's children. It's one of the finest things you can do.
+Den bästa övningen är den där alla får många bollkontakter och ingen står i kö.	The best exercise is the one where everyone gets lots of touches and nobody waits in line.
+Våga låta spelarna misslyckas. Det är där de lär sig.	Dare to let your players fail. That's where they learn.
+Fråga en spelare i dag: ”Vad tyckte du var roligast?” Svaret säger mycket.	Ask a player today: "What did you enjoy most?" The answer says a lot.
+Bra tränare har svar. Riktigt bra tränare ställer frågor.	Good coaches have answers. Really good coaches ask questions.
+Tänk på den tränare som betydde mest för dig. I dag kan du vara den för någon annan.	Think of the coach who meant the most to you. Today you can be that coach for someone else.
+Glädje först, utveckling sen. Ofta kommer de samtidigt.	Joy first, development second. Often they come together.
+Du behöver inte vara perfekt. Du behöver vara där, förberedd och engagerad. Det är du.	You don't need to be perfect. You need to be there, prepared and committed. And you are.
+Varje spelare har en egen resa. Din uppgift är att göra den lite roligare och lite längre.	Every player has their own journey. Your job is to make it a little more fun and a little longer.
+En bra säsong mäts inte i vinster, utan i hur många som vill fortsätta spela.	A good season isn't measured in wins, but in how many want to keep playing.
+En välplanerad träning är en gåva till spelarna, och till dig själv.	A well-planned session is a gift to your players, and to yourself.
+Tålamod är också en tränarfärdighet.	Patience is a coaching skill too.
+Tänk på den tystaste spelaren i laget. Vad kan du göra för att hen ska våga ta plats i dag?	Think of the quietest player in the team. What can you do to help them speak up today?
+Utveckling syns inte alltid direkt. Lita på processen och på det du gör.	Development doesn't always show straight away. Trust the process and what you're doing.
+Fotboll är ett lagspel, även för tränare. Dela en övning med en kollega i dag.	Football is a team game, for coaches too. Share a exercise with a colleague today.
+För många i ditt lag är träningsdagarna veckans bästa dagar. Det är tack vare dig.	For many in your team, training days are the best days of the week. That's thanks to you.
+Ge beröm för ansträngning, inte bara för talang.	Praise effort, not just talent.
+Det finns spelare som kommer till träningen just för att du är där.	Some players come to training precisely because you are there.
+Planera som ett proffs, led som en förebild, skratta som ett barn.	Plan like a pro, lead like a role model, laugh like a child.
+Det du gör är viktigt. Tack för att du fortfarande står där.	What you do matters. Thank you for still being out there.
+Varför är du fortfarande tränare? Håll fast vid svaret, det är din bästa motor.	Why are you still a coach? Hold on to the answer – it's your best motivation.
+tränare	coach
+Välkommen till	Welcome to
+Inbjudan · Övningsfabriken	Invitation · Övningsfabriken
+Du har blivit inbjuden som	You have been invited as
+. Här planerar ni träningarna, hittar övningar som passar era lag och följer spelarnas utveckling – tillsammans.	. Here you plan sessions, find exercises that suit your teams and follow the players' development – together.
+Nästa steg: skapa ditt konto. Det tar en minut.	Next step: create your account. It takes a minute.
+· Övningsfabriken	· Övningsfabriken
+tack för att du valde oss.	thank you for choosing us.
+Hej {}, tack för att du valde oss.	Hi {1}, thank you for choosing us.
+Välkommen,	Welcome,
+Välkommen, {}	Welcome, {1}
+Nu är du en del av tränarlaget i	You are now part of the coaching staff at
+, som tränare för	, as coach of
+. Här planerar du träningar, hittar övningar som passar ditt lag och följer spelarnas utveckling.	. Here you plan sessions, find exercises that suit your team and follow the players' development.
+Innan du går vidare: tänk på varför du är tränare. Kanske för glädjen i spelarnas ögon, för gemenskapen eller för att du själv en gång hade en tränare som trodde på dig. Det svaret är det viktigaste du tar med dig ut på planen.	Before you go on: think about why you coach. Maybe for the joy in your players' eyes, for the team spirit, or because you once had a coach who believed in you. That answer is the most important thing you take out onto the pitch.
+Till träningen	To training
+Välkommen	Welcome
+Utvecklarfliken →	Developer tab →
+Kontrollerar inloggningen …	Checking sign-in …
+Inbjudan	Invitation
+Skapa ditt konto	Create your account
+Logga in för att gå med	Sign in to join
+Du har blivit inbjuden till	You have been invited to
+Välj e-post och lösenord så kopplas du till klubben.	Choose an email and password and you'll be linked to the club.
+Logga in så kopplas kontot till klubben.	Sign in and your account will be linked to the club.
+Välkommen tillbaka till klubbens träningsplanering.	Welcome back to the club's training planning.
+Övningsfabriken är till för tränare med klubblicens.	Övningsfabriken is for coaches with a club license.
+Ditt förnamn	Your first name
+Så hälsar appen på dig	How the app will greet you
+E-post	Email
+Lösenord	Password
+Minst 8 tecken.	At least 8 characters.
+Vänta …	Wait …
+Skapa konto och gå med	Create account and join
+Har du blivit inbjuden? Så kommer du in	Have you been invited? Here's how to get in
+Kolla din e-post eller dina meddelanden.	Check your email or your messages.
+Klubbens ansvariga skickar en inbjudningslänk – den kan komma som mejl, sms eller i en chatt.	The club administrator sends an invitation link – it may arrive by email, text message or in a chat.
+Öppna länken.	Open the link.
+Då kommer du till Övningsfabriken, väljer ett lösenord och kopplas direkt till klubben.	It takes you to Övningsfabriken, where you choose a password and are linked straight to the club.
+Ingen länk?	No link?
+Be klubbens ansvariga bjuda in dig under Konto → Bjud in en kollega. Har klubben ingen licens än: tryck på Begär tillgång nedan.	Ask the club administrator to invite you under Account → Invite a colleague. If the club has no license yet: tap Request access below.
+Har du redan ett konto?	Already have an account?
+Inget konto än?	No account yet?
+Skapa konto	Create account
+Ny tränare? Be klubbens ansvariga om en inbjudningslänk.	New coach? Ask the club administrator for an invitation link.
+Har klubben ingen licens än?	Club doesn't have a license yet?
+Begär tillgång	Request access
+Glömt lösenordet?	Forgot your password?
+Kontakta klubbens ansvariga eller Övningsfabriken, så hjälper vi dig. Du kan också få en inloggningslänk på mejlen:	Contact the club administrator or Övningsfabriken and we'll help you. You can also get a sign-in link by email:
+Skicka länk	Send link
+din@epost.se	you@email.com
+E-post för inloggningslänk	Email for sign-in link
+Logga in	Sign in
+Logga ut	Sign out
+Klubben	The club
+Dina lag	Your teams
+Vilket lag tränar du?	Which team do you coach?
+Välj de lag du tränar. Det första blir ditt aktiva lag.	Choose the teams you coach. The first one becomes your active team.
+Välj ditt lag så anpassas pass, övningar och läroplan efter åldern. Du kan välja flera.	Choose your team and sessions, exercises and curriculum adapt to the age group. You can choose several.
+Aktivt lag i appen	Active team in the app
+Lagen du kryssar i nedan sparas. Det aktiva laget måste vara ikryssat.	The teams you tick below are saved. The active team must be ticked.
+Sparar …	Saving …
+Spara och fortsätt	Save and continue
+Jag tränar inget lag just nu	I'm not coaching a team right now
+Enhetsgräns	Device limit
+Kontot används redan	The account is already in use
+Ditt konto är aktivt på	Your account is active on
+enheter, och licensen tillåter	devices, and the license allows
+per tränare. Logga ut en av dem för att använda den här.	per coach. Sign out of one of them to use this one.
+Okänd enhet	Unknown device
+Senast använd	Last used
+Logga ut den	Sign it out
+Kontot är personligt. Kollegor behöver en egen inbjudan från klubbens ansvariga.	The account is personal. Colleagues need their own invitation from the club administrator.
+Logga ut här i stället	Sign out here instead
+Ingen aktiv licens	No active license
+Nästan där	Almost there
+Du är inloggad som	You are signed in as
+, men kontot är inte kopplat till någon klubb med aktiv licens.	, but the account isn't linked to any club with an active license.
+s licens gick ut	's license expired
+. Kontakta klubbens ansvariga.	. Contact the club administrator.
+Har du fått en	Have you received an
+inbjudningslänk	invitation link
+? Öppna den igen, så kopplas du till klubben.	? Open it again and you'll be linked to the club.
+Ansvarig för klubben, eller saknas klubben?	Responsible for the club, or is the club missing?
+så hör vi av oss.	and we'll get in touch.
+Försök igen	Try again
+Planera träningen.	Plan the training.
+Utveckla spelarna.	Develop the players.
+Planera träningen. Utveckla spelarna.	Plan the training. Develop the players.
+Tack!	Thank you!
+Förfrågan är skickad	Your request has been sent
+Vi hör av oss till	We'll get back to
+så snart vi kan, oftast inom ett par dagar.	as soon as we can, usually within a couple of days.
+Vilken klubb gäller det?	Which club is it?
+Övningsfabriken används av klubbar med licens. Fyll i uppgifterna så kontaktar vi dig eller klubbens ansvariga.	Övningsfabriken is used by clubs with a license. Fill in the details and we'll contact you or the club administrator.
+Sök eller skriv klubbens namn	Search for or type the club's name
+Ditt namn	Your name
+Din roll	Your role
+Tränare – vill gå med i klubbens licens	Coach – want to join the club's license
+Ansvarig – vill ha licens för klubben	Administrator – want a license for the club
+Ungefär hur många tränare? (valfritt)	Roughly how many coaches? (optional)
+Meddelande (valfritt)	Message (optional)
+Jag godkänner att Övningsfabriken sparar uppgifterna för att kontakta mig.	I agree that Övningsfabriken may store these details in order to contact me.
+Skickar …	Sending …
+Skicka förfrågan	Send request
+Licens för hela klubben	License for the whole club
+Tränarlicens	Coach license
+Förfrågan kunde inte skickas just nu. Kontrollera uppkopplingen och försök igen.	The request couldn't be sent right now. Check your connection and try again.
+Fel e-post eller lösenord.	Wrong email or password.
+Det finns redan ett konto med den e-posten. Logga in med ditt lösenord, eller tryck Glömt lösenordet? nedan så får du en inloggningslänk på mejlen.	There is already an account with that email. Sign in with your password, or tap Forgot your password? below to get a sign-in link by email.
+Lösenordet måste vara minst 8 tecken.	The password must be at least 8 characters.
+E-postadressen är inte bekräftad än.	The email address hasn't been confirmed yet.
+För många försök. Vänta en stund och försök igen.	Too many attempts. Wait a moment and try again.
+Du är redan med i	You are already a member of
+Inbjudan kunde inte användas:	The invitation couldn't be used:
+Kunde inte kontrollera licensen:	Couldn't check the license:
+Kontot är skapat men behöver bekräftas. Kontakta Övningsfabriken.	The account has been created but needs to be confirmed. Contact Övningsfabriken.
+Välj minst ett lag, eller tryck "Jag tränar inget lag just nu".	Choose at least one team, or tap "I'm not coaching a team right now".
+Klart! Öppna mejlet och tryck på länken	Done! Open the email and tap the link
+– inbjudan följer med automatiskt.	– the invitation comes along automatically.
+Kolla skräpposten om det dröjer.	Check your spam folder if it takes a while.
+Kunde inte ansluta till Övningsfabriken. Kontrollera nätet och ladda om sidan.	Couldn't connect to Övningsfabriken. Check your connection and reload the page.
+Inte inloggad	Not signed in
+Ansluter …	Connecting …
+Sparas bara på den här enheten	Saved only on this device
+Kunde inte synka. Försöker igen.	Couldn't sync. Trying again.
+Spara dina pass i molnet	Save your sessions in the cloud
+Ditt konto	Your account
+Spara i molnet	Save in the cloud
+Molnet är inte tillgängligt just nu.	The cloud isn't available right now.
+Logga in med e-post så sparas dina pass, matcher och favoriter i molnet. Då finns de på alla dina enheter.	Sign in with email and your sessions, matches and favorites are saved in the cloud, on all your devices.
+E-postadress	Email address
+namn@klubb.se	name@club.com
+Skicka inloggningslänk	Send sign-in link
+Du behöver inget lösenord. Vi mejlar en länk som loggar in dig. Allt du redan gjort på den här enheten följer med upp.	You don't need a password. We email you a link that signs you in. Everything you've already done on this device comes along.
+Status	Status
+Så sparas dina data →	How your data is stored →
+Hämtar klubb …	Loading club …
+Byt lösenord	Change password
+Nytt lösenord	New password
+Spara lösenord	Save password
+Du är admin men inte med i någon klubb.	You are an admin but not a member of any club.
+Kontot är inte kopplat till någon klubb.	The account isn't linked to any club.
+Klubbadministration · du är ansvarig	Club administration · you are the administrator
+Tränare i klubben	Coaches in the club
+Licensen gäller till	The license is valid until
+Licensen gick ut	The license expired
+bjuder in och tar bort tränare och ser vilka som är med.	invites and removes coaches and sees who is a member.
+använder appen. Ingen av er ser någon annans pass, matcher eller anteckningar.	use the app. None of you can see anyone else's sessions, matches or notes.
+Klubbens ansvariga bjuder in och tar bort tränare. Dina pass, matcher och anteckningar ser bara du.	The club administrator invites and removes coaches. Only you can see your sessions, matches and notes.
+Okänd	Unknown
+Väntar på att gå med	Waiting to join
+Kopiera länk	Copy link
+Bjud in en kollega	Invite a colleague
+Skapa länk	Create link
+Namn, t.ex. Anna (valfritt)	Name, e.g. Anna (optional)
+Alla platser är använda. Ta bort någon eller kontakta Övningsfabriken för fler platser.	All seats are in use. Remove someone or contact Övningsfabriken for more seats.
+Dina enheter	Your devices
+(den här)	(this one)
+Kontot är personligt och kan användas på ett begränsat antal enheter.	The account is personal and can be used on a limited number of devices.
+Inbjudan till Övningsfabriken	Invitation to Övningsfabriken
+Länken är kopierad. Skicka den till din kollega.	The link has been copied. Send it to your colleague.
+Ta bort inbjudan? Länken slutar fungera.	Remove the invitation? The link will stop working.
+från klubben? Platsen blir ledig.	from the club? The seat becomes free.
+Lösenordet är sparat	The password has been saved
+Klart! Öppna mejlet till	Done! Open the email to
+och tryck på länken. Kolla skräpposten om det dröjer.	and tap the link. Check your spam folder if it takes a while.
+För många inloggningsmejl just nu. Vänta en stund och försök igen.	Too many sign-in emails right now. Wait a moment and try again.
+Det gick inte att skicka mejlet:	The email couldn't be sent:
+Sparade	Saved
+ändring	change
+Fel vid sparande:	Error saving:
+Hämtade	Fetched
+från molnet	from the cloud
+Fel vid hämtning:	Error fetching:
+Inloggningslänk skickad	Sign-in link sent
+Android-mobil	Android phone
+Android-surfplatta	Android tablet
+Windows-dator	Windows computer
+Linux-dator	Linux computer
+Enhet	Device
+Ny tränare på enheten – tidigare data rensad lokalt	New coach on this device – previous data cleared locally
+Utloggad	Signed out
+Appen kunde inte laddas. Kontrollera nätet och ladda om sidan.	The app couldn't load. Check your connection and reload the page.
+Övningsfabriken startar …	Övningsfabriken is starting …
+Aktivera JavaScript i webbläsaren för att använda Övningsfabriken.	Enable JavaScript in your browser to use Övningsfabriken.
+Stäng	Close
+Spara	Save
+Avbryt	Cancel
+Ta bort	Delete
+Ändra	Edit
+Klar	Done
+Tillbaka	Back
+Nästa	Next
+Föregående	Previous
+Dela	Share
+Skriv ut	Print
+Kopiera	Copy
+Sök	Search
+Rita och ladda upp övningar, sparade övningar, säsongsplan	Draw and upload exercises, saved exercises, season plan
+Favoriter, mina egna och klubbens delade	Favorites, my own and the club's shared
+Inloggning, tränarlaget, enheter och lösenord	Sign-in, coaching staff, devices and password
+Vad som finns på kontot och vem som ser vad	What is on the account and who sees what
+Klubbar, licenser och ägarlänkar (admin)	Clubs, licenses and owner links (admin)
+på Övningsfabriken. Välj e-post och lösenord så kopplas du till klubben.	at Övningsfabriken. Choose an email and password and you'll be linked to the club.
+Lagsida ↗	Team page ↗
+min	min
+spelare	players
+JFA:s spelarutbildningsplan 2025	JFA player development plan 2025
+Språk	Language
+Senior	Senior
+Match	Match
+Rondo	Rondo
+Japan	Japan
+Övningsfabriken	Övningsfabriken
+nyss	just now
+‹ Match	‹ Match
+Hemma	Home
+Borta	Away
+Gräs	Grass
+Konstgräs	Artificial grass
+⏱ Starta matchdagen	⏱ Start match day
+Samma i anfall och försvar	Same in attack and defense
+Formation:	Formation:
+exempel 4-4-2	example 4-4-2
+Återställ	Reset
+4-1-2-1-2 (4-4-2 romb)	4-1-2-1-2 (4-4-2 diamond)
+4-3-2-1 (julgran)	4-3-2-1 (Christmas tree)
+Frisparkar	Free kicks
+Hörnor	Corners
+Inkast	Throw-ins
+Straffar	Penalties
+Filmer och bilder: av (bara låst lagring) · appkod: på	Videos and images: off (locked storage only) · app code: on
+Tis	Tue
+Ons	Wed
+Tor	Thu
+Fre	Fri
+Mån	Mon
+Lör	Sat
+Sön	Sun
+Hej {},	Hi {1},
+Hej {}!	Hi {1}!
+Lag i {}	Teams in {1}
+Pojkar födda {}	Boys born {1}
+Flickor födda {}	Girls born {1}
+Alla typer	All types
+@mot	v
+@eller	or
+@och	and
+@år	years
+@spelare	players
+@min	min
+@plan	pitch
+@födda	born
+@Pojkar	Boys
+@Flickor	Girls
+@vecka	week
+@Vecka	Week
+# ---------- Startsidan ----------
+Övningarna visas här snart.	The exercises will appear here soon.
+Vi kunde inte hämta övningarna just nu.	We couldn't load the exercises right now.
+Skriv ditt namn.	Enter your name.
+Skriv en giltig e-postadress.	Enter a valid email address.
+Antal tränare ska vara en siffra.	Number of coaches must be a number.
+Bekräfta att du har läst integritetspolicyn.	Confirm that you have read the privacy policy.
+Något gick fel och förfrågan skickades inte. Försök igen om en stund.	Something went wrong and the request wasn't sent. Please try again shortly.
+Meny	Menu
+Ny	New
+Övningsfabriken – tränarens verktyg för hela säsongen	Övningsfabriken – the coach's tool for the whole season
+Appen	The app
+För föreningar	For clubs
+Frågor	FAQ
+Prova appen	Try the app
+Om Sam	About Sam
+Kontakt	Contact
+Passet klart innan du kliver ut på planen.	Your session ready before you step onto the pitch.
+Övningsfabriken är	Övningsfabriken is
+tränarens verktyg för hela säsongen	the coach's tool for the whole season
+. Bygg passet på några minuter, planera säsongen efter spelarutbildningsplanen och följ upp matcherna. Med 1 450 övningar att välja bland.	. Build a session in a few minutes, plan the season around the player development plan and follow up your matches. With 1,450 exercises to choose from.
+Bollvinst högt ger 3 poäng	Winning the ball high gives 3 points
+1 450 övningar	1,450 exercises
+Fler läggs till hela tiden.	More are added all the time.
+Läroplan per ålder	Curriculum by age
+Ålderskort från 8 till 17 år enligt spelarutbildningsplanen, och lek för 6–7 år.	Age cards from 8 to 17 following the player development plan, plus play for ages 6–7.
+Inga spelaruppgifter	No player data
+Inga namn på barn eller vuxna. Aldrig.	No names of children or adults. Ever.
+Det här får ni i appen.	What you get in the app.
+Från säsongsplanen i augusti till matchdagen i oktober. Allt hänger ihop: läroplanen styr säsongen, säsongen styr passen, matchanalysen styr träningsveckan, och det ni lär er efter matchen sparas till nästa gång.	From the season plan in August to match day in October. Everything connects: the curriculum drives the season, the season drives the sessions, the match analysis drives the training week, and what you learn after the match is saved for next time.
+Matchveckan	Match week
+Efter matchen	After the match
+Ett färdigt pass, block för block.	A ready-made session, block by block.
+Skriv vad ni ska träna, hur många spelare och målvakter ni har och hur lång träningen är. Du får ett pass med uppvärmning, huvudövningar och spel, där varje block har en bild av övningen.	Type what you'll train, how many players and goalkeepers you have and how long the session is. You get a session with warm-up, main exercises and games, where every block has a picture of the exercise.
+Ändra minuter och byt övning i varje block	Change minutes and swap exercises in every block
+Kör passet med timer ute på planen	Run the session with a timer out on the pitch
+Återbud? Passet anpassas efter antalet spelare	Drop-outs? The session adapts to the number of players
+Lista över vad du ska ta med: västar, koner, mål och bollar	A list of what to bring: bibs, cones, goals and balls
+1 450 övningar, sorterade och sökbara.	1,450 exercises, sorted and searchable.
+Sök på det ni behöver träna och filtrera på spelskede, kategori, spelform, lärandemål och antal spelare. Varje övning har en bild, och många har animerad video.	Search for what you need to train and filter by phase of play, category, format, learning objective and number of players. Every exercise has a picture, and many have an animated video.
+Filter på skede, kategori, spelform och lärandemål	Filters for phase, category, format and learning objective
+Visar direkt om övningen passar ert antal spelare	Shows straight away whether the exercise suits your number of players
+Spara favoriter med en stjärna	Save favorites with a star
+Lägg övningen direkt i ett pass	Add the exercise straight to a session
+Ålderskort för varje årskull.	Age cards for every age group.
+Från 8 år och 5 mot 5 till 16 år och 11 mot 11, enligt spelarutbildningsplanen. Varje ålderskort visar hur mycket färdighet och spel det ska vara, och vilka färdigheter som tränas varje vecka, varannan vecka eller ibland.	From age 8 and 5 v 5 to age 16 and 11 v 11, following the player development plan. Each age card shows how much skill work and play there should be, and which skills are trained every week, every other week or now and then.
+Spelform, passlängd och antal pass i veckan per ålder	Format, session length and sessions per week by age
+Lärandemål för varje färdighet	Learning objectives for every skill
+Skapa en säsongsplan direkt från ålderskortet	Create a season plan straight from the age card
+Säsongen planerad vecka för vecka.	The season planned week by week.
+Utgå från klubbens läroplan och välj ålder, hur många veckor säsongen är och hur länge varje tema ska pågå. Du får en plan där varje tema kopplar en färdighet till ett spelkoncept.	Start from the club's curriculum and choose the age, how many weeks the season lasts and how long each theme runs. You get a plan where every theme links a skill to a game concept.
+Bygger på klubbens egen läroplan	Built on the club's own curriculum
+Lägg till egna perioder	Add your own periods
+Lagets spelidé och egna ord.	The team's game model and its own words.
+Skriv in lagets principer för varje spelskede, till exempel ”vi pressar inåt”, och lagets egna ord och begrepp. Pass, övningar och matchplaner utgår sedan från dem, så att spelarna hör samma språk hela säsongen.	Enter the team's principles for each phase of play, for example "we press inside", and the team's own words and terms. Sessions, exercises and match plans then build on them, so the players hear the same language all season.
+Principer för varje spelskede	Principles for each phase of play
+Lagets ord och begrepp med förklaring	The team's words and terms, explained
+Appen säger till om något går emot en princip	The app tells you if something goes against a principle
+Läs av motståndaren före matchen.	Read the opponent before the match.
+Lägg in nästa match och motståndarens formation och spelstil. Bedöm deras styrkor och svagheter i varje spelskede och i fasta situationer. Motståndaren sparas som lagprofil till nästa gång ni möts.	Add the next match and the opponent's formation and style of play. Assess their strengths and weaknesses in each phase of play and at set pieces. The opponent is saved as a team profile for the next time you meet.
+Formation och spelstil	Formation and style of play
+Styrka, svaghet eller farlig, per spelskede	Strength, weakness or dangerous, per phase of play
+Hörnor, frisparkar och inkast	Corners, free kicks and throw-ins
+Farliga spelare med nummer och position, inga namn	Dangerous players by number and position, no names
+Träningsveckan byggs mot matchen.	The training week builds towards the match.
+Välj vilka dagar ni tränar, så får du passen fram till matchen. Första passet utnyttjar motståndarens svagheter, nästa skyddar er mot deras styrkor, och sista passet är lätt och tydligt med fasta situationer.	Choose which days you train and you get the sessions leading up to the match. The first session exploits the opponent's weaknesses, the next protects you against their strengths, and the last one is light and clear, with set pieces.
+Ett pass för varje träningsdag fram till match	A session for every training day up to the match
+Byggt på din analys av motståndaren	Built on your analysis of the opponent
+Matchplan inför matchen	Match plan before the game
+Matchdagen i mobilen.	Match day on your phone.
+Ställ upp laget på planen, starta klockan och byt spelare med ett tryck. Appen räknar speltiden för varje spelare, så att alla får spela lika mycket.	Line the team up on the pitch, start the clock and make substitutions with one tap. The app counts every player's minutes so everyone gets equal playing time.
+Klocka, perioder, halvtid och resultat	Clock, periods, half-time and score
+Formation och byten direkt på planen	Formation and substitutions right on the pitch
+Rättvis speltid, räknad för varje spelare	Fair playing time, counted for every player
+Snabbanteckningar som ”Bra press” eller ”Farlig hörna”, eller prata in dem	Quick notes like "Good press" or "Dangerous corner", or dictate them
+Påminnelse om vad ni ska ändra till andra halvlek	A reminder of what to change for the second half
+Lär er av varje match.	Learn from every match.
+Efter matchen svarar du på några korta frågor: fungerade planen, stoppade ni deras farliga skeden, och spelade de i den formation ni trodde? Svaren sparas på lagprofilen och används nästa gång ni möter samma lag.	After the match you answer a few short questions: did the plan work, did you stop their dangerous phases, and did they play the formation you expected? The answers are saved on the team profile and used next time you face the same team.
+Alla anteckningar från matchen samlade	All notes from the match in one place
+Betygsätt matchplanen: bra, okej eller dåligt	Rate the match plan: good, okay or poor
+Skriv eller prata in dina svar	Type or dictate your answers
+Sparas på motståndarens lagprofil till nästa möte	Saved on the opponent's team profile for the next meeting
+Det här ingår i licensen	Included in the license
+Träningspass block för block, med timer	Training sessions block by block, with a timer
+Utrustningslista till varje pass	Equipment list for every session
+1 450 övningar med bild och filter	1,450 exercises with pictures and filters
+Animerade videor till många övningar	Animated videos for many exercises
+Läroplan med ålderskort 8–17 år (och lek för 6–7 år)	Curriculum with age cards for ages 8–17 (and play for ages 6–7)
+Säsongsplan från klubbens läroplan	Season plan from the club's curriculum
+Lagets spelidé, principer och begrepp	The team's game model, principles and terms
+Motståndaranalys och lagprofiler	Opponent analysis and team profiles
+Träningsveckan mot nästa match	The training week towards the next match
+Matchdag med klocka, byten och rättvis speltid	Match day with clock, substitutions and fair playing time
+Snabbanteckningar och röst under matchen	Quick notes and voice during the match
+Uppföljning efter matchen	Follow-up after the match
+Rita egna övningar	Draw your own exercises
+Sparade övningar och favoriter	Saved exercises and favorites
+Progressioner i flera steg	Multi-step progressions
+Se övningen innan du ställer ut konerna.	See the exercise before you put out the cones.
+Här är ett urval ur banken, de senaste först. Varje video går igenom övningen moment för moment: var spelarna står, vart bollen går och vad som händer när den tappas.	Here is a selection from the library, newest first. Each video walks through the exercise step by step: where the players stand, where the ball goes and what happens when it's lost.
+Alla 1 450 övningar finns i appen.	All 1,450 exercises are in the app.
+Hela klubben tränar med samma övningar.	The whole club trains with the same exercises.
+För dig som är sportchef, ungdomsansvarig eller tränaransvarig. Ge alla klubbens ledare samma övningsbank, från de yngsta lagen till juniorerna.	For sporting directors, youth coordinators and heads of coaching. Give all the club's coaches the same exercise library, from the youngest teams to the juniors.
+Nya ledare kommer igång direkt	New coaches get going straight away
+Föräldern som tog över laget i augusti behöver inte hitta på något själv. Videon visar hur övningen går till och beskrivningen säger vad den tränar.	The parent who took over the team in August doesn't have to make things up. The video shows how the exercise works and the description says what it trains.
+En gemensam grund i klubben	A shared foundation across the club
+När alla lag hämtar från samma bank känner spelarna igen övningarna när de flyttas upp en årskull eller byter lag.	When every team draws from the same library, players recognize the exercises when they move up an age group or change teams.
+Kunskapen stannar kvar	The knowledge stays
+Tränare kommer och går. Övningarna och sättet att träna finns kvar i klubben, säsong efter säsong.	Coaches come and go. The exercises and the way of training stay in the club, season after season.
+Inga uppgifter om barn	No data about children
+Eget konto för varje tränare	Own account for every coach
+Fungerar i alla mobiler	Works on every phone
+Det här finns i banken just nu	In the library right now
+En tränare eller hela klubben.	One coach or the whole club.
+Alla licenser ger tillgång till alla övningar och videor. Klubblicenser betalas månadsvis, och varje tränare får ett eget konto.	Every license gives access to all exercises and videos. Club licenses are paid monthly, and every coach gets their own account.
+Licens	License
+Konton	Accounts
+Betalning	Payment
+Pris	Price
+För dig som tränar ett lag	For coaches of one team
+1 konto, inloggning med e-post	1 account, sign-in with email
+Hör av dig	Get in touch
+Fråga om pris	Ask for a price
+5–6 tränare	5–6 coaches
+Mindre klubb eller några lag	Smaller club or a few teams
+Ett konto per tränare	One account per coach
+Månadsvis	Monthly
+7 tränare	7 coaches
+Större grupp	Larger group
+Hela klubben	The whole club
+Alla lag, alla tränare	All teams, all coaches
+Alla klubbens tränare	All the club's coaches
+Övningarna och videorna får användas i hela klubbens verksamhet, men inte spridas utanför klubben.	The exercises and videos may be used across all the club's activities, but not shared outside the club.
+”Varför ska varje tränare behöva leta och rita sina övningar själv?”	"Why should every coach have to search for and draw their exercises on their own?"
+, UEFA C-tränare och grundare av Övningsfabriken	, UEFA C coach and founder of Övningsfabriken
+Övningsfabriken började med den frågan. Kvällar gick åt till att leta övningar på nätet och rita upplägg på papper som spelarna ändå inte förstod. Varje tränare i klubben gjorde samma jobb, var för sig.	Övningsfabriken started with that question. Evenings went on searching for exercises online and drawing set-ups on paper that the players didn't understand anyway. Every coach in the club did the same work, each on their own.
+Appen samlar färdiga övningar med tydliga beskrivningar och animerade videor, så att tiden går till spelarna i stället. Den är byggd av en tränare som har tränat ungdomslag i sju klubbar runt Stockholm, från Hammarby IF till Järfälla Football Academy.	The app gathers ready-made exercises with clear descriptions and animated videos, so your time goes to the players instead. It is built by a coach who has coached youth teams at seven clubs around Stockholm, from Hammarby IF to Järfälla Football Academy.
+Läs mer om Sam	Read more about Sam
+Bra att veta.	Good to know.
+Vad kostar det?	What does it cost?
+Det beror på om du är en enskild tränare eller vill ha licens för flera tränare eller hela klubben. Klubblicenser betalas månadsvis. Hör av dig, så får du pris och upplägg.	It depends on whether you're an individual coach or want a license for several coaches or the whole club. Club licenses are paid monthly. Get in touch and we'll send you a price and a set-up.
+Hur loggar jag in?	How do I sign in?
+Varje tränare har en egen inloggning med sin e-postadress. Med en klubblicens får varje tränare i klubben ett eget konto.	Every coach has their own sign-in with their email address. With a club license, every coach in the club gets their own account.
+Behöver jag lägga in spelare?	Do I need to add players?
+Nej. Appen behöver inga uppgifter om spelarna, och sådana uppgifter ska inte heller skrivas in. Det skyddar barnens integritet och gör appen enkel att använda.	No. The app needs no information about the players, and such information shouldn't be entered either. That protects the children's privacy and keeps the app simple to use.
+Kan hela klubben använda övningarna?	Can the whole club use the exercises?
+Ja, med en klubblicens kan alla klubbens tränare använda övningarna i klubbens verksamhet. Övningarna och videorna får däremot inte spridas vidare utanför klubben.	Yes, with a club license all the club's coaches can use the exercises in the club's activities. The exercises and videos may not, however, be shared outside the club.
+Fungerar den i mobilen?	Does it work on my phone?
+Ja. Övningsfabriken är en webbapp som fungerar i mobilen, surfplattan och datorn. Du behöver inte ladda ner något från App Store eller Google Play.	Yes. Övningsfabriken is a web app that works on phones, tablets and computers. You don't need to download anything from the App Store or Google Play.
+Vilka åldrar passar övningarna för?	Which ages are the exercises for?
+Det står i varje övning vilken ålder den passar från och vad den tränar. Det är tränaren som anpassar övningen efter spelarnas ålder och nivå.	Each exercise states the age it suits and what it trains. The coach adapts the exercise to the players' age and level.
+Vill din klubb komma igång?	Does your club want to get started?
+Berätta om klubben eller laget, så hör vi av oss med pris och upplägg.	Tell us about the club or the team and we'll get back to you with a price and a set-up.
+Licens för en tränare eller hela klubben	License for one coach or the whole club
+Hjälp att komma igång	Help getting started
+Inga förpliktelser	No obligations
+Namn	Name
+Antal tränare	Number of coaches
+Vad är du intresserad av?	What are you interested in?
+Klubblicens 5–6 tränare	Club license 5–6 coaches
+Klubblicens 7 tränare	Club license 7 coaches
+Annat	Other
+Meddelande	Message
+Lämna tomt	Leave empty
+Jag har läst	I have read the
+och förstår hur mina uppgifter används.	and understand how my details are used.
+integritetspolicyn	privacy policy
+(valfritt)	(optional)
+Tack, vi har fått din förfrågan.	Thank you, we've received your request.
+så snart vi kan, oftast inom ett par vardagar.	as soon as we can, usually within a couple of working days.
+Integritetspolicy	Privacy policy
+Animerad övning: Press för poäng i tredjedelar	Animated exercise: Pressing for points in thirds
+Kort om appen	The app in brief
+Delar av appen	Parts of the app
+Skärmbild: ett färdigt träningspass med uppvärmning, huvudövningar och spel, och lista över utrustning	Screenshot: a ready-made training session with warm-up, main exercises and games, and an equipment list
+Skärmbild: övningsbanken med sökning, filter och 1 450 övningar	Screenshot: the exercise library with search, filters and 1,450 exercises
+Skärmbild: ålderskort för 11 år, 7 mot 7, med färdigheter och hur ofta de ska tränas	Screenshot: age card for age 11, 7 v 7, with skills and how often to train them
+Skärmbild: säsongsplan från klubbens läroplan med antal veckor och veckor per tema	Screenshot: season plan from the club's curriculum with number of weeks and weeks per theme
+Skärmbild: lagets principer per spelskede och lagets egna ord och begrepp	Screenshot: the team's principles per phase of play and its own words and terms
+Skärmbild: motståndaranalys med formation, spelstil och styrkor och svagheter per skede	Screenshot: opponent analysis with formation, style of play and strengths and weaknesses per phase
+Skärmbild: träningsveckan med tre pass fram till matchen mot Djurgården	Screenshot: the training week with three sessions leading up to the match against Djurgården
+Skärmbild: matchdag med klocka, resultat, laguppställning på planen, avbytare, speltid per spelare och snabbanteckningar	Screenshot: match day with clock, score, line-up on the pitch, substitutes, playing time per player and quick notes
+Skärmbild: efter matchen med anteckningar, betyg på matchplanen och frågor som sparas på lagprofilen	Screenshot: after the match with notes, a rating of the match plan and questions saved on the team profile
+Filtrera på tema	Filter by theme
+Sam Nouman, grundare av Övningsfabriken	Sam Nouman, founder of Övningsfabriken
+Skriv inga uppgifter om spelare här.	Don't enter any information about players here.
+Press för poäng i tredjedelar	Pressing for points in thirds
+8, 12, 16 eller 20 veckor	8, 12, 16 or 20 weeks
+Sam Nouman	Sam Nouman
+Video: {}	Video: {1}
+Spela videon: {}	Play the video: {1}
+# ---------- Integritet och Om Sam ----------
+När	When
+Varför	Why
+Bolagsnamn fylls i	Company name to be added
+leverantörer fylls i	suppliers to be added
+, är personuppgiftsansvarig. Du når oss på	, is the data controller. You can reach us at
+För att svara dig och ta fram pris och upplägg	To answer you and prepare a price and set-up
+Vem som kan ta del av uppgifterna	Who can access the data
+Hur länge vi sparar uppgifterna	How long we keep the data
+få veta vilka uppgifter vi har om dig och få en kopia,	know what data we hold about you and get a copy,
+få felaktiga uppgifter rättade,	have incorrect data corrected,
+få uppgifter raderade när de inte längre behövs,	have data erased when it is no longer needed,
+begära att behandlingen begränsas eller invända mot den,	request that processing is restricted or object to it,
+få ut uppgifter du lämnat i ett maskinläsbart format.	receive the data you provided in a machine-readable format.
+Cookies	Cookies
+← Tillbaka till startsidan	← Back to the home page
+Övningsfabriken – till startsidan	Övningsfabriken – to the home page
+Startsidan	Home
+Hej, jag heter Sam.	Hi, my name is Sam.
+UEFA C-tränare, rektor och grundare av Övningsfabriken	UEFA C coach, headteacher and founder of Övningsfabriken
+Jag är 32 år och bor i Järfälla. Jag har tränat ungdomsfotboll i sju klubbar runt Stockholm, och i dag tränar jag P14 i Järfälla Football Academy.	I'm 32 and live in Järfälla. I have coached youth football at seven clubs around Stockholm, and today I coach the boys' U14 team at Järfälla Football Academy.
+Varför jag startade Övningsfabriken	Why I started Övningsfabriken
+Oftast hittade jag övningar på nätet som såg väldigt bra ut, men jag förstod inte syftet med dem. Tre frågor saknade svar:	I often found exercises online that looked really good, but I didn't understand their purpose. Three questions had no answer:
+Vad?	What?
+Vad tränar övningen egentligen?	What does the exercise actually train?
+Varför?	Why?
+Hur?	How?
+Tränare i sju klubbar	Coach at seven clubs
+Jag har tränat ungdomslag i flera åldersgrupper, i både breddklubbar och Hammarby IF. Nu är jag extern tränare för P14 i Järfälla Football Academy.	I have coached youth teams in several age groups, at both grassroots clubs and Hammarby IF. I'm now an external coach for the boys' U14 team at Järfälla Football Academy.
+P14 · nu	Boys U14 · now
+UEFA C-utbildad.	UEFA C qualified.
+Rektor till vardags	Headteacher by day
+Därför har övningarna i Övningsfabriken animerade videor. Spelarna ser övningen, och tränaren slipper stå och förklara vid konerna.	That's why the exercises in Övningsfabriken have animated videos. The players see the exercise, and the coach doesn't have to stand and explain by the cones.
+Det jag vill med appen	What I want with the app
+Och att appen aldrig ska behöva några uppgifter om spelarna. Det är barn det handlar om, och deras integritet går först.	And that the app should never need any information about the players. We're talking about children, and their privacy comes first.
+Vill du prata om hur din klubb kan använda Övningsfabriken? Hör av dig, så tar vi det därifrån.	Want to talk about how your club could use Övningsfabriken? Get in touch and we'll take it from there.
+Kontakta mig	Contact me
+Min berättelse	My story
+# ---------- Övningsvyn ----------
+Komma till avslut och göra mål	Create chances and score goals
+Från #+	From #+
+koner	cones
+mål	goals
+bollar	balls
+västar	bibs
++ Lägg i pass	+ Add to session
+Anpassa till mina # spelare	Adapt to my # players
+Visa liknande	Show similar
+Liknande	Similar
+Planen finns som PDF hos FIFA Training Centre:	The plan is available as a PDF from FIFA Training Centre:
+öppna PDF:en direkt	open the PDF directly
+Visa spelarna	Show the players
+{}: {} min ({})	{1}: {2} min ({3})
+Spel # %	Play # %
+Ibland	Sometimes
+Bollhållare – spela till fördel	Player on the ball – play for advantage
+Närmaste – bli spelbar	Nearest player – become available
+Övriga – skapa position (bredd, djup, kontringsskydd)	Others – take up positions (width, depth, counter-protection)
+Press och styr	Press and steer
+Understöd, täck och säkra	Support, cover and secure
+Flytta laget kompakt	Shift the team compactly
+MATCHVIDEO	MATCH VIDEO
+# # övningar att välja bland	#,# exercises to choose from
+# övningar av # #	# exercises of #,#

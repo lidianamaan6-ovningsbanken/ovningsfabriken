@@ -288,7 +288,7 @@
     }
     const club = brandInfo?.crest ? ' has-club' : '';
     return '<div class="of-grind-card' + club + '" role="dialog" aria-modal="true" aria-labelledby="g-title"><div class="of-grind-side" aria-hidden="true"><div>' + brandHTML() + '<p>Planera träningen.<br>Utveckla spelarna.</p></div></div>'
-      + '<div class="of-grind-main"><div class="of-grind-mobile-logo">' + brandHTML() + '</div>' + body.replace('<h1>', '<h1 id="g-title">') + dev + '</div></div>';
+      + '<div class="of-grind-main"><button type="button" class="of-grind-lang" data-sprak-open aria-label="Språk / Language"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span translate="no">' + (window.OF_SPRAK?.label() || 'Svenska') + '</span></button><div class="of-grind-mobile-logo">' + brandHTML() + '</div>' + body.replace('<h1>', '<h1 id="g-title">') + dev + '</div></div>';
   }
   /* ---------- G6: Begär tillgång – sparas i tabellen leads ---------- */
   const knownClubs = () => [...new Set((window.OF_SIGN_IN?.teams || []).map(t => t.club))].sort((a, b) => a.localeCompare(b, 'sv'));

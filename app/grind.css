@@ -114,3 +114,7 @@ html.of-grind-on #nav-root, html.of-grind-on #app, html.of-grind-on body > main,
 .of-grind-invited { margin-top: 14px; border: 1px solid #e2e6df; border-radius: 13px; background: #fff; padding: 2px 14px; }
 .of-grind-invited summary { cursor: pointer; font-weight: 700; padding: 12px 0; color: #16392b; }
 .of-grind-steps2 { margin: 0 0 12px; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; color: #34443b; }
+/* Språkval */
+.of-grind-main { position:relative; }
+.of-grind-lang { position:absolute; top:14px; inset-inline-end:14px; z-index:2; display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:6px 12px; border:1px solid rgba(0,0,0,.12); border-radius:999px; background:rgba(255,255,255,.75); color:inherit; font:inherit; font-size:13px; cursor:pointer; }
+.of-grind-lang:hover { background:#fff; }

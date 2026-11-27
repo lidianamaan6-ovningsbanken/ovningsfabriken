@@ -77,7 +77,7 @@
           : 'Klubbens ansvariga bjuder in och tar bort tränare. Dina pass, matcher och anteckningar ser bara du.') + '</p>';
       const { data: members } = await M().sb.from('club_members').select('user_id,email,role,joined_at').eq('club_id', c.id).order('joined_at');
       const me = M().state.user.id;
-      h += '<ul class="of-klubb-list">' + (members || []).map(m => '<li><span class="of-acc-ic is-in sm">' + esc((m.email || '?').slice(0, 1).toUpperCase()) + '</span><span class="grow">' + esc(m.email || 'Okänd') + (m.user_id === me ? ' <small>(du)</small>' : '') + '<small>' + (m.role === 'owner' ? 'Ansvarig' : 'Tränare') + '</small></span>'
+      h += '<ul class="of-klubb-list">' + (Array.isArray(members) ? members : []).map(m => '<li><span class="of-acc-ic is-in sm">' + esc((m.email || '?').slice(0, 1).toUpperCase()) + '</span><span class="grow">' + esc(m.email || 'Okänd') + (m.user_id === me ? ' <small>(du)</small>' : '') + '<small>' + (m.role === 'owner' ? 'Ansvarig' : 'Tränare') + '</small></span>'
         + (c.role === 'owner' && m.role !== 'owner' ? '<button type="button" class="of-text-action" data-konto="remove" data-club="' + c.id + '" data-user="' + m.user_id + '" data-name="' + esc(m.email) + '">Ta bort</button>' : '') + '</li>').join('') + '</ul>';
       if (c.role === 'owner') {
         const { data: inv } = await M().sb.from('club_invites').select('token,label,role,expires_at,created_at').eq('club_id', c.id).is('used_by', null).eq('revoked', false).gt('expires_at', new Date().toISOString()).order('created_at');
@@ -92,7 +92,7 @@
     }
     const { data: devs } = await M().sb.from('user_devices').select('device_id,label,last_seen').order('last_seen', { ascending: false });
     const mine = M().deviceId();
-    h += '<section class="of-klubb-c"><h4>Dina enheter</h4><ul class="of-klubb-list">' + (devs || []).map(d => '<li><span class="grow">' + esc(d.label || 'Okänd enhet') + (d.device_id === mine ? ' <small>(den här)</small>' : '')
+    h += '<section class="of-klubb-c"><h4>Dina enheter</h4><ul class="of-klubb-list">' + (Array.isArray(devs) ? devs : []).map(d => '<li><span class="grow">' + esc(d.label || 'Okänd enhet') + (d.device_id === mine ? ' <small>(den här)</small>' : '')
       + '<small>Senast använd ' + esc(String(d.last_seen).slice(0, 10)) + '</small></span>'
       + (d.device_id !== mine ? '<button type="button" class="of-text-action" data-konto="forget" data-dev="' + esc(d.device_id) + '">Logga ut</button>' : '') + '</li>').join('') + '</ul>'
       + '<p class="of-konto-note">Kontot är personligt och kan användas på ett begränsat antal enheter.</p></section>';
