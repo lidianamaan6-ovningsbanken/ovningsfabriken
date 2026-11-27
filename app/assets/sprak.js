@@ -8,7 +8,7 @@
 (function () {
   'use strict';
   /* Versionsnummer för ordlistorna – skrivs av verktyg/sprak/bygg_sprak.py */
-  const V = {"en":"79a73b75","bank-en":"c06e079b","ar":"7f6e2c96","bank-ar":"4d51e40d","de":"ced5a50e","bank-de":"bd0b2abd","es":"05c74ccd","bank-es":"958d0e98","fa":"9b501175","bank-fa":"c3e5458f","fi":"63f98a86","bank-fi":"ddaed772","fr":"090fc91b","bank-fr":"6330ab34","it":"1ac8d43d","bank-it":"4374cac4","pl":"7c147216","bank-pl":"76b93a4b","pt":"90c3f3cc","bank-pt":"8208f42f","ru":"11647f23","bank-ru":"fa076ec0","tr":"94db9a33","bank-tr":"d01738aa","uk":"3fc8befc","bank-uk":"92cbcc05"};
+  const V = {"en":"79a73b75","bank-en":"c06e079b","ar":"ebdff9dd","bank-ar":"9a43846d","de":"6d7ab7e7","bank-de":"b104b659","es":"4b6db86f","bank-es":"b3540cd5","fa":"c371d8c2","bank-fa":"4ad4d0ae","fi":"ec769a46","bank-fi":"b9f9dbe1","fr":"3a2420f3","bank-fr":"a89dcccd","it":"c44b380d","bank-it":"ec49d31b","pl":"100d888e","bank-pl":"6f289814","pt":"7aba3970","bank-pt":"727fbaef","ru":"31be957b","bank-ru":"90b27d5a","tr":"f439f4d0","bank-tr":"fbab1c25","uk":"7446391e","bank-uk":"0f979d1a"};
   const LANGS = [
     ['sv', 'Svenska'], ['en', 'English'], ['ar', 'العربية', 1], ['fa', 'فارسی', 1], ['fi', 'Suomi'], ['es', 'Español'],
     ['de', 'Deutsch'], ['fr', 'Français'], ['pl', 'Polski'], ['tr', 'Türkçe'], ['uk', 'Українська'], ['ru', 'Русский'], ['pt', 'Português'], ['it', 'Italiano']
