@@ -9062,7 +9062,8 @@ const WORKSPACE_PAGES = [
 const OF_DEV_ON = (() => { try {
   const u = new URLSearchParams(location.search).get('utvecklare');
   if (u === '1') localStorage.setItem('of-utvecklare', '1'); if (u === '0') localStorage.removeItem('of-utvecklare');
-  return localStorage.getItem('of-utvecklare') === '1' || location.hostname === 'localhost';
+  /* Utvecklare syns bara för inloggad admin (och lokalt vid utveckling) */
+  return location.hostname === 'localhost' || !!window.OF_ACCESS?.admin;
 } catch (e) { return false; } })();
 if (OF_DEV_ON) WORKSPACE_PAGES.push(['dev', 'Utvecklare', 'M8 8l-5 4 5 4m8-8 5 4-5 4M14 4l-4 16']);
 const workspaceIcon = i => '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + WORKSPACE_PAGES[i][2] + '"/></svg>';

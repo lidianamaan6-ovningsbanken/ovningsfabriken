@@ -14,7 +14,7 @@
   // Inbjudan sparas på enheten så att den följer med även om man loggar in via en länk på mejlen
   let invite = q.get('inbjudan') || (() => { try { const v = JSON.parse(localStorage.getItem('of-inbjudan') || 'null'); return v && Date.now() - v.at < 864e5 ? v.t : null; } catch (e) { return null; } })();
   if (q.get('inbjudan')) { try { localStorage.setItem('of-inbjudan', JSON.stringify({ t: invite, at: Date.now() })); } catch (e) { } }
-  const devOn = () => { try { return localStorage.getItem('of-utvecklare') === '1' || location.hostname === 'localhost' || q.get('utvecklare') === '1'; } catch (e) { return false; } };
+  const devOn = () => { try { return location.hostname === 'localhost' || !!window.OF_ACCESS?.admin; } catch (e) { return false; } };   // bara admin
 
   const st = { phase: 'start', access: null, msg: '', mode: invite ? 'signup' : 'login', busy: false, inviteClub: '', teamMode: 'first', picked: [] };
   const g = n => { try { return (0, eval)(n); } catch (e) { return undefined; } };
