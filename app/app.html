@@ -1,19 +1,17 @@
 <!doctype html>
 <html lang="sv"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdnjs.cloudflare.com; worker-src 'self' blob: https://cdnjs.cloudflare.com; connect-src 'self' https://fwgvfmkdmrpmgririxpt.supabase.co wss://fwgvfmkdmrpmgririxpt.supabase.co https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; media-src 'self' blob: https://fwgvfmkdmrpmgririxpt.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'self' blob:; frame-src 'self' blob:; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; worker-src 'self' blob:; connect-src 'self' https://fwgvfmkdmrpmgririxpt.supabase.co wss://fwgvfmkdmrpmgririxpt.supabase.co; img-src 'self' data: blob: https:; media-src 'self' blob: https://fwgvfmkdmrpmgririxpt.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'self' blob:; frame-src 'self' blob:; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
 <meta name="description" content="Planera fotbollsträningar, hitta övningar och följ upp matcher."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Övningsfabriken</title>
 <meta name="of-open" content="1">
-<meta name="of-app" content="app-17bb85c3132c2bc2.js?v=b871f913e5">
+<meta name="of-app" content="app-17bb85c3132c2bc2.js?v=2c5c21781e">
 <script>
 /* Laget kommer från kontot. Gamla adresser med ?team= eller ?utan-lag städas bort. */
 (function(){try{var u=new URL(location.href);if(u.searchParams.has('team')||u.searchParams.has('utan-lag')){u.searchParams.delete('team');u.searchParams.delete('utan-lag');history.replaceState(null,'',u.toString());}}catch(e){}})();
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="./fonts/fonts.css?v=1">
 <style>
 /* Layout: one column (max 640px). Hero = the player count on a pitch-green panel, then skede and mode, then a growing stack of exercise cards; once there are results the settings collapse into a green summary bar. Bib orange is the only action colour; phase colours mark anfall / försvar / omställning. */
 :root{
@@ -25,7 +23,7 @@
   --bad:#B42318; --bad-soft:#FBE0DD; --warn:#9A6200; --warn-soft:#FBEFD2;
   --shadow:0 1px 2px rgba(19,32,26,.08),0 6px 20px rgba(19,32,26,.06);
   --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:14px; --r-sm:8px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -1039,7 +1037,7 @@ html,body{overflow-x:clip}
 .wl>.btn.big{position:sticky;bottom:0;box-shadow:0 -10px 20px var(--bg)}
 </style>
 
-<link rel="stylesheet" href="./workspace.css?v=52">
+<link rel="stylesheet" href="./workspace.css?v=53">
 <link rel="stylesheet" href="./grind.css?v=9">
 <script>try{var c=JSON.parse(localStorage.getItem('of-tillgang')||'null');if(!(c&&c.ok&&Date.now()-c.at<6048e5)||/[?&]inbjudan=/.test(location.search))document.documentElement.classList.add('of-grind-on')}catch(e){document.documentElement.classList.add('of-grind-on')}</script>
 
@@ -1063,12 +1061,12 @@ setTimeout(function(){if(d.parentNode){d.style.opacity='0';setTimeout(function()
 <script src="./stockholm-p2009.js" defer></script>
 <script src="./lagkatalog.js" defer></script>
 <script src="./assets/vendor/supabase.js?v=2" defer></script>
-<script src="./assets/moln.js?v=8" defer></script>
-<script src="./assets/konto.js?v=5" defer></script>
+<script src="./assets/moln.js?v=9" defer></script>
+<script src="./assets/konto.js?v=6" defer></script>
 <script src="./assets/skydd.js?v=4" defer></script>
 <script src="./assets/klubbfarger.js?v=1" defer></script>
 <script src="./assets/grind.js?v=13" defer></script>
-<script src="./assets/utvecklare.js?v=6" defer></script>
+<script src="./assets/utvecklare.js?v=7" defer></script>
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});</script>
 
 <style>

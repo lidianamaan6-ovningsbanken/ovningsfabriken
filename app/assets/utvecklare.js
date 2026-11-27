@@ -240,7 +240,7 @@
         try { await M().rpc('admin_set_license', { cid: b.dataset.id, seat_count: seats, valid }); adminClubs = await M().rpc('admin_clubs'); } catch (err) { adminErr = err.message; }
         rerender();
       }
-      if (a === 'sync') { await M().pull(false); await M().push(); refreshRemote(); T('Synkat'); }
+      if (a === 'sync') { await M().pull(false, true); await M().push(); refreshRemote(); T('Synkat'); }
       if (a === 'resync') { await M().resetSync(); refreshRemote(); T('Full omsynk klar'); }
       if (a === 'theme') { const v = b.dataset.v; if (v === 'system') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v; rerender(); }
       if (a === 'export') {

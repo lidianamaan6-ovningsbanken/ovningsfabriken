@@ -1,0 +1,25 @@
+# Vid varje publicering till main:
+# 1) kontrollerar att appens JavaScript-filer går att läsa in (stoppar trasig kod),
+# 2) laddar upp den nya appversionen och nya filmer till den skyddade lagringen i Supabase.
+# Kräver hemligheten SUPABASE_SERVICE_ROLE_KEY under Settings → Secrets and variables → Actions.
+name: Publicera
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'verktyg/skydd/**', '.github/workflows/publicera.yml']
+  workflow_dispatch:
+jobs:
+  kontroll-och-lagring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Kontrollera att koden går att läsa in
+        run: |
+          for f in app/assets/*.js; do node -e "new Function(require('fs').readFileSync('$f','utf8'))" || { echo "Syntaxfel i $f"; exit 1; }; done
+          python3 -c "import json;json.load(open('app/assets/skydd-lista.json'))"
+      - name: Ladda upp till skyddad lagring
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 verktyg/skydd/ladda_upp.py

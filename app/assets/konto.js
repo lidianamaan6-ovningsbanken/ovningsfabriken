@@ -105,7 +105,7 @@
         const a = e.target.closest('[data-konto]')?.dataset.konto;
         if (a === 'close') d.close();
         if (a === 'data') { d.close(); window.OF_DATA_INFO?.(); }
-        if (a === 'sync') { await M().pull(false); await M().push(); d.innerHTML = dialogHTML(); }
+        if (a === 'sync') { await M().pull(false, true); await M().push(); d.innerHTML = dialogHTML(); }
         if (a === 'out') { await M().signOut(); clubCache = ''; d.close(); }
         if (a === 'forget') { try { await M().rpc('forget_device', { dev: e.target.closest('[data-dev]').dataset.dev }); } catch (err) { alert(err.message); } loadClub(); }
         if (a === 'copy') copy(e.target.closest('[data-url]').dataset.url);

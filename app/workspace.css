@@ -984,3 +984,14 @@ html[data-sun] .pass-way.primary small, html[data-sun] .of-hero .of-eyebrow { co
 .coach-av.pend { background: #f1efe6; color: #8a7a4a; }
 .of-text-action.red { color: #a12a1f; }
 .coach-list li .of-text-action { white-space: nowrap; font-size: 13px; }
+/* Meny: på mobil och surfplatta fyra flikar + Mer, i sidomenyn på dator alla flikar */
+@media (max-width:1049px) {
+  .of-links { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+  .of-links button[data-v="tools"], .of-links button[data-v="dev"] { display: none !important; }
+}
+@media (min-width:1050px) { .of-links .of-more { display: none !important; } }
+.more { display: flex; flex-direction: column; gap: 8px; }
+.more-i { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line, #dcdcd4); background: var(--surface, #fff); font: inherit; color: inherit; cursor: pointer; }
+.more-i b { font-size: 16px; }
+.more-i small { color: var(--muted, #5b6660); }
+.pass-ways-mini { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 12px; }

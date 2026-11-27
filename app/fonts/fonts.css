@@ -1,0 +1,6 @@
+/* Typsnitten ligger på egen server (ingen hämtning från Google). Licens: SIL Open Font License 1.1 – se LICENSE-OFL.txt */
+@font-face { font-family: "DM Sans"; font-style: normal; font-weight: 400 800; font-display: swap; src: url(dmsans-var.woff2) format("woff2"); }
+@font-face { font-family: "Fraunces"; font-style: normal; font-weight: 400 600; font-display: swap; src: url(fraunces-var.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 500; font-display: swap; src: url(barlowcond-500.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 600; font-display: swap; src: url(barlowcond-600.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 700; font-display: swap; src: url(barlowcond-700.woff2) format("woff2"); }

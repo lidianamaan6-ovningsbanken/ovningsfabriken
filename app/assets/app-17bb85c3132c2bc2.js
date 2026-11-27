@@ -5324,6 +5324,7 @@ function startHeroHTML() {
 
 /* ---------- G14/G16: tre tydliga vägar till ett pass ---------- */
 function passWaysHTML(empty) {
+  if (!empty) return '<div class="pass-ways-mini"><button type="button" class="btn primary" data-a="workspaceCompose">+ Nytt pass</button><button type="button" class="btn" data-a="planSub" data-v="season">Planera säsongen</button></div>';
   const way = (a, v, t, d, primary) => '<button type="button" class="pass-way' + (primary ? ' primary' : '') + '" data-a="' + a + '"' + (v ? ' data-v="' + v + '"' : '') + '><b>' + t + '</b><small>' + d + '</small></button>';
   return (empty ? '<div class="card empty pass-empty"><h3 style="color:var(--ink)">Inga pass än</h3><p>Välj hur du vill börja. Allt går att ändra efteråt.</p></div>' : '')
     + '<div class="pass-ways" role="group" aria-label="Skapa ett pass">'
@@ -5703,7 +5704,7 @@ function runClose() { clearInterval(RUNT); if (ACT && ACT.u.startsWith('run-')) 
 /* ---------- Utskrift, offline-fil och delning ---------- */
 function sessDocHTML(s, standalone) {
   const kit = sessKit(s); const d = s.date;
-  const kitTxt = [kit.a && kit.a + ' orange västar', kit.b && kit.b + ' blå västar', kit.j && kit.j + ' jokervästar', kit.gk && kit.gk + ' målvakter', kit.cones && kit.cones + ' koner', kit.goals && kit.goals + ' mål', kit.balls && kit.balls + ' bollar'].filter(Boolean).join(' · ');
+  const kitTxt = [kit.a && kit.a + ' västar lag 1', kit.b && kit.b + ' västar lag 2', kit.j && kit.j + ' jokervästar', kit.gk && kit.gk + ' målvakter', kit.cones && kit.cones + ' koner', kit.goals && kit.goals + ' mål', kit.balls && kit.balls + ' bollar'].filter(Boolean).join(' · ');
   let h = '<div class="pd"><header class="pd-h"><div><h1>' + esc(s.name) + '</h1><p>' + esc(d) + ' · ' + sessTotal(s) + ' min · ' + (s.players || ST.n) + ' spelare' + (sfOf(ST.spelform) ? ' · ' + esc(sfOf(ST.spelform)[1]) : '') + '</p>' + (s.focus ? '<p class="pd-f">' + esc(s.focus) + '</p>' : '') + '</div><div class="pd-kit"><b>Material</b><br>' + esc(kitTxt) + '</div></header>';
   let t = 0;
   s.blocks.forEach((b, i) => {
@@ -5722,7 +5723,7 @@ function sessText(s) {
   const L = [s.name + ' – ' + s.date, sessTotal(s) + ' min · ' + (s.players || ST.n) + ' spelare'];
   if (s.focus) L.push(s.focus);
   let t = 0; s.blocks.forEach((b, i) => { const st = t; t += Number(b.min) || 0; L.push('', (i + 1) + '. ' + kindName(b.kind) + ' (' + st + '–' + t + ' min): ' + b.ex.name); (b.ex.coachingPoints || []).slice(0, 2).forEach(c => L.push('   • ' + c)); });
-  const k = sessKit(s); L.push('', 'Material: ' + [k.a && k.a + ' orange västar', k.b && k.b + ' blå västar', k.cones && k.cones + ' koner', k.goals && k.goals + ' mål', k.balls && k.balls + ' bollar'].filter(Boolean).join(', '));
+  const k = sessKit(s); L.push('', 'Material: ' + [k.a && k.a + ' västar lag 1', k.b && k.b + ' västar lag 2', k.cones && k.cones + ' koner', k.goals && k.goals + ' mål', k.balls && k.balls + ' bollar'].filter(Boolean).join(', '));
   return L.join('\n');
 }
 function shareHTML(s) {
@@ -5926,8 +5927,8 @@ const __kitOf11 = kitOf;
 kitOf = function (ex) { const b = ex && ex.fromBank ? bankById(ex.basedOn) : null; if (b && catOf(b) === 'prev') return { a: 0, b: 0, j: 0, gk: 0, cones: 4, goals: 0, balls: 0, players: 0 }; return __kitOf11(ex); };
 kitItems = function (k) {
   const it = [];
-  if (k.a) it.push([KI.bib('var(--bib-a)'), k.a, 'orange västar']);
-  if (k.b) it.push([KI.bib('var(--bib-b)'), k.b, 'blå västar']);
+  if (k.a) it.push([KI.bib('var(--bib-a)'), k.a, 'västar lag 1']);
+  if (k.b) it.push([KI.bib('var(--bib-b)'), k.b, 'västar lag 2']);
   if (k.j) it.push([KI.bib('#fff'), k.j, k.j === 1 ? 'jokerväst' : 'jokervästar']);
   if (k.gk) it.push([KI.bib('var(--cone)'), k.gk, k.gk === 1 ? 'målvakt' : 'målvakter']);
   if (k.cones) it.push([KI.cone, k.cones, 'koner']);
@@ -5935,7 +5936,7 @@ kitItems = function (k) {
   if (k.balls) it.push([KI.ball, k.balls, 'bollar']);
   return '<div class="kit-row">' + it.map(([i, n, l]) => '<span class="kit-i">' + i + '<b class="num">' + n + '</b><small>' + l + '</small></span>').join('') + '</div>';
 };
-kitRow = function (ex) { const k = kitFor(ex, ST.n); if (!k) return ''; return '<div class="kit"><span class="label">Material för ' + ST.n + ' spelare</span>' + kitItems(k) + groupsText(ex, ST.n) + '</div>'; };
+kitRow = function (ex) { const k = kitFor(ex, ST.n); if (!k) return ''; return '<div class="kit"><span class="label">Material för ditt lag (' + ST.n + ' spelare)</span>' + kitItems(k) + groupsText(ex, ST.n) + '</div>'; };
 const __bankBrowse11 = bankBrowseHTML;
 bankBrowseHTML = function () {
   const bs = ST.bankStyle || 'all';
@@ -6953,7 +6954,7 @@ async function sessPNG(s) {
   const IW = 400, IH = Math.round(IW * BH / BW), TX = IMG_PAD + IW + 32, TW = IMG_W - TX - IMG_PAD;
   const imgs = await Promise.all(s.blocks.map(b => loadSvgImg(svgForImg(b.ex, IW * 2))));
   const kit = sessKit(s);
-  const kitTxt = [kit.a && kit.a + ' orange västar', kit.b && kit.b + ' blå västar', kit.j && kit.j + ' jokervästar', kit.cones && kit.cones + ' koner', kit.goals && kit.goals + ' mål', kit.balls && kit.balls + ' bollar'].filter(Boolean).join(' · ');
+  const kitTxt = [kit.a && kit.a + ' västar lag 1', kit.b && kit.b + ' västar lag 2', kit.j && kit.j + ' jokervästar', kit.cones && kit.cones + ' koner', kit.goals && kit.goals + ' mål', kit.balls && kit.balls + ' bollar'].filter(Boolean).join(' · ');
   const meta = [fmtDate(s.date), sessTotal(s) + ' min', (s.players || ST.n) + ' spelare', sfOf(ST.spelform) ? sfOf(ST.spelform)[1] : ''].filter(Boolean).join(' · ');
   const c = document.createElement('canvas'); const x = c.getContext('2d');
   // Mät höjder
@@ -7413,7 +7414,7 @@ let JSPDF_P = null;
 function loadJsPDF() {
   if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
   if (JSPDF_P) return JSPDF_P;
-  JSPDF_P = new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; s.onload = () => (window.jspdf && window.jspdf.jsPDF) ? res(window.jspdf.jsPDF) : rej(new Error('jspdf')); s.onerror = () => { JSPDF_P = null; rej(new Error('jspdf')); }; document.head.appendChild(s); });
+  JSPDF_P = new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'assets/vendor/jspdf-2.5.1.umd.min.js?v=2.5.1'; s.onload = () => (window.jspdf && window.jspdf.jsPDF) ? res(window.jspdf.jsPDF) : rej(new Error('jspdf')); s.onerror = () => { JSPDF_P = null; rej(new Error('jspdf')); }; document.head.appendChild(s); });
   return JSPDF_P;
 }
 const PDF_GREEN = [31, 97, 67], PDF_GOLD = [201, 162, 39], PDF_INK = [25, 28, 26], PDF_MUTED = [105, 112, 108], PDF_LINE = [200, 206, 202];
@@ -7504,7 +7505,7 @@ function pdfSess(s) {
     P.text(s.name || 'Träningspass', { size: 20, bold: true, lh: 2 });
     P.text([fmtDate(s.date), sessTotal(s) + ' min', (s.players || ST.n) + ' spelare', sfOf(ST.spelform) ? sfOf(ST.spelform)[1] : ''].filter(Boolean).join(' · '), { size: 10.5, color: PDF_MUTED }); P.y += 2;
     if (s.focus) P.section('Fokus', s.focus);
-    const kitTxt = [kit.a && kit.a + ' orange västar', kit.b && kit.b + ' blå västar', kit.j && kit.j + ' jokervästar', kit.cones && kit.cones + ' koner', kit.goals && kit.goals + ' mål', kit.balls && kit.balls + ' bollar'].filter(Boolean).join(', ');
+    const kitTxt = [kit.a && kit.a + ' västar lag 1', kit.b && kit.b + ' västar lag 2', kit.j && kit.j + ' jokervästar', kit.cones && kit.cones + ' koner', kit.goals && kit.goals + ' mål', kit.balls && kit.balls + ' bollar'].filter(Boolean).join(', ');
     if (kitTxt) P.section('Material', kitTxt);
     P.need(14); P.y += 2; doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...PDF_GREEN); doc.text('Passets upplägg', 14, P.y + 4); P.y += 8;
     let t = 0;
@@ -9057,7 +9058,7 @@ const WORKSPACE_PAGES = [
   ['plan', 'Planering', 'M6 3v4m12-4v4M3 10h18 M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z M7 14h4m2 3h4'],
   ['bank', 'Övningsbank', 'M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z M4 16h16M8 8h8m-8 4h5'],
   ['match', 'Match', 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v4m0 6v4 M3 9h3v6H3m18-6h-3v6h3 M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0'],
-  ['tools', 'Verktyg', 'M5 12h.01m7 0h.01m7 0h.01'],
+  ['tools', 'Verktyg', 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z'],
 ];
 /* Utvecklare syns bara för inloggad admin (och lokalt vid utveckling) – räknas om vid varje visning */
 const devOk = () => { try { return location.hostname === 'localhost' || !!window.OF_ACCESS?.admin; } catch (e) { return false; } };
@@ -9074,7 +9075,8 @@ renderNav = function () {
   $('#nav-root').innerHTML = '<nav class="of-nav" aria-label="Huvudmeny">'
     + '<button class="of-brand" type="button" data-a="view" data-v="today">' + workspaceBrand() + '</button>'
     + '<div class="of-links">' + WORKSPACE_PAGES.map(([view, label], i) =>
-      '<button type="button" data-a="view" data-v="' + view + '"' + (active === view ? ' aria-current="page"' : '') + '>' + workspaceIcon(i) + '<span>' + label + '</span></button>').join('') + '</div>'
+      '<button type="button" data-a="view" data-v="' + view + '"' + (active === view ? ' aria-current="page"' : '') + '>' + workspaceIcon(i) + '<span>' + label + '</span></button>').join('')
+    + '<button type="button" class="of-more" data-a="navMore"' + (['tools', 'dev', 'draw', 'saved', 'make'].includes(active) ? ' aria-current="page"' : '') + ' aria-label="Mer: verktyg och konto"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mer</span></button></div>'
     + workspaceNavTeam() + '<button type="button" class="of-nav-acc" data-a="ofAccount" data-moln-nav>' + (window.OF_KONTO ? OF_KONTO.navHTML() : 'Logga in') + '</button>'
     + workspaceClubBadge('of-nav-club', 'Tränarverktyg') + '</nav>';
 };
@@ -9215,7 +9217,7 @@ function workspaceToday() {
     + '<p>' + esc(finishedPass.name) + '</p><button type="button" class="of-text-action" data-a="'
     + (finishedPass.refl?.done ? 'openSess' : 'reflStart') + '" data-id="' + esc(finishedPass.id) + '">'
     + (finishedPass.refl?.done ? 'Öppna passet' : 'Reflektera över passet') + '</button></section>' : '';
-  const empty = showComposer ? '<section class="of-home-panel of-home-empty"><div class="of-panel-head"><div><span class="of-eyebrow">Idag</span><h2>Inget planerat idag</h2></div><p>Välj hur du vill komma igång.</p></div>'
+  const empty = showComposer ? '<section class="of-home-panel of-home-empty"><div class="of-panel-head"><div><span class="of-eyebrow">Skapa ett pass</span><h2>Välj hur du vill börja</h2></div></div>'
     + '<div class="of-quick">'
     + '<button type="button" class="of-quick-item of-quick-main" data-a="workspaceOpenComposer"><span class="of-quick-ic">' + workspaceIcon(1) + '</span><span><b>Snabbt pass</b><small>Skriv fokus – appen väljer övningar ur banken</small></span></button>'
     + '<button type="button" class="of-quick-item" data-a="newPass"><span class="of-quick-ic">+</span><span><b>Tomt pass</b><small>Bygg själv, block för block</small></span></button>'
@@ -9820,7 +9822,7 @@ startWorkspace();
 /* Prestanda: PDF-biblioteket förladdas i bakgrunden så att första PDF:en skapas utan väntan */
 (function () {
   const idle = window.requestIdleCallback || (fn => setTimeout(fn, 6000));
-  setTimeout(() => idle(() => { try { const l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; document.head.appendChild(l); } catch (e) { } }, { timeout: 15000 }), 5000);
+  setTimeout(() => idle(() => { try { const l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = 'assets/vendor/jspdf-2.5.1.umd.min.js?v=2.5.1'; document.head.appendChild(l); } catch (e) { } }, { timeout: 15000 }), 5000);
 })();
 
 /* ---------- Ladda upp egen övning (foto, skärmbild, whiteboard) – fungerar utan AI ---------- */
@@ -9839,13 +9841,13 @@ function upCompress(src, w, h, maxSide, limit) {
   }
   return out;
 }
-const PDFJS_V = '3.11.174', PDFJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + PDFJS_V + '/';
+const PDFJS_V = '3.11.174', PDFJS_BASE = 'assets/vendor/';
 let PDFJS_P = null;
 function loadPdfJs() {
   if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
   if (PDFJS_P) return PDFJS_P;
-  PDFJS_P = new Promise((res, rej) => { const s = document.createElement('script'); s.src = PDFJS_BASE + 'pdf.min.js';
-    s.onload = () => { const L = window.pdfjsLib; if (!L) { PDFJS_P = null; rej(new Error('pdfjs')); return; } L.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js'; res(L); };
+  PDFJS_P = new Promise((res, rej) => { const s = document.createElement('script'); s.src = PDFJS_BASE + 'pdfjs-' + PDFJS_V + '.min.js?v=' + PDFJS_V;
+    s.onload = () => { const L = window.pdfjsLib; if (!L) { PDFJS_P = null; rej(new Error('pdfjs')); return; } L.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdfjs-' + PDFJS_V + '.worker.min.js?v=' + PDFJS_V; res(L); };
     s.onerror = () => { PDFJS_P = null; s.remove(); rej(new Error('pdfjs')); }; document.head.appendChild(s); });
   return PDFJS_P;
 }
@@ -10507,7 +10509,7 @@ function calendarHTML() {
     }
     h += '</div>';
   }
-  h += '</div><p class="small muted cal-key"><span class="cal-key-s"></span> Träningspass <span class="cal-key-m"></span> Match <span class="cal-key-r">röd</span> = helgdag · randigt = vanligt lov. Tryck på ett datum för att planera ett pass den dagen.</p></section>';
+  h += '</div><p class="small muted cal-key"><span class="cal-key-s"></span> Träningspass <span class="cal-key-m"></span> Match <span class="cal-key-r">röd</span> = helgdag · <span class="wk-lov-key"></span> = vanligt lov. Tryck på ett datum för att planera ett pass den dagen.</p></section>';
   return h;
 }
 const __passListCal = passListHTML;
@@ -10613,11 +10615,12 @@ const __renderDev = render;
 render = function () { syncDevPage(); return __renderDev.apply(this, arguments); };
 /* Tränarlaget: väntande inbjudningar (med namn) för ansvariga */
 let INVITES = null;
+let INVITES_BUSY = false;
 async function loadInvites() {
-  const M = window.OF_MOLN, c = coachClub(); if (!M?.sb || !c || c.role !== 'owner') return;
+  const M = window.OF_MOLN, c = coachClub(); if (!M?.sb || !c || c.role !== 'owner' || INVITES_BUSY) return; INVITES_BUSY = true;
   try { const { data } = await M.sb.from('club_invites').select('token,label,role,expires_at,created_at').eq('club_id', c.id).is('used_by', null).eq('revoked', false).gt('expires_at', new Date().toISOString()).order('created_at'); INVITES = { club: c.id, list: Array.isArray(data) ? data : [] }; }
   catch (e) { INVITES = { club: c.id, list: [] }; }
-  const box = $('#of-coaches'); if (box) box.outerHTML = coachesHTML();
+  INVITES_BUSY = false; const box = $('#of-coaches'); if (box) box.outerHTML = coachesHTML();
 }
 const inviteUrl = t => location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
 const __coachesHTMLInv = coachesHTML;
@@ -10649,3 +10652,38 @@ Object.assign(A, {
   invCopy: el => { const c = coachClub(); const i = (INVITES?.list || []).find(x => x.token === el.dataset.t); shareInvite(inviteUrl(el.dataset.t), c?.name || 'klubben', i?.label || ''); },
   invRevoke: async el => { if (!confirm('Ta bort inbjudan? Länken slutar fungera och platsen blir ledig.')) return; try { await window.OF_MOLN.rpc('revoke_invite', { invite_token: el.dataset.t }); toast('Inbjudan är borttagen'); } catch (e) { toast('Kunde inte ta bort: ' + (e?.message || '')); } INVITES = null; loadInvites(); },
 });
+
+/* Mobil: fyra flikar + ”Mer” (Verktyg, Konto, data och – för admin – Utvecklare) */
+Object.assign(A, {
+  navMore: () => {
+    const r = $('#m2-root'); if (!r) return;
+    const it = (a, v, t, d) => '<button type="button" class="more-i" data-a="' + a + '"' + (v ? ' data-v="' + v + '"' : '') + '><b>' + t + '</b><small>' + d + '</small></button>';
+    r.innerHTML = '<div class="modal-wrap more-wrap" data-a="moreClose" role="dialog" aria-modal="true" aria-label="Mer"><div class="modal more">'
+      + it('moreGo', 'tools', 'Verktyg', 'Rita och ladda upp övningar, sparade övningar, säsongsplan')
+      + it('moreGo', 'saved', 'Sparade övningar', 'Favoriter, mina egna och klubbens delade')
+      + it('moreAcc', '', 'Konto och klubb', 'Inloggning, tränarlaget, enheter och lösenord')
+      + it('moreData', '', 'Så sparas dina data', 'Vad som finns på kontot och vem som ser vad')
+      + (devOk() ? it('moreGo', 'dev', 'Utvecklare', 'Klubbar, licenser och ägarlänkar (admin)') : '')
+      + '<button type="button" class="btn ghost" data-a="moreClose">Stäng</button></div></div>';
+  },
+  moreClose: (el, e) => { if (el.classList.contains('modal-wrap') && e && e.target !== el) return; closeM2(); },
+  moreGo: el => { closeM2(); A.view({ dataset: { v: el.dataset.v } }); },
+  moreAcc: () => { closeM2(); A.ofAccount(); },
+  moreData: () => { closeM2(); A.dataInfo(); },
+});
+/* Felbevakning: fel hos tränarna skickas till Supabase (client_errors), högst ett av varje sort per session */
+(function errorReport() {
+  const seen = new Set(); let n = 0;
+  const ver = (document.querySelector('meta[name="of-app"]')?.content || '').split('v=')[1] || '';
+  const send = (msg, src) => {
+    try {
+      msg = String(msg || '').slice(0, 500); if (!msg || /ResizeObserver|Script error\.?$|AbortError|NetworkError|Failed to fetch|Load failed/i.test(msg)) return;
+      const k = msg + '|' + src; if (seen.has(k) || ++n > 10) return; seen.add(k);
+      const M = window.OF_MOLN; if (!M?.rpc) return;
+      M.rpc('report_error', { msg, src: String(src || '').slice(0, 300), ver, vw: (typeof ST !== 'undefined' && ST.view) || '', dev: navigator.userAgent.slice(0, 120) }).catch(() => { });
+    } catch (e) { }
+  };
+  window.addEventListener('error', e => send(e.message, (e.filename || '').split('/').pop() + ':' + (e.lineno || 0)));
+  window.addEventListener('unhandledrejection', e => send(e.reason && (e.reason.message || e.reason), 'promise'));
+  window.OF_REPORT = send;
+})();

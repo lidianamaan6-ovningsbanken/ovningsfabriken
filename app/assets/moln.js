@@ -56,12 +56,12 @@
     if (!state.user) return;
     clearTimeout(pushTimer); pushTimer = setTimeout(push, delay);
     // Prestanda: jämförelsen av all data görs när synken körs, inte vid varje klick
-    if (!state.pending) { state.pending = 1; emit(); }
+    if (!state.pending) { state.pending = 1; state.status = 'sparar'; emit(); }
   }
   async function push() {
     if (!state.user || state.pushing) return;
     const changes = diff(); state.pending = changes.length;
-    if (!changes.length) { emit(); return; }
+    if (!changes.length) { if (state.status === 'sparar') state.status = 'synkad'; emit(); return; }
     state.pushing = true; state.status = 'sparar'; emit();
     try {
       for (let i = 0; i < changes.length; i += 200) {
@@ -82,8 +82,12 @@
   }
 
   /* ---------- Hämta ---------- */
-  async function pull(full) {
+  let lastPull = 0;
+  async function pull(full, force) {
     if (!state.user || state.pulling) return;
+    /* En enda hämtning åt gången, och inte oftare än var 30:e sekund (utom vid start, full synk eller knappen Synka nu) */
+    if (!full && !force && Date.now() - lastPull < 30000) return;
+    lastPull = Date.now();
     state.pulling = true; emit();
     try {
       const since = full ? null : readJSON('pulledAt', null);
@@ -221,8 +225,8 @@
   const ready = sb.auth.getSession().then(({ data }) => setUser(data.session?.user)).catch(e => { state.lastError = e.message; emit(); });
   sb.auth.onAuthStateChange((_evt, session) => setUser(session?.user));
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pull(false); else push(); });
-  window.addEventListener('online', () => { pull(false); });
-  setInterval(() => { if (document.visibilityState === 'visible') pull(false); }, 60000);
+  window.addEventListener('online', () => { pull(false, true); });
+  setInterval(() => { if (document.visibilityState === 'visible') pull(false); }, 180000);   // var tredje minut när appen är öppen
 
   async function ping() {
     const t = performance.now();
