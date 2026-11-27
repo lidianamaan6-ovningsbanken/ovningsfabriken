@@ -1,7 +1,6 @@
 # Handöversatta texter (svenska<TAB>engelska). Går före maskinöversättningen.
 # Rader med {} är mallar: {} fångar ett namn, en siffra eller en annan text, {1} {2} … sätter in dem.
 11 mot 11	11 v 11
-Vecka 48	Week 48
 God eftermiddag, {}	Good afternoon, {1}
 God morgon, {}	Good morning, {1}
 God kväll, {}	Good evening, {1}
@@ -664,8 +663,6 @@ Alla typer	All types
 @födda	born
 @Pojkar	Boys
 @Flickor	Girls
-@vecka	week
-@Vecka	Week
 # ---------- Startsidan ----------
 Övningarna visas här snart.	The exercises will appear here soon.
 Vi kunde inte hämta övningarna just nu.	We couldn't load the exercises right now.

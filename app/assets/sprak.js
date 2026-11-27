@@ -8,7 +8,7 @@
 (function () {
   'use strict';
   /* Versionsnummer för ordlistorna – skrivs av verktyg/sprak/bygg_sprak.py */
-  const V = {"en":"866fc46f","bank-en":"a5f2f0a9","ar":"568566e2","bank-ar":"3f62950a","de":"e5ed8d81","bank-de":"b75e1277","es":"29366827","bank-es":"fb53a736","fi":"d496d187","bank-fi":"4a06f66f","fr":"842557c7","bank-fr":"578a7a94"};
+  const V = {"en":"2b112abe","bank-en":"a5f2f0a9","ar":"13c643e7","bank-ar":"3f62950a","de":"fd17d218","bank-de":"634a541f","es":"47decd97","bank-es":"f983b5c5","fa":"e555840b","bank-fa":"d03f2c74","fi":"3b0a9830","bank-fi":"53398202","fr":"27d3d124","bank-fr":"a15cc351","it":"e9eccb73","bank-it":"e1ad1982","pt":"994edd16","bank-pt":"d5023ec6","ru":"90bc73b5","bank-ru":"9134ad22","tr":"5f1642b8","bank-tr":"e5152072","uk":"5733ee2f","bank-uk":"b718ad78"};
   const LANGS = [
     ['sv', 'Svenska'], ['en', 'English'], ['ar', 'العربية', 1], ['fa', 'فارسی', 1], ['fi', 'Suomi'], ['es', 'Español'],
     ['de', 'Deutsch'], ['fr', 'Français'], ['pl', 'Polski'], ['tr', 'Türkçe'], ['uk', 'Українська'], ['ru', 'Русский'], ['pt', 'Português'], ['it', 'Italiano']

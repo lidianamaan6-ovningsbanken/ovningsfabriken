@@ -110,7 +110,7 @@ def build(lang):
     ui = {k: v for k, v in d.items() if k not in BANK and v and v != k}
     bank = {k: v for k, v in d.items() if k in BANK and v and v != k}
     files = {}
-    for name, obj in [(lang, {'t': ui, 'n': n, 'p': sorted(p.items()), 'w': {**words(lang), **extra}}), ('bank-' + lang, {'t': bank})]:
+    for name, obj in [(lang, {'t': ui, 'n': n, 'p': sorted(p.items()), 'w': {**extra, **words(lang)}}), ('bank-' + lang, {'t': bank})]:
         s = json.dumps(obj, ensure_ascii=False, separators=(',', ':'))
         open(f'{OUT}/{name}.json', 'w', encoding='utf-8').write(s)
         files[name] = hashlib.sha1(s.encode()).hexdigest()[:8]
