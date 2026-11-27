@@ -9077,10 +9077,14 @@ renderNav = function () {
     + '<div class="of-links">' + WORKSPACE_PAGES.map(([view, label], i) =>
       '<button type="button" data-a="view" data-v="' + view + '"' + (active === view ? ' aria-current="page"' : '') + '>' + workspaceIcon(i) + '<span>' + label + '</span></button>').join('')
     + '<button type="button" class="of-more" data-a="navMore"' + (['tools', 'dev', 'draw', 'saved', 'make'].includes(active) ? ' aria-current="page"' : '') + ' aria-label="Mer: verktyg och konto"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mer</span></button></div>'
-    + workspaceNavTeam() + '<button type="button" class="of-nav-acc" data-a="ofAccount" data-moln-nav>' + (window.OF_KONTO ? OF_KONTO.navHTML() : 'Logga in') + '</button>'
+    + workspaceNavTeam() + workspaceNavLang() + '<button type="button" class="of-nav-acc" data-a="ofAccount" data-moln-nav>' + (window.OF_KONTO ? OF_KONTO.navHTML() : 'Logga in') + '</button>'
     + workspaceClubBadge('of-nav-club', 'Tränarverktyg') + '</nav>';
 };
 
+/* Språkval: knappen öppnar väljaren i sprak.js. Språknamnet visas alltid på sitt eget språk. */
+const LANG_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>';
+const langName = () => '<span translate="no">' + esc(window.OF_SPRAK?.label() || 'Svenska') + '</span>';
+function workspaceNavLang() { return '<button type="button" class="of-nav-lang" data-sprak-open aria-label="Språk">' + LANG_ICON + langName() + '</button>'; }
 function workspaceNavTeam() {
   const team = clubTeam();
   const crest = window.OF_PROFILE?.crest;
@@ -10664,6 +10668,7 @@ Object.assign(A, {
       + it('moreAcc', '', 'Konto och klubb', 'Inloggning, tränarlaget, enheter och lösenord')
       + it('moreData', '', 'Så sparas dina data', 'Vad som finns på kontot och vem som ser vad')
       + (devOk() ? it('moreGo', 'dev', 'Utvecklare', 'Klubbar, licenser och ägarlänkar (admin)') : '')
+      + '<button type="button" class="more-i more-lang" data-sprak-open><b>' + LANG_ICON + '<span translate="no">Språk · Language</span></b><small>' + langName() + '</small></button>'
       + '<button type="button" class="btn ghost" data-a="moreClose">Stäng</button></div></div>';
   },
   moreClose: (el, e) => { if (el.classList.contains('modal-wrap') && e && e.target !== el) return; closeM2(); },

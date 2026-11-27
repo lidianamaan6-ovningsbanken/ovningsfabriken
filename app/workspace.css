@@ -995,3 +995,16 @@ html[data-sun] .pass-way.primary small, html[data-sun] .of-hero .of-eyebrow { co
 .more-i b { font-size: 16px; }
 .more-i small { color: var(--muted, #5b6660); }
 .pass-ways-mini { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 12px; }
+
+/* Språkval */
+.of-nav-lang { display:none; }
+@media (min-width:1050px) {
+  .of-nav-lang { display:flex; align-items:center; gap:10px; margin:8px 0 0; padding:8px 12px; border:0; border-radius:12px; background:none; color:#d7e3db; font:inherit; font-size:13px; cursor:pointer; }
+  .of-nav-lang:hover { background:rgba(255,255,255,.06); color:#fff; }
+}
+.more-lang b { display:flex; align-items:center; gap:8px; }
+/* Höger-till-vänster (arabiska, persiska) */
+[dir=rtl] .of-nav-team, [dir=rtl] .of-nav-acc, [dir=rtl] .more-i { text-align:right; }
+/* Långa menyord på andra språk: korta av i stället för att flyta över grannen */
+.of-links button { min-width:0; }
+.of-links button span { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
