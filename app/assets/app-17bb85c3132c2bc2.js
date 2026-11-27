@@ -9059,13 +9059,11 @@ const WORKSPACE_PAGES = [
   ['match', 'Match', 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v4m0 6v4 M3 9h3v6H3m18-6h-3v6h3 M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0'],
   ['tools', 'Verktyg', 'M5 12h.01m7 0h.01m7 0h.01'],
 ];
-const OF_DEV_ON = (() => { try {
-  const u = new URLSearchParams(location.search).get('utvecklare');
-  if (u === '1') localStorage.setItem('of-utvecklare', '1'); if (u === '0') localStorage.removeItem('of-utvecklare');
-  /* Utvecklare syns bara för inloggad admin (och lokalt vid utveckling) */
-  return location.hostname === 'localhost' || !!window.OF_ACCESS?.admin;
-} catch (e) { return false; } })();
-if (OF_DEV_ON) WORKSPACE_PAGES.push(['dev', 'Utvecklare', 'M8 8l-5 4 5 4m8-8 5 4-5 4M14 4l-4 16']);
+/* Utvecklare syns bara för inloggad admin (och lokalt vid utveckling) – räknas om vid varje visning */
+const devOk = () => { try { return location.hostname === 'localhost' || !!window.OF_ACCESS?.admin; } catch (e) { return false; } };
+const DEV_PAGE = ['dev', 'Utvecklare', 'M8 8l-5 4 5 4m8-8 5 4-5 4M14 4l-4 16'];
+const syncDevPage = () => { const i = WORKSPACE_PAGES.findIndex(x => x[0] === 'dev'); if (devOk() && i < 0) WORKSPACE_PAGES.push(DEV_PAGE); if (!devOk() && i >= 0) WORKSPACE_PAGES.splice(i, 1); };
+syncDevPage();
 const workspaceIcon = i => '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + WORKSPACE_PAGES[i][2] + '"/></svg>';
 const WS_DATEFMT = new Map();   /* Intl-formaterare är dyra att skapa – återanvänd dem */
 const workspaceDate = (date, options) => { const k = JSON.stringify(options || {}); let f = WS_DATEFMT.get(k); if (!f) { f = new Intl.DateTimeFormat('sv-SE', options); WS_DATEFMT.set(k, f); } return f.format(new Date(date + 'T12:00')); };
@@ -9354,7 +9352,7 @@ function workspaceTools() {
 const renderWorkspacePage = render;
 render = function () {
   const app = $('#app');
-  if (ST.view === 'dev' && !OF_DEV_ON) ST.view = 'today';
+  if (ST.view === 'dev' && !devOk()) ST.view = 'today';
   if (window.OF_GRIND && !OF_GRIND.allowed(ST.view)) { app.innerHTML = ''; OF_GRIND.show(); return; }
   if (ST.view === 'today' || ST.view === 'tools' || ST.view === 'dev') {
     app.className = 'wrap of-workspace';
@@ -10049,14 +10047,14 @@ window.addEventListener('popstate', () => {
   if (DET || SOPEN || MOPEN || (typeof LIVE !== 'undefined' && LIVE)) return;   /* öppen detalj/pass/match stängs av sina egna hanterare */
   const p = navParse(location.hash) || { view: 'today', sub: 'pass' };
   if (p.view === ST.view && (p.view !== 'plan' || p.sub === (ST.planSub || 'pass')) && (p.view !== 'match' || p.msub === (ST.matchSub === 'analys' ? 'analys' : 'matcher'))) return;
-  if (p.view === 'dev' && typeof OF_DEV_ON !== 'undefined' && !OF_DEV_ON) return;
+  if (p.view === 'dev' && !devOk()) return;
   ST.view = p.view; if (p.sub) ST.planSub = p.sub; if (p.msub) ST.matchSub = p.msub;
   NAV_POP = true; try { persist(); render(); } finally { NAV_POP = false; }
   window.scrollTo(0, 0);
 });
 (function navStart() {
   const p = navParse(location.hash);
-  const allowed = p && !(p.view === 'dev' && typeof OF_DEV_ON !== 'undefined' && !OF_DEV_ON) && !(p.view === 'plan' && p.sub === 'lp' && !ofIsJfa());
+  const allowed = p && !(p.view === 'dev' && !devOk()) && !(p.view === 'plan' && p.sub === 'lp' && !ofIsJfa());
   ST.bankQ = '';   /* G19: en gammal sökning ligger aldrig kvar i sökfältet vid start */
   ST.view = allowed ? p.view : 'today'; if (allowed && p.sub) ST.planSub = p.sub; if (allowed && p.msub) ST.matchSub = p.msub;
   try { history.replaceState({ v: ST.view, sub: ST.planSub || 'pass' }, '', navHash()); } catch (e) { }
@@ -10609,3 +10607,45 @@ coachesHTML = function () {
   if (!h || !c || !(c.role === 'owner' || window.OF_ACCESS?.admin)) return h;
   return h.replace('<button type="button" class="of-text-action coach-leave"', '<button type="button" class="btn coach-usage" data-a="usageOpen">Klubbens översikt – aktivitet och läroplan</button><button type="button" class="of-text-action coach-leave"');
 };
+
+/* Utvecklarfliken dyker upp så fort appen vet att man är admin */
+const __renderDev = render;
+render = function () { syncDevPage(); return __renderDev.apply(this, arguments); };
+/* Tränarlaget: väntande inbjudningar (med namn) för ansvariga */
+let INVITES = null;
+async function loadInvites() {
+  const M = window.OF_MOLN, c = coachClub(); if (!M?.sb || !c || c.role !== 'owner') return;
+  try { const { data } = await M.sb.from('club_invites').select('token,label,role,expires_at,created_at').eq('club_id', c.id).is('used_by', null).eq('revoked', false).gt('expires_at', new Date().toISOString()).order('created_at'); INVITES = { club: c.id, list: Array.isArray(data) ? data : [] }; }
+  catch (e) { INVITES = { club: c.id, list: [] }; }
+  const box = $('#of-coaches'); if (box) box.outerHTML = coachesHTML();
+}
+const inviteUrl = t => location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
+const __coachesHTMLInv = coachesHTML;
+coachesHTML = function () {
+  let h = __coachesHTMLInv.apply(this, arguments); const c = coachClub(); if (!h || !c || c.role !== 'owner') return h;
+  if (!INVITES || INVITES.club !== c.id) { setTimeout(loadInvites, 0); return h; }
+  const L = INVITES.list.filter(i => i.role !== 'owner');
+  const block = '<div class="coach-pend"><span class="d2-h">Inbjudna – väntar på att gå med (' + L.length + ')</span>' + (L.length ? '<ul class="coach-list">' + L.map(i => '<li><span class="coach-av pend">…</span><span class="grow">' + esc(i.label || 'Inbjudan utan namn') + '<small class="muted"> · gäller till ' + esc(String(i.expires_at).slice(0, 10)) + '</small></span><button type="button" class="of-text-action" data-a="invCopy" data-t="' + esc(i.token) + '">Skicka igen</button><button type="button" class="of-text-action red" data-a="invRevoke" data-t="' + esc(i.token) + '">Ta bort</button></li>').join('') + '</ul>' : '<p class="small muted">Inga väntande inbjudningar.</p>') + '</div>';
+  return h.replace('<button type="button" class="btn primary coach-inv"', block + '<button type="button" class="btn primary coach-inv"');
+};
+const __coachInvite = A.coachInvite;
+A.coachInvite = async el => {
+  const c = coachClub(); if (!c) return;
+  const name = prompt('Vem bjuder du in? Skriv namn och gärna lag, t.ex. ”Anna – P2012”.'); if (name === null) return;
+  el.disabled = true; el.textContent = 'Skapar länk …';
+  try {
+    const t = await window.OF_MOLN.rpc('create_invite', { cid: c.id, invite_label: name.trim().slice(0, 80) || null });
+    await shareInvite(inviteUrl(t), c.name, name.trim());
+    INVITES = null; loadInvites(); loadCoaches(true);
+  } catch (e) { toast(/plats|seats|full/i.test(e?.message || '') ? 'Alla platser är använda. Ta bort någon eller utöka licensen.' : 'Kunde inte skapa länken: ' + (e?.message || 'försök igen')); }
+  el.disabled = false; el.textContent = 'Bjud in kollega';
+};
+async function shareInvite(url, club, name) {
+  const text = (name ? 'Hej ' + name.split(/[–-]/)[0].trim() + '! ' : '') + 'Du är inbjuden till ' + club + ' i Övningsfabriken. Öppna länken och skapa ditt konto:';
+  try { if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) { await navigator.share({ title: 'Inbjudan till ' + club, text, url }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text + ' ' + url); toast('Inbjudan är kopierad – klistra in den i sms, mejl eller WhatsApp'); } catch (e) { prompt('Kopiera och skicka:', text + ' ' + url); }
+}
+Object.assign(A, {
+  invCopy: el => { const c = coachClub(); const i = (INVITES?.list || []).find(x => x.token === el.dataset.t); shareInvite(inviteUrl(el.dataset.t), c?.name || 'klubben', i?.label || ''); },
+  invRevoke: async el => { if (!confirm('Ta bort inbjudan? Länken slutar fungera och platsen blir ledig.')) return; try { await window.OF_MOLN.rpc('revoke_invite', { invite_token: el.dataset.t }); toast('Inbjudan är borttagen'); } catch (e) { toast('Kunde inte ta bort: ' + (e?.message || '')); } INVITES = null; loadInvites(); },
+});
