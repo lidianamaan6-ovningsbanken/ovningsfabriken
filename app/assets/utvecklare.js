@@ -14,8 +14,9 @@
   const nf = new Intl.NumberFormat('sv-SE');
   const KIND = { sess: 'Pass', match: 'Matcher', mxteam: 'Matchlag', mxform: 'Uppställningar', saved: 'Favoriter', settings: 'Inställningar' };
   let lager = null, lagerErr = '', upp = null;
-  let ping = null, cloud = null, cloudErr = '', searchQ = '', adminClubs = null, adminErr = '', newLink = '';
+  let ping = null, cloud = null, cloudErr = '', searchQ = '', adminClubs = null, adminErr = '', newLink = '', newLinkSolo = false;
   const inviteURL = t => location.origin + location.pathname.replace(/[^/]*$/, '') + 'app.html?inbjudan=' + t;
+  const inMonth = () => { const d = new Date(); d.setMonth(d.getMonth() + 1); return d.toISOString().slice(0, 10); };
   const inYear = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d.toISOString().slice(0, 10); };
 
   const card = (title, eyebrow, body, wide) => '<section class="of-home-panel of-dev-card' + (wide ? ' is-wide' : '') + '"><div class="of-panel-head"><div><span class="of-eyebrow">' + eyebrow + '</span><h2>' + title + '</h2></div></div>' + body + '</section>';
@@ -85,12 +86,17 @@
         + '<datalist id="of-dev-katalog">' + [...new Set((window.OF_SIGN_IN?.teams || []).map(t => t.club))].sort((a, b) => a.localeCompare(b, 'sv')).map(n => '<option value="' + esc(n) + '">').join('') + '</datalist>'
         + '<div class="of-dev-two"><label>Kortnamn (adress ?klubb=)<input name="slug" pattern="[a-z0-9-]{2,30}" placeholder="t.ex. jfa"></label><label>Klubbfärg<input name="color" type="color" value="#16392b"></label></div>'
         + '<button class="btn primary" type="submit">Skapa klubb och ägarlänk</button></form>'
-        + (newLink ? '<div class="of-dev-link"><span class="of-eyebrow">Skicka till klubbens ansvariga</span><code>' + esc(newLink) + '</code><button class="btn" data-dev="copy" data-url="' + esc(newLink) + '">Kopiera länk</button></div>' : '')
+        + '<form class="of-dev-lic" data-devform="solo"><span class="of-eyebrow">Egen licens för en tränare utan klubblicens</span>'
+        + '<label>Tränarens namn eller e-post<input name="label" required maxlength="80" placeholder="t.ex. Anna Svensson"></label>'
+        + '<div class="of-dev-two"><label>Klubb hen tränar i (valfritt)<input name="home" maxlength="120" placeholder="t.ex. IFK Lilla Byn"></label><label>Gäller till<input name="valid" type="date" value="' + inMonth() + '" required></label></div>'
+        + '<p class="of-muted-note">1 plats. Tränaren ser inga andra klubbars lag eller material och kan inte bjuda in kollegor.</p>'
+        + '<button class="btn primary" type="submit">Skapa egen licens och länk</button></form>'
+        + (newLink ? '<div class="of-dev-link"><span class="of-eyebrow">' + (newLinkSolo ? 'Skicka till tränaren' : 'Skicka till klubbens ansvariga') + '</span><code>' + esc(newLink) + '</code><button class="btn" data-dev="copy" data-url="' + esc(newLink) + '">Kopiera länk</button></div>' : '')
         + (adminErr ? '<p class="of-konto-msg">' + esc(adminErr) + '</p>' : '')
         + (adminClubs ? (adminClubs.length ? '<table class="of-dev-table"><thead><tr><th>Klubb</th><th>Platser</th><th>Enhetsbyten 30 d</th><th>Till</th></tr></thead><tbody>' + adminClubs.map(c =>
-          '<tr><td><b>' + esc(c.name) + '</b><br><small class="of-muted-note">' + (c.owners.length ? esc(c.owners.join(', ')) : 'Ingen ansvarig än') + '</small><br>'
-          + '<button class="of-text-action" data-dev="ownerlink" data-id="' + c.id + '">Ny ägarlänk</button> · <button class="of-text-action" data-dev="extend" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">+1 år</button> · <button class="of-text-action" data-dev="seats" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">Ändra platser</button>'
-          + ' · <button class="of-text-action" data-dev="brand" data-id="' + c.id + '" data-name="' + esc(c.name) + '">Profil</button>'
+          '<tr><td><b>' + esc(c.kind === 'solo' && c.home_club ? c.name + ' (' + c.home_club + ')' : c.name) + '</b>' + (c.kind === 'solo' ? ' <span class="of-dev-tag">egen licens</span>' : '') + '<br><small class="of-muted-note">' + (c.owners.length ? esc(c.owners.join(', ')) : 'Ingen ansvarig än') + '</small><br>'
+          + '<button class="of-text-action" data-dev="ownerlink" data-id="' + c.id + '">Ny ägarlänk</button> · <button class="of-text-action" data-dev="extend" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">+1 år</button>' + (c.kind === 'solo' ? ' · <button class="of-text-action" data-dev="month" data-id="' + c.id + '" data-seats="1" data-valid="' + c.valid_until + '">+1 månad</button>' : ' · <button class="of-text-action" data-dev="seats" data-id="' + c.id + '" data-seats="' + c.seats + '" data-valid="' + c.valid_until + '">Ändra platser</button>'
+          + ' · <button class="of-text-action" data-dev="brand" data-id="' + c.id + '" data-name="' + esc(c.name) + '">Profil</button>')
           + ' · <button class="of-text-action" data-dev="devices" data-id="' + c.id + '" data-n="' + (c.devices || 2) + '">Enheter: ' + (c.devices || 2) + '/tränare</button></td>'
           + '<td>' + c.members + ' / ' + c.seats + '</td><td' + ((c.switches30 || 0) >= 10 ? ' class="of-dev-danger" title="Många byten – kan tyda på delat lösenord"' : '') + '>' + (c.switches30 || 0) + '</td><td' + (c.valid_until < new Date().toISOString().slice(0, 10) ? ' class="of-dev-danger"' : '') + '>' + esc(c.valid_until) + '</td></tr>').join('') + '</tbody></table>'
           : '<p class="of-muted-note">Inga klubbar än.</p>') : '<p class="of-muted-note">Hämtar klubbar …</p>');
@@ -205,7 +211,17 @@
       if (e.target.name === 'slug') e.target.dataset.touched = '1';
     });
     document.addEventListener('submit', async e => {
-      const f = e.target; if (f.dataset.devform !== 'club') return; e.preventDefault();
+      const f = e.target;
+      if (f.dataset.devform === 'solo') {
+        e.preventDefault();
+        try {
+          const r = await M().rpc('admin_create_solo', { coach_label: f.elements.label.value, coach_club: f.elements.home.value, valid: f.elements.valid.value });
+          newLink = inviteURL(r.token); newLinkSolo = true; adminClubs = await M().rpc('admin_clubs'); adminErr = '';
+        } catch (err) { adminErr = err.message; }
+        rerender(); return;
+      }
+      if (f.dataset.devform !== 'club') return; e.preventDefault();
+      newLinkSolo = false;
       try {
         const r = await M().rpc('admin_create_club', { club_name: f.elements.name.value, seat_count: Number(f.elements.seats.value), valid: f.elements.valid.value });
         if (f.elements.catalog.value || f.elements.slug.value) await M().rpc('admin_set_brand', { cid: r.club_id, club_name: f.elements.name.value, catalog: f.elements.catalog.value, club_slug: f.elements.slug.value, crest: '', club_color: f.elements.color.value });
@@ -220,7 +236,7 @@
       const a = b.dataset.dev; const T = g('toast') || alert;
       if (a === 'upload') { if (lager && !lager.missing) { await checkLager().catch(e => lagerErr = e.message); rerender(); } else upload(); return; }
       if (a === 'copy') { try { await navigator.clipboard.writeText(b.dataset.url); T('Länken är kopierad'); } catch (err) { prompt('Kopiera länken:', b.dataset.url); } }
-      if (a === 'ownerlink') { try { newLink = inviteURL(await M().rpc('admin_owner_link', { cid: b.dataset.id })); } catch (err) { adminErr = err.message; } rerender(); }
+      if (a === 'ownerlink') { newLinkSolo = false; try { newLink = inviteURL(await M().rpc('admin_owner_link', { cid: b.dataset.id })); } catch (err) { adminErr = err.message; } rerender(); }
       if (a === 'brand') {
         const catalog = prompt('Klubb i lagkatalogen (exakt namn, t.ex. Järfälla FA):', b.dataset.name); if (catalog === null) return;
         const slug = prompt('Kortnamn för adressen ?klubb= (små bokstäver, t.ex. jfa):', ''); if (slug === null) return;
@@ -233,8 +249,9 @@
         try { await M().rpc('admin_set_devices', { cid: b.dataset.id, n: Number(v) }); adminClubs = await M().rpc('admin_clubs'); } catch (err) { adminErr = err.message; }
         rerender(); return;
       }
-      if (a === 'extend' || a === 'seats') {
+      if (a === 'extend' || a === 'seats' || a === 'month') {
         let seats = Number(b.dataset.seats), valid = b.dataset.valid;
+        if (a === 'month') { const d = new Date(Math.max(Date.now(), new Date(valid).getTime())); d.setMonth(d.getMonth() + 1); valid = d.toISOString().slice(0, 10); }
         if (a === 'extend') { const d = new Date(Math.max(Date.now(), new Date(valid).getTime())); d.setFullYear(d.getFullYear() + 1); valid = d.toISOString().slice(0, 10); }
         else { const v = prompt('Antal platser:', seats); if (!v) return; seats = Number(v); }
         try { await M().rpc('admin_set_license', { cid: b.dataset.id, seat_count: seats, valid }); adminClubs = await M().rpc('admin_clubs'); } catch (err) { adminErr = err.message; }

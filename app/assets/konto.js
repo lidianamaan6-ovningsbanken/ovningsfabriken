@@ -60,6 +60,15 @@
     if (!clubs.length) { clubCache = '<h3>Klubb</h3><p class="of-konto-note">' + (a?.admin ? 'Du är admin men inte med i någon klubb.' : 'Kontot är inte kopplat till någon klubb.') + '</p>'; box.innerHTML = clubCache; return; }
     let h = '';
     for (const c of clubs) {
+      if (c.kind === 'solo') {
+        const t = (c.own_teams || [])[0];
+        h += '<section class="of-klubb-c"><div class="of-klubb-top"><div><span class="of-eyebrow">Egen licens</span><h3>' + esc((c.home_club || '').trim() || 'Din licens') + '</h3></div></div>'
+          + '<p class="of-konto-note">' + (c.active ? 'Licensen gäller till ' + esc(c.valid_until) : 'Licensen gick ut ' + esc(c.valid_until)) + '</p>'
+          + '<p class="of-konto-note">' + (t ? 'Ditt lag: <b>' + esc(t.name) + '</b>' + (t.y ? ' (födda ' + esc(t.y) + ')' : '') : 'Du har inte lagt upp något lag än.')
+          + ' <button type="button" class="of-text-action" data-konto="ownteam">' + (t ? 'Ändra' : 'Lägg upp lag') + '</button></p>'
+          + '<p class="of-konto-note of-roller">Licensen gäller bara dig. Dina pass, matcher och anteckningar ser bara du. Vill ni vara fler tränare i klubben behöver klubben en klubblicens.</p></section>';
+        continue;
+      }
       h += '<section class="of-klubb-c"><div class="of-klubb-top"><div><span class="of-eyebrow">' + (c.role === 'owner' ? 'Klubbadministration · du är ansvarig' : 'Tränare i klubben') + '</span><h3>' + esc(c.name) + '</h3></div>'
         + '<span class="of-klubb-seats"><b>' + c.used + '</b> / ' + c.seats + ' platser</span></div>'
         + '<p class="of-konto-note">' + (c.active ? 'Licensen gäller till ' + esc(c.valid_until) : 'Licensen gick ut ' + esc(c.valid_until)) + '</p>'
@@ -105,6 +114,7 @@
         const a = e.target.closest('[data-konto]')?.dataset.konto;
         if (a === 'close') d.close();
         if (a === 'data') { d.close(); window.OF_DATA_INFO?.(); }
+        if (a === 'ownteam') { d.close(); window.OF_GRIND?.pickTeam(); }
         if (a === 'sync') { await M().pull(false, true); await M().push(); d.innerHTML = dialogHTML(); }
         if (a === 'out') { await M().signOut(); clubCache = ''; d.close(); }
         if (a === 'forget') { try { await M().rpc('forget_device', { dev: e.target.closest('[data-dev]').dataset.dev }); } catch (err) { alert(err.message); } loadClub(); }

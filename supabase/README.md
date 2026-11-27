@@ -36,6 +36,14 @@ och `published_at` till dagens datum. Övningen syns direkt på startsidan.
 2. Gör dig själv till admin i SQL Editor (byt till din e-post):
    `insert into public.app_admins (user_id) select id from auth.users where email = 'din@epost.se';`
 
+### Egen licens (solo-klubb)
+För en tränare som inte hör till någon klubb med licens (migrering 0013).
+- Admin skapar den i Utvecklare → *Egen licens för en tränare* och skickar länken till tränaren. Tränaren skapar konto via länken.
+- En solo-klubb har `kind = 'solo'`, alltid 1 plats och inga inbjudningar av kollegor (`create_invite` stoppar).
+- Ingen lagkatalog, inget märke och inget klubbmaterial: appen ger solo-klubben ett eget katalognamn, så den aldrig matchar en riktig klubb.
+- Tränaren lägger själv upp sitt lag (namn, kön, födelseår) – sparas i `club_members.own_teams` via `set_my_own_team`. Spelformen väljs efter åldern.
+- Förläng i Utvecklare med *+1 månad*. Funktioner: `admin_create_solo`, `set_my_own_team`, `is_solo`.
+
 ## Skyddad lagring
 Bucket `skyddat` (privat): `app/<version>.js` (appens kod) och `media/<fil>` (filmer och bilder).
 Läses bara av aktiv licens eller admin, via tillfälliga länkar. Se `verktyg/skydd/LAS_MIG.md`.
