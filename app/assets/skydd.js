@@ -7,7 +7,8 @@
  */
 (function () {
   'use strict';
-  const RESERV = true;
+  const RESERV = true;          // appens kod: öppen reserv tills uppladdningen sker automatiskt vid varje publicering
+  const RESERV_MEDIA = false;   // filmer och bilder: bara från den låsta lagringen (sedan 27 nov 2026)
   const BUCKET = 'skyddat';
   const M = () => window.OF_MOLN;
   const meta = document.querySelector('meta[name="of-app"]')?.content || '';
@@ -117,7 +118,7 @@
       const n = el.getAttribute(a); if (!n) continue;
       const hit = urls.get(n);
       let url = hit && hit.exp > Date.now() ? hit.url : null;
-      if (!url && RESERV && (missing.has(n) || storeEmpty)) { url = 'assets/' + n; if (storeEmpty && !missing.has(n) && !checkedThisSession) queue.add(n); }
+      if (!url && RESERV_MEDIA && (missing.has(n) || storeEmpty)) { url = 'assets/' + n; if (storeEmpty && !missing.has(n) && !checkedThisSession) queue.add(n); }
       if (!url) { queue.add(n); continue; }
       if (el.getAttribute(prop) !== url) {
         el.setAttribute(prop, url);
@@ -146,7 +147,7 @@
       } catch (e) { part.forEach(n => missing.add(n)); stats.fel.unshift('Medialänkar: ' + (e.message || e)); }
     }
     stats.media = urls.size + missing.size;
-    storeEmpty = RESERV && hits === 0 && names.length >= 3 ? true : (hits > 0 ? false : storeEmpty);
+    storeEmpty = RESERV_MEDIA && hits === 0 && names.length >= 3 ? true : (hits > 0 ? false : storeEmpty);
     saveMedia();
     document.querySelectorAll(SEL).forEach(el => { for (const [a] of ATTRS) { const n = el.getAttribute(a); if (n && names.includes(n)) { apply(el); break; } } });
   }
@@ -159,6 +160,6 @@
     if (queue.size) { clearTimeout(timer); timer = setTimeout(fetchUrls, 10); }
   }).observe(document.documentElement, { childList: true, subtree: true });
 
-  window.OF_SKYDD = { loadApp, scan, stats, RESERV, appFile, appVer, BUCKET, prefetch };
+  window.OF_SKYDD = { loadApp, scan, stats, RESERV, RESERV_MEDIA, appFile, appVer, BUCKET, prefetch };
   try { if (JSON.parse(localStorage.getItem('of-tillgang') || 'null')?.ok) prefetch(); } catch (e) { }
 })();

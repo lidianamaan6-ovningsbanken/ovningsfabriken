@@ -33,6 +33,9 @@ if not KEY:
     print(f"Torrtest (ingen nyckel): appversion {app_name}, {len(L['media'])} mediafiler i listan."); sys.exit(0)
 have_app, have_media = existing('app/'), existing('media/')
 todo = [m['n'] for m in L['media'] if m['n'] not in have_media]
+gone = [n for n in todo if not os.path.exists(os.path.join(ROOT, n))]
+if gone: print(f'VARNING: {len(gone)} filer saknas både i lagringen och på disk, t.ex. {gone[0]}')
+todo = [n for n in todo if n not in gone]
 print(f"I lagringen: {len(have_media)} mediafiler, appversion {'finns' if app_name in have_app else 'saknas'}. Att ladda upp: {len(todo)} mediafiler.")
 for i, n in enumerate(todo, 1):
     upload('media/' + n, os.path.join(ROOT, n), 'video/mp4' if n.endswith('.mp4') else 'image/jpeg', 'max-age=31536000')

@@ -100,7 +100,7 @@
       ['Appens kod hämtades från', esc(SK?.stats.appKalla || '–')],
       ['Filmlänkar från lagringen', nf.format(SK?.stats.mediaLagring || 0)],
       ['Filmlänkar från öppen reserv', nf.format(SK?.stats.mediaReserv || 0)],
-      ['Reserv på GitHub', SK?.RESERV ? 'På (filerna ligger också öppet)' : 'Av – allt kommer från låst lagring'],
+      ['Reserv på GitHub', (SK?.RESERV_MEDIA ? 'Filmer: på' : 'Filmer och bilder: av (bara låst lagring)') + ' · ' + (SK?.RESERV ? 'appkod: på' : 'appkod: av')],
     ]) + (isAdmin ? (lager ? rows([
         ['Filmer och bilder i lagringen', nf.format(lager.media) + ' av ' + nf.format(lager.mediaTotal) + ' (' + nf.format(Math.round(lager.mb)) + ' MB)'],
         ['Appens kod (v ' + esc(lager.v) + ')', lager.app ? 'Finns' : 'Saknas'],
