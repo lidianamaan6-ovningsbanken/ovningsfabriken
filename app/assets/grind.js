@@ -93,6 +93,25 @@
   const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { } };
   let wEl = null, wTimer = 0;
+  /* Inbjudan: klubbens logga och välkomst i helskärm innan kontot skapas – ligger kvar tills man trycker */
+  let introShown = false;
+  function inviteIntro(r) {
+    if (introShown || document.getElementById('of-inbjudan')) return; introShown = true;
+    const club = r.name || brandInfo?.name || 'klubben'; const crest = crestFor(r) || brandInfo?.crest || '';
+    const role = r.role === 'owner' ? 'ansvarig' : 'tränare';
+    const el = document.createElement('div'); el.id = 'of-inbjudan'; el.className = 'of-valk is-first of-invite-intro';
+    el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Välkommen till ' + club);
+    el.style.setProperty('--valk', colorFor(r) || brandInfo?.color || DEF_COLOR);
+    el.innerHTML = '<div class="of-valk-inner">' + (crest ? '<div class="of-valk-crest is-large"><img src="' + esc(crest) + '" alt="' + esc(club) + '"></div>' : '<img class="of-valk-of" src="assets/ovningsfabriken-logo-light.svg" alt="Övningsfabriken">')
+      + '<span class="of-valk-eyebrow">Inbjudan · Övningsfabriken</span><h1>Välkommen till<br>' + esc(club) + '</h1>'
+      + '<p class="of-valk-lead">Du har blivit inbjuden som <b>' + role + '</b> i ' + esc(club) + '. Här planerar ni träningarna, hittar övningar som passar era lag och följer spelarnas utveckling – tillsammans.</p>'
+      + '<p class="of-valk-lead">Nästa steg: skapa ditt konto. Det tar en minut.</p>'
+      + '<button type="button" class="of-valk-btn" data-intro>Kom igång</button></div>';
+    document.body.appendChild(el); document.getElementById('of-splash')?.remove();
+    requestAnimationFrame(() => el.classList.add('is-in'));
+    const close = () => { el.classList.remove('is-in'); el.classList.add('is-out'); setTimeout(() => { el.remove(); document.getElementById('g-first')?.focus(); }, 500); };
+    el.querySelector('[data-intro]').addEventListener('click', close); el.querySelector('[data-intro]').focus({ preventScroll: true });
+  }
   function welcome(force) {
     const user = M()?.state.user; if (!user || wEl) return;
     if (!force && (g('ST') || {}).view === 'dev') return;
@@ -136,7 +155,7 @@
     wEl.addEventListener('click', e => { if (!first || e.target.closest('[data-valk]')) close(); });
     document.addEventListener('keydown', function k(e) { if (e.key === 'Escape' || e.key === 'Enter') { document.removeEventListener('keydown', k); close(); } });
     wEl.querySelector('[data-valk]').focus({ preventScroll: true });
-    if (!first) wTimer = setTimeout(close, 9000);
+    if (!first) wTimer = setTimeout(close, 15000);
   }
 
   /* ---------- Rendering ---------- */
@@ -392,7 +411,7 @@
     if (!M()) { setTimeout(boot, 50); return; }
     if (open) window.OF_SKYDD?.loadApp();
     if (!M().sb) { open = false; st.phase = 'nolicense'; st.msg = 'Kunde inte ansluta till Övningsfabriken. Kontrollera nätet och ladda om sidan.'; show(); return; }
-    if (invite && M().sb) M().rpc('invite_info', { invite_token: invite }).then(r => { if (r?.ok) { st.inviteClub = r.name; setBrand(r, false); if (!open) show(); } }).catch(() => { });
+    if (invite && M().sb) M().rpc('invite_info', { invite_token: invite }).then(r => { if (r?.ok) { st.inviteClub = r.name; st.inviteRole = r.role; setBrand(r, false); if (!open) show(); if (!M().state.user) inviteIntro(r); } }).catch(() => { });
     else if (q.get('klubb') && M().sb) M().rpc('club_brand', { club_slug: q.get('klubb') }).then(r => { if (r?.name) { setBrand(r, true); if (!open) show(); } }).catch(() => { });
     M().ready.then(() => { lastUid = M().state.user?.id; if (open && lastUid) welcome(); check(); });
     M().on(s => { const uid = s.user?.id; if (uid !== lastUid) { lastUid = uid; open = false; check(); } });
