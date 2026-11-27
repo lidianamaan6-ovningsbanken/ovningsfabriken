@@ -68,7 +68,7 @@ def words(lang):
 
 def english():
     mt = J(C + '/sv-en.json'); ht, hn, hp = hand('en')
-    fix = lambda v: re.sub(r'(?i)\b(the )?(exercise|practice) factory\b', 'Övningsfabriken', v)
+    fix = lambda v: re.sub(r'\b([Aa]) (exercise)', r'\1n \2', re.sub(r'(?i)\b(the )?(exercise|practice) factory\b', 'Övningsfabriken', v))
     d = {k: fix(v) for k, v in mt.items() if ok_key(k, hn) and ok_val(k, v)}; d.update(kort('en')); d.update(ht)
     sv_tok = J(C + '/tpl-sv.json'); tpl_en = J(C + '/tpl-sv-en.json')
     p = {}

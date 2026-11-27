@@ -25028,6 +25028,14 @@
   "app/assets/app-17bb85c3132c2bc2.js"
  ],
  [
+  "Svenska",
+  "app/assets/app-17bb85c3132c2bc2.js"
+ ],
+ [
+  "Språk",
+  "app/assets/app-17bb85c3132c2bc2.js"
+ ],
+ [
   "<img class=\"of-nav-team-crest\" src=\"",
   "app/assets/app-17bb85c3132c2bc2.js"
  ],
@@ -27264,6 +27272,22 @@
   "app/assets/app-17bb85c3132c2bc2.js"
  ],
  [
+  "Språk · Language",
+  "app/assets/app-17bb85c3132c2bc2.js"
+ ],
+ [
+  "Egen licens",
+  "app/assets/grind.js"
+ ],
+ [
+  "Mixat",
+  "app/assets/grind.js"
+ ],
+ [
+  "a[href=\"#egen-lag\"]{display:none!important}",
+  "app/assets/grind.js"
+ ],
+ [
   "Någon i ditt lag kommer att minnas dagens träning i många år. Kanske inte övningen, men känslan du gav.",
   "app/assets/grind.js"
  ],
@@ -27376,11 +27400,23 @@
   "app/assets/grind.js"
  ],
  [
-  "tränare",
+  "Egen licens · Övningsfabriken",
   "app/assets/grind.js"
  ],
  [
   "Välkommen till",
+  "app/assets/grind.js"
+ ],
+ [
+  "Din egen tränarlicens är klar. Här planerar du träningarna, hittar övningar som passar ditt lag och följer spelarnas utveckling.",
+  "app/assets/grind.js"
+ ],
+ [
+  "Nästa steg: skapa ditt konto. Det tar en minut.",
+  "app/assets/grind.js"
+ ],
+ [
+  "tränare",
   "app/assets/grind.js"
  ],
  [
@@ -27396,10 +27432,6 @@
   "app/assets/grind.js"
  ],
  [
-  "Nästa steg: skapa ditt konto. Det tar en minut.",
-  "app/assets/grind.js"
- ],
- [
   "· Övningsfabriken",
   "app/assets/grind.js"
  ],
@@ -27412,15 +27444,23 @@
   "app/assets/grind.js"
  ],
  [
+  "Din egen tränarlicens är aktiv",
+  "app/assets/grind.js"
+ ],
+ [
+  ", och appen är anpassad för",
+  "app/assets/grind.js"
+ ],
+ [
+  ". Här planerar du träningar, hittar övningar som passar ditt lag och följer spelarnas utveckling.",
+  "app/assets/grind.js"
+ ],
+ [
   "Nu är du en del av tränarlaget i",
   "app/assets/grind.js"
  ],
  [
   ", som tränare för",
-  "app/assets/grind.js"
- ],
- [
-  ". Här planerar du träningar, hittar övningar som passar ditt lag och följer spelarnas utveckling.",
   "app/assets/grind.js"
  ],
  [
@@ -27472,11 +27512,15 @@
   "app/assets/grind.js"
  ],
  [
+  "Välkommen tillbaka till din träningsplanering.",
+  "app/assets/grind.js"
+ ],
+ [
   "Välkommen tillbaka till klubbens träningsplanering.",
   "app/assets/grind.js"
  ],
  [
-  "Övningsfabriken är till för tränare med klubblicens.",
+  "Övningsfabriken är till för tränare med egen licens eller klubblicens.",
   "app/assets/grind.js"
  ],
  [
@@ -27592,6 +27636,86 @@
   "app/assets/grind.js"
  ],
  [
+  "Berätta om ditt lag",
+  "app/assets/grind.js"
+ ],
+ [
+  "Då anpassas pass, övningar och läroplan efter spelarnas ålder och spelform. Du kan ändra det när som helst.",
+  "app/assets/grind.js"
+ ],
+ [
+  "<input id=\"g-name\" name=\"name\" autocomplete=\"given-name\" maxlength=\"40\" value=\"",
+  "app/assets/grind.js"
+ ],
+ [
+  "\" placeholder=\"Så hälsar appen på dig\">",
+  "app/assets/grind.js"
+ ],
+ [
+  "Klubb du tränar i",
+  "app/assets/grind.js"
+ ],
+ [
+  "<input id=\"g-home\" name=\"home\" maxlength=\"120\" autocomplete=\"organization\" value=\"",
+  "app/assets/grind.js"
+ ],
+ [
+  "\" placeholder=\"t.ex. IFK Lilla Byn\">",
+  "app/assets/grind.js"
+ ],
+ [
+  "t.ex. IFK Lilla Byn",
+  "app/assets/grind.js"
+ ],
+ [
+  "<input id=\"g-tname\" name=\"tname\" required maxlength=\"60\" value=\"",
+  "app/assets/grind.js"
+ ],
+ [
+  "\" placeholder=\"t.ex. P2015 eller Flickor 12\">",
+  "app/assets/grind.js"
+ ],
+ [
+  "t.ex. P2015 eller Flickor 12",
+  "app/assets/grind.js"
+ ],
+ [
+  "Herr",
+  "app/assets/grind.js"
+ ],
+ [
+  "Dam",
+  "app/assets/grind.js"
+ ],
+ [
+  "Spelarna är födda",
+  "app/assets/grind.js"
+ ],
+ [
+  "Seniorer / vuxna",
+  "app/assets/grind.js"
+ ],
+ [
+  "år i år)",
+  "app/assets/grind.js"
+ ],
+ [
+  "Spelformen väljs efter åldern (3 mot 3 upp till 11 mot 11).",
+  "app/assets/grind.js"
+ ],
+ [
+  "Sparar …",
+  "app/assets/grind.js"
+ ],
+ [
+  "Spara och fortsätt",
+  "app/assets/grind.js"
+ ],
+ [
+  "Jag tränar inget lag just nu",
+  "app/assets/grind.js"
+ ],
+ [
   "Klubben",
   "app/assets/grind.js"
  ],
@@ -27612,14 +27736,6 @@
   "app/assets/grind.js"
  ],
  [
-  "<input id=\"g-name\" name=\"name\" autocomplete=\"given-name\" maxlength=\"40\" value=\"",
-  "app/assets/grind.js"
- ],
- [
-  "\" placeholder=\"Så hälsar appen på dig\">",
-  "app/assets/grind.js"
- ],
- [
   "Aktivt lag i appen",
   "app/assets/grind.js"
  ],
@@ -27629,18 +27745,6 @@
  ],
  [
   "<input type=\"checkbox\" name=\"team\" value=\"",
-  "app/assets/grind.js"
- ],
- [
-  "Sparar …",
-  "app/assets/grind.js"
- ],
- [
-  "Spara och fortsätt",
-  "app/assets/grind.js"
- ],
- [
-  "Jag tränar inget lag just nu",
   "app/assets/grind.js"
  ],
  [
@@ -27704,6 +27808,14 @@
   "app/assets/grind.js"
  ],
  [
+  "Din egen licens gick ut",
+  "app/assets/grind.js"
+ ],
+ [
+  ". Förnya den på ovningsfabriken.se eller kontakta Övningsfabriken.",
+  "app/assets/grind.js"
+ ],
+ [
   "s licens gick ut",
   "app/assets/grind.js"
  ],
@@ -27745,6 +27857,10 @@
  ],
  [
   "Utveckla spelarna.",
+  "app/assets/grind.js"
+ ],
+ [
+  "Språk / Language",
   "app/assets/grind.js"
  ],
  [
@@ -27876,6 +27992,10 @@
   "app/assets/grind.js"
  ],
  [
+  "Skriv lagets namn, eller tryck \"Jag tränar inget lag just nu\".",
+  "app/assets/grind.js"
+ ],
+ [
   "Välj minst ett lag, eller tryck \"Jag tränar inget lag just nu\".",
   "app/assets/grind.js"
  ],
@@ -28004,11 +28124,7 @@
   "app/assets/konto.js"
  ],
  [
-  "Klubbadministration · du är ansvarig",
-  "app/assets/konto.js"
- ],
- [
-  "Tränare i klubben",
+  "Din licens",
   "app/assets/konto.js"
  ],
  [
@@ -28017,6 +28133,34 @@
  ],
  [
   "Licensen gick ut",
+  "app/assets/konto.js"
+ ],
+ [
+  "Ditt lag:",
+  "app/assets/konto.js"
+ ],
+ [
+  "(födda",
+  "app/assets/konto.js"
+ ],
+ [
+  "Du har inte lagt upp något lag än.",
+  "app/assets/konto.js"
+ ],
+ [
+  "Lägg upp lag",
+  "app/assets/konto.js"
+ ],
+ [
+  "Licensen gäller bara dig. Dina pass, matcher och anteckningar ser bara du. Vill ni vara fler tränare i klubben behöver klubben en klubblicens.",
+  "app/assets/konto.js"
+ ],
+ [
+  "Klubbadministration · du är ansvarig",
+  "app/assets/konto.js"
+ ],
+ [
+  "Tränare i klubben",
   "app/assets/konto.js"
  ],
  [
@@ -28468,6 +28612,34 @@
   "app/assets/utvecklare.js"
  ],
  [
+  "Egen licens för en tränare utan klubblicens",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "Tränarens namn eller e-post",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "t.ex. Anna Svensson",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "Klubb hen tränar i (valfritt)",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "1 plats. Tränaren ser inga andra klubbars lag eller material och kan inte bjuda in kollegor.",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "Skapa egen licens och länk",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "Skicka till tränaren",
+  "app/assets/utvecklare.js"
+ ],
+ [
   "Skicka till klubbens ansvariga",
   "app/assets/utvecklare.js"
  ],
@@ -28501,6 +28673,14 @@
  ],
  [
   "\">+1 år",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "· <button class=\"of-text-action\" data-dev=\"month\" data-id=\"",
+  "app/assets/utvecklare.js"
+ ],
+ [
+  "\">+1 månad",
   "app/assets/utvecklare.js"
  ],
  [

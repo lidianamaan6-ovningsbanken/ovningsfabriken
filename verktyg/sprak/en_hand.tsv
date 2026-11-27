@@ -98,7 +98,7 @@ Skapa	Create
 Bank	Library
 Rita	Draw
 Favoriter (#)	Favorites (#)
-Hitta en övning och lägg den direkt i ett pass.	Find a exercise and add it straight to a session.
+Hitta en övning och lägg den direkt i ett pass.	Find an exercise and add it straight to a session.
 Sök övning	Search exercises
 Fler filter · Aktiva	More filters · Active
 Fler filter	More filters
@@ -170,7 +170,7 @@ FIFA och UEFA	FIFA and UEFA
 Internationellt	International
 Mina övningar	My exercises
 Passar # spelare	Suits # players
-Filtren gäller samtidigt: en övning visas bara om den passar alla val. Sökordet söker inom de valda filtren.	Filters apply together: a exercise is shown only if it matches every choice. The search term searches within the selected filters.
+Filtren gäller samtidigt: en övning visas bara om den passar alla val. Sökordet söker inom de valda filtren.	Filters apply together: an exercise is shown only if it matches every choice. The search term searches within the selected filters.
 Rensa sökning och filter	Clear search and filters
 Anpassat för {}	Adapted for {1}
 · # mot # · bäst lämpade först	· # v # · best suited first
@@ -204,10 +204,10 @@ Inloggad som {}	Signed in as {1}
 Så sparas dina data	How your data is stored
 Vad som finns på ditt konto, vad som bara finns på enheten och vem som ser vad.	What is on your account, what is only on this device and who sees what.
 Rita och importera	Draw and import
-Rita en egen övning steg för steg, eller ladda upp en bild av en övning du redan har – ett foto, en skärmbild eller en whiteboard.	Draw your own exercise step by step, or upload a picture of a exercise you already have – a photo, a screenshot or a whiteboard.
+Rita en egen övning steg för steg, eller ladda upp en bild av en övning du redan har – ett foto, en skärmbild eller en whiteboard.	Draw your own exercise step by step, or upload a picture of an exercise you already have – a photo, a screenshot or a whiteboard.
 Rita ny övning	Draw a new exercise
 Lägg ut spelare, koner och mål. Dra dem steg för steg och se animationen.	Place players, cones and goals. Move them step by step and watch the animation.
-Ladda upp övning	Upload a exercise
+Ladda upp övning	Upload an exercise
 Ett foto, en skärmbild, en whiteboard eller en PDF. Sparas under Mina egna övningar.	A photo, a screenshot, a whiteboard or a PDF. Saved under My own exercises.
 Anteckningsblock	Notepad
 Skriv ut tomma planer med rutor för egna övningar. Rita och fyll i för hand på planen eller i bilen.	Print blank pitches with boxes for your own exercises. Draw and fill in by hand at the pitch or in the car.
@@ -224,12 +224,12 @@ Ladda ner som PDF	Download as PDF
 Mina egna övningar	My own exercises
 + Ladda upp bild eller PDF	+ Upload image or PDF
 Inga egna övningar än	No exercises of your own yet
-Övningar du ritar eller laddar upp hamnar här och synkas till dina andra enheter. Du kan också trycka på "Rita egen version" på en övning i banken.	Exercises you draw or upload end up here and sync to your other devices. You can also tap "Draw your own version" on a exercise in the library.
+Övningar du ritar eller laddar upp hamnar här och synkas till dina andra enheter. Du kan också trycka på "Rita egen version" på en övning i banken.	Exercises you draw or upload end up here and sync to your other devices. You can also tap "Draw your own version" on an exercise in the library.
 Övningar du har stjärnmärkt. Bara du ser dem.	Exercises you have starred. Only you can see them.
 Mina egna (#)	My own (#)
 Klubbens delade	Shared by the club
 Inga favoriter än	No favorites yet
-Tryck på ☆ på en övning i övningsbanken så hamnar den här, även på dina andra enheter.	Tap ☆ on a exercise in the library and it appears here, on your other devices too.
+Tryck på ☆ på en övning i övningsbanken så hamnar den här, även på dina andra enheter.	Tap ☆ on an exercise in the library and it appears here, on your other devices too.
 Gå till övningsbanken	Go to the exercise library
 Ditt lag	Your team
 # mot # · # min · # spelare	# v # · # min · # players
@@ -244,7 +244,7 @@ Spelform (SvFF)	Format (SvFF)
 #–# år	#–# years
 # år och äldre	# years and older
 · plan ca # × # m · Fullstort mål · boll storlek #	· pitch approx. # × # m · Full-size goal · ball size #
-Ladda upp en övning	Upload a exercise
+Ladda upp en övning	Upload an exercise
 Foto, skärmbild, whiteboard eller PDF – sparas under Mina egna övningar.	Photo, screenshot, whiteboard or PDF – saved under My own exercises.
 Dina pass och säsong	Your sessions and season
 # pass · planera teman vecka för vecka	# sessions · plan themes week by week
@@ -401,7 +401,7 @@ En välplanerad träning är en gåva till spelarna, och till dig själv.	A well
 Tålamod är också en tränarfärdighet.	Patience is a coaching skill too.
 Tänk på den tystaste spelaren i laget. Vad kan du göra för att hen ska våga ta plats i dag?	Think of the quietest player in the team. What can you do to help them speak up today?
 Utveckling syns inte alltid direkt. Lita på processen och på det du gör.	Development doesn't always show straight away. Trust the process and what you're doing.
-Fotboll är ett lagspel, även för tränare. Dela en övning med en kollega i dag.	Football is a team game, for coaches too. Share a exercise with a colleague today.
+Fotboll är ett lagspel, även för tränare. Dela en övning med en kollega i dag.	Football is a team game, for coaches too. Share an exercise with a colleague today.
 För många i ditt lag är träningsdagarna veckans bästa dagar. Det är tack vare dig.	For many in your team, training days are the best days of the week. That's thanks to you.
 Ge beröm för ansträngning, inte bara för talang.	Praise effort, not just talent.
 Det finns spelare som kommer till träningen just för att du är där.	Some players come to training precisely because you are there.
@@ -921,3 +921,37 @@ Flytta laget kompakt	Shift the team compactly
 MATCHVIDEO	MATCH VIDEO
 # # övningar att välja bland	#,# exercises to choose from
 # övningar av # #	# exercises of #,#
+# ---------- Egen licens (solo) ----------
+(födda	(born
+, och appen är anpassad för	, and the app is adapted for
+. Förnya den på ovningsfabriken.se eller kontakta Övningsfabriken.	. Renew it at ovningsfabriken.se or contact Övningsfabriken.
+1 plats. Tränaren ser inga andra klubbars lag eller material och kan inte bjuda in kollegor.	1 seat. The coach sees no other clubs' teams or material and cannot invite colleagues.
+Berätta om ditt lag	Tell us about your team
+Dam	Women
+Herr	Men
+Mixat	Mixed
+Din egen licens gick ut	Your own license has expired
+Din egen tränarlicens är aktiv	Your own coach license is active
+Din egen tränarlicens är klar. Här planerar du träningarna, hittar övningar som passar ditt lag och följer spelarnas utveckling.	Your own coach license is ready. Here you plan your sessions, find exercises that suit your team and follow the players' development.
+Din licens	Your license
+Ditt lag:	Your team:
+Du har inte lagt upp något lag än.	You haven't added a team yet.
+Då anpassas pass, övningar och läroplan efter spelarnas ålder och spelform. Du kan ändra det när som helst.	Sessions, exercises and curriculum then adapt to the players' age and game format. You can change it at any time.
+Egen licens	Own license
+Egen licens för en tränare utan klubblicens	Own license for a coach without a club license
+Egen licens · Övningsfabriken	Own license · Övningsfabriken
+Klubb du tränar i	Club you coach at
+Klubb hen tränar i (valfritt)	Club they coach at (optional)
+Licensen gäller bara dig. Dina pass, matcher och anteckningar ser bara du. Vill ni vara fler tränare i klubben behöver klubben en klubblicens.	The license is for you only. Only you can see your sessions, matches and notes. If more coaches in the club want to join, the club needs a club license.
+Lägg upp lag	Add team
+Seniorer / vuxna	Seniors / adults
+Skapa egen licens och länk	Create own license and link
+Skicka till tränaren	Send to the coach
+Skriv lagets namn, eller tryck "Jag tränar inget lag just nu".	Enter the team's name, or tap "I'm not coaching a team right now".
+Spelarna är födda	The players were born
+Tränarens namn eller e-post	Coach's name or email
+Välkommen tillbaka till din träningsplanering.	Welcome back to your training planning.
+Övningsfabriken är till för tränare med egen licens eller klubblicens.	Övningsfabriken is for coaches with their own license or a club license.
+t.ex. IFK Lilla Byn	e.g. IFK Lilla Byn
+t.ex. P2015 eller Flickor 12	e.g. P2015 or Girls 12
+år i år)	this year)
