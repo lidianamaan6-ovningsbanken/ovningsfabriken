@@ -8875,7 +8875,7 @@ const __openMatch32 = openMatch;
 openMatch = function (id, keep) {
   const r = __openMatch32.apply(this, arguments);
   try {
-    const m = MX.matches[id] || MX_DRAFT[id]; const root = $('#match-root'); if (!m || !root || !youthMatch(m) || m.deep) return r;
+    const m = MX.matches[id] || MX_DRAFT[id]; const root = $('#match-root'); if (!m || !root || m.deep) return r; const young = youthMatch(m);
     const first = root.querySelector('details.msec'); const box = first && first.parentNode; if (!box) return r;
     const sec = k => box.querySelector('details.msec[data-sec="' + k + '"]');
     const setT = (d, n, t) => { if (!d) return; const s = d.querySelector('summary'); const nn = s.querySelector('.msec-n'); if (nn) nn.textContent = n; const b = s.querySelector('b'); if (b) b.textContent = t; };
@@ -8887,10 +8887,12 @@ openMatch = function (id, keep) {
     day.innerHTML = '<div class="m-day-h"><span class="msec-n num">2</span><b>Matchdagen</b></div><p class="small muted">Vilka är med, startelva, klocka, rättvisa byten och snabbanteckningar.</p><button type="button" class="btn primary big" data-a="liveOpen">⏱ ' + (m.live && m.live.ended ? 'Visa matchdagen' : played ? 'Fortsätt matchdagen' : 'Starta matchdagen') + '</button>';
     if (info) info.insertAdjacentElement('afterend', day);
     const deep = document.createElement('details'); deep.className = 'card m-deep';
-    deep.innerHTML = '<summary><b>Fördjupning (valfritt)</b><span class="small muted">Motståndarens formation, spelstil och skeden, AI-matchplan och träningsvecka</span></summary><div class="m-deep-in"></div>';
+    deep.innerHTML = '<summary><b>Fördjupning (valfritt)</b><span class="small muted">' + (NO_AI ? 'Motståndarens formation, spelstil, styrkor och svagheter samt träningsveckan' : 'Motståndarens formation, spelstil och skeden, AI-matchplan och träningsvecka') + '</span></summary><div class="m-deep-in"></div>';
     const inn = deep.querySelector('.m-deep-in');
-    ['form', 'style', 'items', 'plan', 'week', 'after'].forEach(k => { const d = sec(k); if (d) inn.appendChild(d); });
-    if (own) own.insertAdjacentElement('afterend', deep); else box.appendChild(deep);
+    (young ? ['form', 'style', 'items', 'plan', 'week', 'after'] : ['form', 'style', 'items', 'plan', 'week']).forEach(k => { const d = sec(k); if (!d) return; if (k === 'plan' && NO_AI) { d.remove(); return; } inn.appendChild(d); });
+    const aft = sec('after'); if (!young && aft && own) { own.insertAdjacentElement('afterend', aft); setT(aft, '4', 'Utvärdera motståndaren'); }
+    const anchor = !young && aft ? aft : own;
+    if (anchor) anchor.insertAdjacentElement('afterend', deep); else box.appendChild(deep);
     if (ST.mDeepOpen) deep.open = true; deep.addEventListener('toggle', () => { ST.mDeepOpen = deep.open; });
     if (own && m.live && m.live.ended && !keep) own.open = true;
   } catch (e) { }

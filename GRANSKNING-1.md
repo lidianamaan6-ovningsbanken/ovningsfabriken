@@ -24,7 +24,7 @@ Varje punkt från granskningen har ett nummer. Status: ⬜ ej påbörjad · 🔧
 - G15 ✅ (”Snabbt pass” i stället för ”på en minut”; passet byggs direkt ur banken utan väntan. AI-väntestatus blir aktuell först om AI slås på – se 👤) ”Träningspass på en minut” – bara om löftet håller; AI-väntestatus, avbryt.
 - G16 ✅ (Tomlägen med nästa steg: Pass (fyra vägar), Säsong (”+ Lägg till en period”), Utveckling (checklista med knappar), Match (Ny match)) Tomma lägen med tydligt nästa steg: Planering, Pass, Match, Utveckling.
 - G17 ✅ (Match har två flikar: Matcher och Matchanalys (video), egen rubrik, förklaring i tre steg och egen adress #match/analys) Match och Matchanalys separeras.
-- G18 🔧 (unika namn: ”Utvärdera motståndaren” (7), ”Vårt eget spel” (8), för yngre ”Efter matchen: vårt eget spel”; yngre lag har grundflöde + Fördjupning – samma upplägg för äldre lag återstår) Matchflödet: grundflöde + fördjupningar, unika namn (två ”Efter matchen”).
+- G18 ✅ (Alla matcher: grundflöde 1 Före matchen → 2 Matchdagen → 3 Efter matchen: vårt eget spel (→ 4 Utvärdera motståndaren för äldre lag), resten under ”Fördjupning (valfritt)”; unika namn; AI-matchplanen visas inte på den öppna sidan)
 
 ## Etapp 4 – Förval och innehåll
 - G19 ✅ (Övningsbank: sökfältet är tomt vid start, raden visar ”N övningar för ’sökord’ · Rensa sökningen”, och sökningen visar bara övningar där ordet faktiskt finns – bäst träff först) Övningsbanken: sökfältet visade ”6 mot 4 till 6 mot 6” – bara platshållare, resultat följer alltid sökfältet.
